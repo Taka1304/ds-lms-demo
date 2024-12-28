@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma";
-import NextAuth from "next-auth";
+import NextAuth, { type NextAuthOptions } from "next-auth";
 import GoogleProvider, { type GoogleProfile } from "next-auth/providers/google";
 
 declare module "next-auth" {
@@ -10,10 +10,14 @@ declare module "next-auth" {
 
 // Check if the email is from the university
 const checkDomain = (email: string) => {
-  return email.endsWith("@planet.kanazawa-it.ac.jp") || email.endsWith("@st.kanazawa-it.ac.jp");
+  const arrowDomains = [
+    "@planet.kanazawa-it.ac.jp",
+    "@st.kanazawa-it.ac.jp",
+  ]
+  return arrowDomains.some((domain) => email.endsWith(domain));
 }
 
-const handler = NextAuth({
+export const authOptions: NextAuthOptions = {
   providers: [
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID || "",
@@ -86,6 +90,8 @@ const handler = NextAuth({
     // error: "/auth/error",
     // newUser: '/auth/new-user',
   }
-});
+};
+
+const handler = NextAuth(authOptions);
 
 export { handler as GET, handler as POST };
