@@ -29,15 +29,34 @@ model User {
   systemRole    SystemRole @default(USER)
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
-  skillProgress SkillProgress[]
-
+  
   // Relations
+  skillProgress SkillProgress[]
+  providers    UserProvider[]
   organizations     OrganizationMember[]
   submissions       Submission[]
   externalLearning  ExternalLearning[]
   notifications     Notification[]
   createdProblems  Problem[]        @relation("ProblemCreator")
   updatedProblems  Problem[]        @relation("ProblemUpdater")
+}
+
+model UserProvider {
+  id           String    @id @default(cuid())
+  userId       String
+  provider     String    // プロバイダー名 (例: "google", "Azure", "github")
+  providerId   String    // プロバイダー側のユーザーID
+  email        String    // プロバイダーから取得したメールアドレス
+  displayName  String?   // プロバイダーの表示名
+  iconImage    String?   // プロバイダーのプロフィール画像
+  additionalData Json?   // プロバイダーから取得したカスタムデータ (例: GitHubのリポジトリ情報など)
+  createdAt    DateTime  @default(now())
+
+  // Relations
+  user         User      @relation(fields: [userId], references: [id])
+
+  @@unique([userId, provider]) // ユーザーごとに1つのプロバイダーのみ許可
+  @@unique([provider, providerId]) // 各プロバイダー内で一意のユーザーIDを保証
 }
 
 // 課外活動団体（部活動/サークル）
