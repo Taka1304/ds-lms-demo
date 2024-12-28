@@ -29,6 +29,7 @@ model User {
   systemRole    SystemRole @default(USER)
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
+  skillProgress SkillProgress[]
 
   // Relations
   organizations     OrganizationMember[]
@@ -264,4 +265,53 @@ model Announcement {
   createdBy   String   // Admin User ID
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+}
+
+enum SkillRequirement {
+  NONE     // 必須ではない
+  BASIC    // 必須スキル (〇)
+  ADVANCED // より高い必須度 (◎)
+}
+
+model SkillCategory {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  description String?  // カテゴリの説明
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  skills      Skill[]
+}
+
+model Skill {
+  id            String           @id @default(cuid())
+  categoryId    String
+  name          String           // スキル名
+  description   String?          // チェック項目の説明
+  level         Int              // スキルレベル (★の数)
+  subCategory   String?          // サブカテゴリ
+  requirement   SkillRequirement @default(NONE) // 必須スキルかどうか
+  aiType        String?          // AI区分 (例: LLM, Diffusion)
+
+  createdAt     DateTime         @default(now())
+  updatedAt     DateTime         @updatedAt
+
+  // Relations
+  category      SkillCategory    @relation(fields: [categoryId], references: [id])
+  userProgress  SkillProgress[]
+}
+
+model SkillProgress {
+  id          String    @id @default(cuid())
+  userId      String
+  skillId     String
+  isAchieved  Boolean   @default(false) // 達成済みかどうか
+  achievedAt  DateTime? // 達成日
+
+  // Relations
+  user        User      @relation(fields: [userId], references: [id])
+  skill       Skill     @relation(fields: [skillId], references: [id])
+
+  @@unique([userId, skillId]) // ユーザーごとのスキル進捗を一意に識別
 }
