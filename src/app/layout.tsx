@@ -4,15 +4,10 @@ import "./globals.css";
 import { Providers } from "@/app/providers";
 import { Header } from "@/components/layout/header";
 
-const geistSans = localFont({
-  src: "./fonts/GeistVF.woff",
-  variable: "--font-geist-sans",
-  weight: "100 900",
-});
-const geistMono = localFont({
-  src: "./fonts/GeistMonoVF.woff",
-  variable: "--font-geist-mono",
-  weight: "100 900",
+const notoSans = localFont({
+  src: "./fonts/NotoSansJP-Medium.ttf",
+  variable: "--font-noto-sans-jp",
+  weight: "400 700",
 });
 
 export const metadata: Metadata = {
@@ -27,10 +22,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ja">
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+      <body className={`${notoSans.variable} antialiased`}>
         <Providers>
           <Header />
-          {children}
+          <main>{children}</main>
         </Providers>
       </body>
     </html>
