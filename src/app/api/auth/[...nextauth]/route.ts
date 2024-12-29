@@ -10,12 +10,9 @@ declare module "next-auth" {
 
 // Check if the email is from the university
 const checkDomain = (email: string) => {
-  const arrowDomains = [
-    "@planet.kanazawa-it.ac.jp",
-    "@st.kanazawa-it.ac.jp",
-  ]
+  const arrowDomains = ["@planet.kanazawa-it.ac.jp", "@st.kanazawa-it.ac.jp"];
   return arrowDomains.some((domain) => email.endsWith(domain));
-}
+};
 
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -23,7 +20,7 @@ export const authOptions: NextAuthOptions = {
       clientId: process.env.GOOGLE_CLIENT_ID || "",
       clientSecret: process.env.GOOGLE_CLIENT_SECRET || "",
     }),
-    // TODO: 
+    // TODO:
     // GithubProvider({
     //   clientId: process.env.GITHUB_CLIENT_ID || "",
     //   clientSecret: process.env.GITHUB_CLIENT_SECRET || "",
@@ -47,9 +44,7 @@ export const authOptions: NextAuthOptions = {
     },
     async signIn({ account, profile }) {
       if (profile?.email && account?.provider === "google") {
-
         const googleProfile = profile as GoogleProfile;
-
         if (checkDomain(googleProfile.email)) {
           // Access Granted
           const user = await prisma.user.upsert({
@@ -61,7 +56,7 @@ export const authOptions: NextAuthOptions = {
               displayName: googleProfile.name || "No Name",
               iconImage: googleProfile.picture,
             },
-          })
+          });
           await prisma.userProvider.upsert({
             where: { provider_providerId: { provider: account.provider, providerId: account.providerAccountId } },
             update: {},
@@ -74,22 +69,22 @@ export const authOptions: NextAuthOptions = {
               displayName: googleProfile.name || "No Name",
             },
           });
-          
+
           return true;
         }
         // Access Denied
         return false;
       }
       // TODO: Add other providers
-      return true
-    }
+      return true;
+    },
   },
   pages: {
     signIn: "/auth/signin",
     // signOut: "/auth/signout",
     // error: "/auth/error",
     // newUser: '/auth/new-user',
-  }
+  },
 };
 
 const handler = NextAuth(authOptions);
