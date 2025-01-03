@@ -99,8 +99,7 @@ model Problem {
   slug            String @unique // URL用のスラッグ
   description     String // 問題の説明（Markdown）
   difficultyLevel Int // 難易度（1-5等）
-  content         Json // 問題の詳細内容（Markdown形式の本文、入力形式、出力形式など）
-  constraints     Json // 制約条件（時間、メモリ、入力値の範囲など）
+  constraints     String // 制約条件（時間、メモリ、入力値の範囲など）
 
   // 実行制限
   timeLimit   Int // ミリ秒単位
