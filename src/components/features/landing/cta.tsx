@@ -31,7 +31,7 @@ export default function CTA() {
             className="space-x-4"
           >
             <Button asChild size={"lg"}>
-              <Link href="/signup">無料で始める</Link>
+              <Link href="/auth/signin">無料で始める</Link>
             </Button>
           </motion.div>
         </div>

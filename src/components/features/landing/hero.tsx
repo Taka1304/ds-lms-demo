@@ -20,7 +20,7 @@ export default function Hero() {
             </p>
             <div className="space-x-4">
               <Button variant="default" size={"lg"}>
-                <Link href="#cta">無料で始める</Link>
+                <Link href="/auth/signin">無料で始める</Link>
               </Button>
             </div>
           </div>
