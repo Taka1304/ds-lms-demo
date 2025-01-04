@@ -38,5 +38,19 @@
 			"lineWidth": 120,
 			"lineEnding": "lf"
 		}
-	}
+	},
+	"overrides": [
+		{
+			"include": ["/src/components/ui/**/*.tsx", "**/seed.ts"],
+			"linter": {
+				"rules": {
+					"suspicious": {
+						"noDebugger": "off",
+						"noConsoleLog": "off",
+						"noExplicitAny": "off"
+					}
+				}
+			}
+		}
+	]
 }

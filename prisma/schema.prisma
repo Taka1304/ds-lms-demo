@@ -3,8 +3,8 @@ generator client {
 }
 
 datasource db {
-  provider  = "postgresql"
-  url       = env("DATABASE_URL")
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
 // システム管理者用の権限
@@ -15,45 +15,45 @@ enum SystemRole {
 
 // 課外活動団体での役割
 enum MemberRole {
-  LEADER    // 管理者
-  MEMBER    // 部員
+  LEADER // 管理者
+  MEMBER // 部員
 }
 
 model User {
-  id            String    @id @default(cuid())
-  email         String    @unique
-  name          String
-  displayName   String?
-  grade         String?
-  iconImage     String?
-  systemRole    SystemRole @default(USER)
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
-  
+  id          String     @id @default(cuid())
+  email       String     @unique
+  name        String
+  displayName String?
+  grade       String?
+  iconImage   String?
+  systemRole  SystemRole @default(USER)
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
   // Relations
-  skillProgress SkillProgress[]
-  providers    UserProvider[]
-  organizations     OrganizationMember[]
-  submissions       Submission[]
-  externalLearning  ExternalLearning[]
-  notifications     Notification[]
-  createdProblems  Problem[]        @relation("ProblemCreator")
-  updatedProblems  Problem[]        @relation("ProblemUpdater")
+  skillProgress    SkillProgress[]
+  providers        UserProvider[]
+  organizations    OrganizationMember[]
+  submissions      Submission[]
+  externalLearning ExternalLearning[]
+  notifications    Notification[]
+  createdProblems  Problem[]            @relation("ProblemCreator")
+  updatedProblems  Problem[]            @relation("ProblemUpdater")
 }
 
 model UserProvider {
-  id           String    @id @default(cuid())
-  userId       String
-  provider     String    // プロバイダー名 (例: "google", "Azure", "github")
-  providerId   String    // プロバイダー側のユーザーID
-  email        String    // プロバイダーから取得したメールアドレス
-  displayName  String?   // プロバイダーの表示名
-  iconImage    String?   // プロバイダーのプロフィール画像
-  additionalData Json?   // プロバイダーから取得したカスタムデータ (例: GitHubのリポジトリ情報など)
-  createdAt    DateTime  @default(now())
+  id             String   @id @default(cuid())
+  userId         String
+  provider       String // プロバイダー名 (例: "google", "Azure", "github")
+  providerId     String // プロバイダー側のユーザーID
+  email          String // プロバイダーから取得したメールアドレス
+  displayName    String? // プロバイダーの表示名
+  iconImage      String? // プロバイダーのプロフィール画像
+  additionalData Json? // プロバイダーから取得したカスタムデータ (例: GitHubのリポジトリ情報など)
+  createdAt      DateTime @default(now())
 
   // Relations
-  user         User      @relation(fields: [userId], references: [id])
+  user User @relation(fields: [userId], references: [id])
 
   @@unique([userId, provider]) // ユーザーごとに1つのプロバイダーのみ許可
   @@unique([provider, providerId]) // 各プロバイダー内で一意のユーザーIDを保証
@@ -61,178 +61,179 @@ model UserProvider {
 
 // 課外活動団体（部活動/サークル）
 model Organization {
-  id          String    @id @default(cuid())
-  name        String    // 団体名
-  description String?   // 団体の説明
+  id          String   @id @default(cuid())
+  name        String   @unique // 団体名
+  description String? // 団体の説明
   iconImage   String?
-  isActive    Boolean   @default(true)
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
   // Relations
-  members     OrganizationMember[]
-  problems    Problem[]            // 団体が作成した問題
+  members  OrganizationMember[]
+  problems Problem[] // 団体が作成した問題
+
+  @@index([name])
 }
 
 // 部員情報（兼部を考慮した多対多の関係）
 model OrganizationMember {
-  id              String      @id @default(cuid())
-  userId          String
-  organizationId  String
-  role            MemberRole
-  createdAt       DateTime    @default(now())
-  updatedAt       DateTime    @updatedAt
+  id             String     @id @default(cuid())
+  userId         String
+  organizationId String
+  role           MemberRole
+  createdAt      DateTime   @default(now())
+  updatedAt      DateTime   @updatedAt
 
   // Relations
-  user          User          @relation(fields: [userId], references: [id])
-  organization  Organization  @relation(fields: [organizationId], references: [id])
+  user         User         @relation(fields: [userId], references: [id])
+  organization Organization @relation(fields: [organizationId], references: [id])
 
   @@unique([userId, organizationId])
 }
 
 model Problem {
-  id              String    @id @default(cuid())
-  organizationId  String    // 作成した団体
+  id              String @id @default(cuid())
+  organizationId  String // 作成した団体
   title           String
-  slug            String    @unique  // URL用のスラッグ
-  description     String    // 問題の説明（Markdown）
-  difficultyLevel Int       // 難易度（1-5等）
-  content         Json      // 問題の詳細内容（Markdown形式の本文、入力形式、出力形式など）
-  constraints     Json      // 制約条件（時間、メモリ、入力値の範囲など）
-  
+  slug            String @unique // URL用のスラッグ
+  description     String // 問題の説明（Markdown）
+  difficultyLevel Int // 難易度（1-5等）
+  constraints     String // 制約条件（時間、メモリ、入力値の範囲など）
+
   // 実行制限
-  timeLimit       Int       // ミリ秒単位
-  memoryLimit     Int       // MB単位
-  
+  timeLimit   Int // ミリ秒単位
+  memoryLimit Int // MB単位
+
   // 公開設定
-  isPublic        Boolean   @default(false)  // true: 全体公開, false: 団体内のみ
-  isArchived      Boolean   @default(false)
-  version         Int       @default(1)      // 問題のバージョン管理
-  
+  isPublic   Boolean @default(false) // true: 全体公開, false: 団体内のみ
+  isArchived Boolean @default(false)
+  version    Int     @default(1) // 問題のバージョン管理
+
   // 統計情報
-  submitCount     Int       @default(0)
-  acceptCount     Int       @default(0)
-  
+  submitCount Int @default(0)
+  acceptCount Int @default(0)
+
   // 作成・更新情報
-  createdById     String
-  updatedById     String
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @updatedAt
+  createdById String
+  updatedById String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
   // Relations
-  organization    Organization @relation(fields: [organizationId], references: [id])
-  createdBy      User        @relation("ProblemCreator", fields: [createdById], references: [id])
-  updatedBy      User        @relation("ProblemUpdater", fields: [updatedById], references: [id])
-  submissions    Submission[]
-  testCases      TestCase[]
-  tags           ProblemTag[]
-  sampleCodes    ProblemSampleCode[]
+  organization Organization        @relation(fields: [organizationId], references: [id])
+  createdBy    User                @relation("ProblemCreator", fields: [createdById], references: [id])
+  updatedBy    User                @relation("ProblemUpdater", fields: [updatedById], references: [id])
+  submissions  Submission[]
+  testCases    TestCase[]
+  tags         ProblemTag[]
+  sampleCodes  ProblemSampleCode[]
 }
 
 model ProblemSampleCode {
   id          String   @id @default(cuid())
   problemId   String
-  language    String   // プログラミング言語
-  code        String   // サンプルコード
-  description String?  // コードの説明
+  language    String // プログラミング言語
+  code        String // サンプルコード
+  description String? // コードの説明
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
   // Relations
-  problem     Problem  @relation(fields: [problemId], references: [id])
+  problem Problem @relation(fields: [problemId], references: [id])
 }
 
 model TestCase {
   id          String   @id @default(cuid())
   problemId   String
-  input       String   // 入力データ
-  output      String   // 期待される出力
-  explanation String?  // テストケースの説明
-  isExample   Boolean  @default(false)  // サンプルケースかどうか
-  isHidden    Boolean  @default(true)   // 提出時に見えるかどうか
+  input       String // 入力データ
+  output      String // 期待される出力
+  explanation String? // テストケースの説明
+  isExample   Boolean  @default(false) // サンプルケースかどうか
+  isHidden    Boolean  @default(true) // 提出時に見えるかどうか
   createdAt   DateTime @default(now())
 
   // Relations
-  problem     Problem  @relation(fields: [problemId], references: [id])
+  problem Problem @relation(fields: [problemId], references: [id])
 }
 
 model Submission {
-  id              String   @id @default(cuid())
-  userId          String
-  problemId       String
-  organizationId  String
-  code            String
-  language        String   @default("python3")
-  status          String   // "accepted", "wrong_answer", "time_limit_exceeded", etc.
-  executionTime   Float?   // 実行時間（ミリ秒）
-  memoryUsage     Int?     // メモリ使用量（MB）
-  errorMessage    String?  // エラーメッセージ
-  testResults     Json?    // 各テストケースの結果
-  score           Float?   // 得点（必要な場合）
-  createdAt       DateTime @default(now())
+  id             String   @id @default(cuid())
+  userId         String
+  problemId      String
+  organizationId String
+  code           String
+  language       String   @default("python3")
+  status         String // "accepted", "wrong_answer", "time_limit_exceeded", etc.
+  executionTime  Float? // 実行時間（ミリ秒）
+  memoryUsage    Int? // メモリ使用量（MB）
+  errorMessage   String? // エラーメッセージ
+  testResults    Json? // 各テストケースの結果
+  score          Float? // 得点（必要な場合）
+  createdAt      DateTime @default(now())
 
   // Relations
-  user        User     @relation(fields: [userId], references: [id])
-  problem     Problem  @relation(fields: [problemId], references: [id])
+  user    User    @relation(fields: [userId], references: [id])
+  problem Problem @relation(fields: [problemId], references: [id])
 
   @@index([userId, problemId, status])
   @@index([problemId, status, executionTime])
 }
 
 model Tag {
-  id            String   @id @default(cuid())
-  name          String   @unique
-  createdAt     DateTime @default(now())
+  id        String   @id @default(cuid())
+  name      String   @unique
+  createdAt DateTime @default(now())
 
   // Relations
-  problems      ProblemTag[]
+  problems             ProblemTag[]
   externalLearningTags ExternalLearningTag[]
 }
 
 model ProblemTag {
-  problemId     String
-  tagId         String
-  createdAt     DateTime @default(now())
+  problemId String
+  tagId     String
+  createdAt DateTime @default(now())
 
   // Relations
-  problem       Problem  @relation(fields: [problemId], references: [id])
-  tag           Tag      @relation(fields: [tagId], references: [id])
+  problem Problem @relation(fields: [problemId], references: [id])
+  tag     Tag     @relation(fields: [tagId], references: [id])
 
   @@id([problemId, tagId])
 }
 
 model ExternalLearning {
-  id            String   @id @default(cuid())
-  userId        String
-  platform      String   // "paiza", "signate" etc.
-  problemId     String?
-  problemTitle  String
-  learningDate  DateTime
-  notes         String?
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  id           String   @id @default(cuid())
+  userId       String
+  platform     String // "paiza", "signate" etc.
+  problemId    String?
+  problemTitle String
+  learningDate DateTime
+  notes        String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 
   // Relations
-  user          User     @relation(fields: [userId], references: [id])
-  attachments   ExternalLearningAttachment[]
-  tags          ExternalLearningTag[]
+  user        User                         @relation(fields: [userId], references: [id])
+  attachments ExternalLearningAttachment[]
+  tags        ExternalLearningTag[]
 }
 
 model ExternalLearningAttachment {
-  id            String   @id @default(cuid())
-  learningId    String
-  type          String   // "image", "text"
-  content       String   // URL or text content
-  createdAt     DateTime @default(now())
+  id         String   @id @default(cuid())
+  learningId String
+  type       String // "image", "text"
+  content    String // URL or text content
+  createdAt  DateTime @default(now())
 
   // Relations
   externalLearning ExternalLearning @relation(fields: [learningId], references: [id])
 }
 
 model ExternalLearningTag {
-  learningId    String
-  tagId         String
-  createdAt     DateTime @default(now())
+  learningId String
+  tagId      String
+  createdAt  DateTime @default(now())
 
   // Relations
   externalLearning ExternalLearning @relation(fields: [learningId], references: [id])
@@ -242,95 +243,95 @@ model ExternalLearningTag {
 }
 
 model Notification {
-  id          String   @id @default(cuid())
-  userId      String
-  title       String
-  content     String
-  isRead      Boolean  @default(false)
-  createdAt   DateTime @default(now())
+  id        String   @id @default(cuid())
+  userId    String
+  title     String
+  content   String
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
 
   // Relations
-  user        User     @relation(fields: [userId], references: [id])
+  user User @relation(fields: [userId], references: [id])
 }
 
 // ランキングのスナップショット（定期保存用）
 model RankingSnapshot {
-  id          String    @id @default(cuid())
-  type        String    // "problem", "global"
-  targetId    String?   // problem_idなど
-  data        Json      // ランキングデータ
-  createdAt   DateTime  @default(now())
+  id        String   @id @default(cuid())
+  type      String // "problem", "global"
+  targetId  String? // problem_idなど
+  data      Json // ランキングデータ
+  createdAt DateTime @default(now())
 
   @@index([type, targetId, createdAt])
 }
 
 // システム設定
 model SystemSetting {
-  id          String   @id @default(cuid())
-  key         String   @unique
-  value       String
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id        String   @id @default(cuid())
+  key       String   @unique
+  value     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 // お知らせ管理
 model Announcement {
-  id          String   @id @default(cuid())
+  id          String    @id @default(cuid())
   title       String
   content     String
-  isPublic    Boolean  @default(false)
+  isPublic    Boolean   @default(false)
   publishFrom DateTime?
   publishTo   DateTime?
-  createdBy   String   // Admin User ID
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  createdBy   String // Admin User ID
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
 }
 
 enum SkillRequirement {
-  NONE     // 必須ではない
-  BASIC    // 必須スキル (〇)
+  NONE // 必須ではない
+  BASIC // 必須スキル (〇)
   ADVANCED // より高い必須度 (◎)
 }
 
 model SkillCategory {
   id          String   @id @default(cuid())
   name        String   @unique
-  description String?  // カテゴリの説明
+  description String? // カテゴリの説明
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
   // Relations
-  skills      Skill[]
+  skills Skill[]
 }
 
 model Skill {
-  id            String           @id @default(cuid())
-  categoryId    String
-  name          String           // スキル名
-  description   String?          // チェック項目の説明
-  level         Int              // スキルレベル (★の数)
-  subCategory   String?          // サブカテゴリ
-  requirement   SkillRequirement @default(NONE) // 必須スキルかどうか
-  aiType        String?          // AI区分 (例: LLM, Diffusion)
+  id          String           @id @default(cuid())
+  categoryId  String
+  name        String // スキル名
+  description String? // チェック項目の説明
+  level       Int // スキルレベル (★の数)
+  subCategory String? // サブカテゴリ
+  requirement SkillRequirement @default(NONE) // 必須スキルかどうか
+  aiType      String? // AI区分 (例: LLM, Diffusion)
 
-  createdAt     DateTime         @default(now())
-  updatedAt     DateTime         @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   // Relations
-  category      SkillCategory    @relation(fields: [categoryId], references: [id])
-  userProgress  SkillProgress[]
+  category     SkillCategory   @relation(fields: [categoryId], references: [id])
+  userProgress SkillProgress[]
 }
 
 model SkillProgress {
-  id          String    @id @default(cuid())
-  userId      String
-  skillId     String
-  isAchieved  Boolean   @default(false) // 達成済みかどうか
-  achievedAt  DateTime? // 達成日
+  id         String    @id @default(cuid())
+  userId     String
+  skillId    String
+  isAchieved Boolean   @default(false) // 達成済みかどうか
+  achievedAt DateTime? // 達成日
 
   // Relations
-  user        User      @relation(fields: [userId], references: [id])
-  skill       Skill     @relation(fields: [skillId], references: [id])
+  user  User  @relation(fields: [userId], references: [id])
+  skill Skill @relation(fields: [skillId], references: [id])
 
   @@unique([userId, skillId]) // ユーザーごとのスキル進捗を一意に識別
 }

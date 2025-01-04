@@ -6,9 +6,6 @@ export default withAuth(
     return NextResponse.next();
   },
   {
-    callbacks: {
-      authorized: ({ token }) => token?.role === "ADMIN",
-    },
     pages: {
       signIn: "/auth/signin",
     },
@@ -16,5 +13,5 @@ export default withAuth(
 );
 
 export const config = {
-  matcher: ["/admin", "/courses"],
+  matcher: ["/admin"],
 };

@@ -6,4 +6,4 @@ pre-commit:
     prisma:
       root: "prisma/"
       glob: "*.{prisma}"
-      run: biome x prisma format && git update-index --again
+      run: bun x prisma format && git update-index --again
