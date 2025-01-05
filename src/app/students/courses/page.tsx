@@ -1,8 +1,9 @@
 "use client";
-
 import { Button } from "@/components/ui/button";
 import { DataTable } from "@/components/ui/data-table";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Separator } from "@/components/ui/separator";
+import { SidebarTrigger } from "@/components/ui/sidebar";
 import type { ColumnDef } from "@tanstack/react-table";
 import Link from "next/link";
 import { useMemo, useState } from "react";
@@ -19,7 +20,9 @@ const difficulties = ["全て", "簡単", "普通", "難しい"];
 export default function ProblemList() {
   const [filterDifficulty, setFilterDifficulty] = useState(difficulties[0]);
   const filteredProblems =
-    filterDifficulty === difficulties[0] ? allProblems : allProblems.filter((p) => p.difficultyLevel === difficulties.indexOf(filterDifficulty));
+    filterDifficulty === difficulties[0]
+      ? allProblems
+      : allProblems.filter((p) => p.difficultyLevel === difficulties.indexOf(filterDifficulty));
 
   const columns: ColumnDef<(typeof allProblems)[0]>[] = useMemo(
     () => [
@@ -48,8 +51,10 @@ export default function ProblemList() {
         cell: ({ row }) => {
           const problem = row.original;
           return (
-            <Link href={`/courses/${problem.id}`}>
-              <Button size="sm" className="w-full">挑戦する</Button>
+            <Link href={`/students/courses/${problem.id}`}>
+              <Button size="sm" className="w-full">
+                挑戦する
+              </Button>
             </Link>
           );
         },
@@ -59,25 +64,32 @@ export default function ProblemList() {
   );
 
   return (
-    <div className="space-y-6 container mx-auto px-4 py-8 min-h-[calc(100vh-60px)]">
-      <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-bold">演習問題</h1>
-        <Select onValueChange={setFilterDifficulty} defaultValue={filterDifficulty}>
-          <SelectTrigger className="w-[180px]">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            {difficulties.map((d) => (
-              <SelectItem key={d} value={d}>
-                {d}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+    <>
+      <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12">
+        <div className="flex items-center gap-2 px-4">
+          <SidebarTrigger className="-ml-1" />
+          <Separator orientation="vertical" className="mr-2 h-4" />
+          <h2 className="text-md">演習問題</h2>
+        </div>
+      </header>
+      <div className="space-y-6 container mx-auto px-4 py-8 min-h-[calc(100vh-60px)]">
+        <div className="flex justify-between items-center">
+          <Select onValueChange={setFilterDifficulty} defaultValue={filterDifficulty}>
+            <SelectTrigger className="w-[180px]">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {difficulties.map((d) => (
+                <SelectItem key={d} value={d}>
+                  {d}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+        <DataTable columns={columns} data={filteredProblems} />
+        {/* TODO: Pagination */}
       </div>
-
-      <DataTable columns={columns} data={filteredProblems} />
-      {/* TODO: Pagination */}
-    </div>
+    </>
   );
 }

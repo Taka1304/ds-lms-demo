@@ -4,11 +4,19 @@ import Image from "next/image";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 
-export default async function SignInPage() {
+export default async function SignInPage({ searchParams }: {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>
+}) {
   const session = await getServerSession();
+  const params = await searchParams;
   // ログイン済みの場合はリダイレクト
   if (session?.user) {
-    redirect("/");
+    if (typeof params.callbackUrl === 'string') {
+      redirect(params.callbackUrl);
+    } else if (typeof params.callbackUrl === 'object') {
+      redirect(params.callbackUrl[0]);
+    }
+    redirect("/students");
   }
 
   return (

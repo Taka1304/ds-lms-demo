@@ -7,9 +7,22 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// 学年
+enum Grade {
+  B1
+  B2
+  B3
+  B4
+  M1
+  M2
+  D1
+  D2
+  D3
+}
+
 // システム管理者用の権限
 enum SystemRole {
-  SYSTEM_ADMIN
+  ADMIN
   USER
 }
 
@@ -20,19 +33,22 @@ enum MemberRole {
 }
 
 model User {
-  id          String     @id @default(cuid())
-  email       String     @unique
-  name        String
-  displayName String?
-  grade       String?
-  iconImage   String?
-  systemRole  SystemRole @default(USER)
-  createdAt   DateTime   @default(now())
-  updatedAt   DateTime   @updatedAt
+  id            String    @id @default(cuid())
+  name          String?
+  displayName   String?
+  email         String    @unique
+  emailVerified DateTime?
+  grade         Grade?
+  image         String?
+  role          SystemRole? @default(USER)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   // Relations
+  accounts         Account[]
+  sessions         Session[]
+  Authenticator    Authenticator[]
   skillProgress    SkillProgress[]
-  providers        UserProvider[]
   organizations    OrganizationMember[]
   submissions      Submission[]
   externalLearning ExternalLearning[]
@@ -41,22 +57,59 @@ model User {
   updatedProblems  Problem[]            @relation("ProblemUpdater")
 }
 
-model UserProvider {
-  id             String   @id @default(cuid())
-  userId         String
-  provider       String // プロバイダー名 (例: "google", "Azure", "github")
-  providerId     String // プロバイダー側のユーザーID
-  email          String // プロバイダーから取得したメールアドレス
-  displayName    String? // プロバイダーの表示名
-  iconImage      String? // プロバイダーのプロフィール画像
-  additionalData Json? // プロバイダーから取得したカスタムデータ (例: GitHubのリポジトリ情報など)
-  createdAt      DateTime @default(now())
+model Account {
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
 
-  // Relations
-  user User @relation(fields: [userId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  @@unique([userId, provider]) // ユーザーごとに1つのプロバイダーのみ許可
-  @@unique([provider, providerId]) // 各プロバイダー内で一意のユーザーIDを保証
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([provider, providerAccountId])
+}
+
+model Session {
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model VerificationToken {
+  identifier String
+  token      String
+  expires    DateTime
+
+  @@id([identifier, token])
+}
+
+// Optional for WebAuthn support
+model Authenticator {
+  credentialID         String  @unique
+  userId               String
+  providerAccountId    String
+  credentialPublicKey  String
+  counter              Int
+  credentialDeviceType String
+  credentialBackedUp   Boolean
+  transports           String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([userId, credentialID])
 }
 
 // 課外活動団体（部活動/サークル）
