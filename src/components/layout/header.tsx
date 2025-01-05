@@ -8,14 +8,14 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Bell, Book, Home, User } from "lucide-react";
-import { signIn, signOut, useSession } from "next-auth/react";
+import { useSession, signOut } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 const navigation = [
   { name: "Home", href: "/", icon: Home },
-  { name: "Courses", href: "/courses", icon: Book },
+  { name: "Courses", href: "/students/courses", icon: Book },
 ];
 
 export function Header() {
@@ -78,7 +78,7 @@ export function Header() {
               </DropdownMenu>
             ) : (
               <Link href="/auth/signin">
-                <Button variant="ghost" size="sm" onClick={() => signIn()}>
+                <Button variant="ghost" size="sm">
                   Sign in
                 </Button>
               </Link>
