@@ -20,7 +20,7 @@ export default async function SignInPage({ searchParams }: {
   }
 
   return (
-    <div className="flex min-h-[calc(100vh-60px)]">
+    <div className="flex min-h-screen]">
       <div className="relative hidden w-1/2 lg:block">
         <Image
           src="/red-ink-on-yellow-and-blue.jpg"
