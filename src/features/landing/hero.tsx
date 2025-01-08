@@ -15,9 +15,7 @@ export default function Hero() {
                 <FlipWords words={words} className="text-white" duration={5000} />
               </h1>
             </span>
-            <p className="mx-auto max-w-[700px] text-gray-200 md:text-xl">
-              あなたはデータサイエンスの夢を見ますか？
-            </p>
+            <p className="mx-auto max-w-[700px] text-gray-200 md:text-xl">あなたはデータサイエンスの夢を見ますか？</p>
             <div className="space-x-4">
               <Button variant="default" size={"lg"}>
                 <Link href="/auth/signin">無料で始める</Link>
