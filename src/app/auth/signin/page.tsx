@@ -4,16 +4,18 @@ import Image from "next/image";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 
-export default async function SignInPage({ searchParams }: {
-  searchParams: Promise<{ [key: string]: string | string[] | undefined }>
+export default async function SignInPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
   const session = await getServerSession();
   const params = await searchParams;
   // ログイン済みの場合はリダイレクト
   if (session?.user) {
-    if (typeof params.callbackUrl === 'string') {
+    if (typeof params.callbackUrl === "string") {
       redirect(params.callbackUrl);
-    } else if (typeof params.callbackUrl === 'object') {
+    } else if (typeof params.callbackUrl === "object") {
       redirect(params.callbackUrl[0]);
     }
     redirect("/students");
@@ -45,6 +47,15 @@ export default async function SignInPage({ searchParams }: {
                 />
               </svg>
               Sign in with Google
+            </SigninButton>
+            <SigninButton provider="azure-ad-b2c">
+              <svg width="16" height="16" aria-hidden="true">
+                <rect x="0" y="0" width="6" height="6" fill="#F25022" />
+                <rect x="0" y="8" width="6" height="6" fill="#00A4EF" />
+                <rect x="8" y="0" width="6" height="6" fill="#7FBA00" />
+                <rect x="8" y="8" width="6" height="6" fill="#FFB900" />
+              </svg>
+              Sign in with Microsoft
             </SigninButton>
             {/* TODO: Add Other Provider */}
             {/* <SigninButton provider="github">Sign in with GitHub</SigninButton> */}
