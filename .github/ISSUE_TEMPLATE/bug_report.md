@@ -2,7 +2,7 @@
 name: Bug report
 about: 期待しない動作、バグの報告
 title: "[Bug\U0001F41B] "
-labels: 'bug :bug:'
+labels: "bug \U0001F41B"
 assignees: ''
 
 ---

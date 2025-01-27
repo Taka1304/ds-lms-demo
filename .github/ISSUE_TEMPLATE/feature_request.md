@@ -2,7 +2,7 @@
 name: Feature request
 about: 新機能のアイデア
 title: "[Feat✨]"
-labels: 'feature :sparkles:'
+labels: feature ✨
 assignees: ''
 
 ---
