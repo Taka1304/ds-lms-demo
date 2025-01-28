@@ -55,11 +55,8 @@ export const authOptions: NextAuthOptions = {
       if (!email || !checkDomain(email as string)) return false;
       if (profile && account?.provider === "azure-ad-b2c") {
         // Azure AD B2C の場合のみ名前と表示名の処理
-        const givenName = profile.given_name;
-        const familyName = profile.family_name;
-        const fullName = givenName && familyName ? `${givenName} ${familyName}` : profile.name;
-
-        user.name = fullName;
+        const  { given_name, family_name } = profile;
+        user.name = given_name && family_name ? `${family_name} ${given_name}` : profile.name;
         user.displayName = profile?.name ?? "";
       }
 
