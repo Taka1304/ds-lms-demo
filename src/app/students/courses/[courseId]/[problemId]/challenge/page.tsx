@@ -6,7 +6,8 @@ import { Separator } from "@/components/ui/separator";
 import Editor from "@monaco-editor/react";
 import type { Problem } from "@prisma/client";
 import dayjs from "dayjs";
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
+import { usePython } from "react-py";
 
 // TODO: dummy
 const problem: Problem = {
@@ -38,13 +39,37 @@ const problem: Problem = {
   acceptCount: 80,
 };
 
+const testCases = [
+  {
+    input: ["2 7 11", "9"],
+    output: ["0 1"],
+  },
+];
+
+
 const Page = ({ params }: { params: Promise<{ id: string }> }) => {
-  // NOTE: 不要なレンダリング防止のためuseStateを使わない
+  const { runPython, sendInput, isReady, isRunning, isAwaitingInput, stderr, stdout } = usePython();
+
   const codeRef = useRef<string | null>(null);
 
   const handleEditorChange = (value: string | undefined) => {
     codeRef.current = value || "";
   };
+  
+  useEffect(() => {
+    if (isAwaitingInput) {
+      sendInput("2 7 11\n")
+    }
+  }, [isAwaitingInput, sendInput])
+
+  const handleRunTest = async () => {
+    const code = codeRef.current;
+    if (!code) return;
+    for (let i = 0; i < testCases.length; i++) {
+      await runPython(code);
+    }
+
+  }
 
   const handleSubmit = async () => {
     const _code = codeRef.current;
@@ -54,6 +79,18 @@ const Page = ({ params }: { params: Promise<{ id: string }> }) => {
     //   body: JSON.stringify({ code }),
     // });
   };
+
+  useEffect(() => {
+    navigator.serviceWorker
+      .register('/react-py-sw.js')
+      .then((registration) =>
+        console.log(
+          'Service Worker registration successful with scope: ',
+          registration.scope
+        )
+      )
+      .catch((err) => console.log('Service Worker registration failed: ', err))
+  }, [])
 
   return (
     <div className="flex flex-col container mx-auto px-4 py-8 min-h-[calc(100vh-60px)]">
@@ -74,6 +111,16 @@ const Page = ({ params }: { params: Promise<{ id: string }> }) => {
           <h2 className="text-2xl font-bold mb-6">提出</h2>
           <div className="w-full h-96">
             <Editor language="python" theme="vs-dark" onChange={handleEditorChange} />
+          </div>
+
+          <div>
+            テストケース
+            <Button onClick={handleRunTest} disabled={isRunning || !isReady}>
+              {isRunning ? "実行中..." : isReady ? "テスト" : "準備中..."}
+            </Button>
+
+            <div>出力: {stdout}</div>
+            <div>エラー: {stderr}</div>
           </div>
 
           <Button className="mt-4" onClick={handleSubmit}>

@@ -3,8 +3,9 @@
 	"version": "0.1.0",
 	"private": true,
 	"scripts": {
-		"postinstall": "prisma generate",
+		"postinstall": "prisma generate && cp node_modules/react-py/dist/workers/service-worker.js public/react-py-sw.js",
 		"dev": "next dev --turbopack",
+		"dev:n": "next dev",
 		"build": "next build",
 		"start": "next start",
 		"lint": "next lint",
@@ -42,6 +43,7 @@
 		"react": "^19.0.0",
 		"react-dom": "^19.0.0",
 		"react-markdown": "^9.0.1",
+		"react-py": "^1.11.2",
 		"rehype-katex": "^7.0.1",
 		"remark-math": "^6.0.0",
 		"tailwind-merge": "^2.5.5",
