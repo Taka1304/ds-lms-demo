@@ -9,9 +9,9 @@ import {} from "react";
 // TODO: dummy
 const allCourses: Course[] = [];
 
-for (let i = 0; i < 10; i++) {
+for (let i = 1; i < 10; i++) {
   allCourses.push({
-    id: i + 1,
+    id: i,
     title: "Beginner Programming",
     description: "Learn how to resolve problem by using programming",
     achievementLevel: 10,
