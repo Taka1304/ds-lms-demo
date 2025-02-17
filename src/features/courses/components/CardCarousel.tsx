@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import SlideCard from "./SlideCard";
 
-type Course = {
+export type Course = {
   id: number;
   title: string;
   description: string;
