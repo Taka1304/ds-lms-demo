@@ -46,16 +46,19 @@ model User {
   updatedAt     DateTime    @updatedAt
 
   // Relations
-  accounts         Account[]
-  sessions         Session[]
-  Authenticator    Authenticator[]
-  skillProgress    SkillProgress[]
-  organizations    OrganizationMember[]
-  submissions      Submission[]
-  externalLearning ExternalLearning[]
-  notifications    Notification[]
-  createdProblems  Problem[]            @relation("ProblemCreator")
-  updatedProblems  Problem[]            @relation("ProblemUpdater")
+  accounts               Account[]
+  sessions               Session[]
+  Authenticator          Authenticator[]
+  skillProgress          SkillProgress[]
+  organizations          OrganizationMember[]
+  submissions            Submission[]
+  externalLearning       ExternalLearning[]
+  notifications          Notification[]
+  createdProblems        Problem[]                @relation("ProblemCreator")
+  updatedProblems        Problem[]                @relation("ProblemUpdater")
+  CompetitionSubmission  CompetitionSubmission[]
+  Competition            Competition[]
+  CompetitionParticipant CompetitionParticipant[]
 }
 
 model Account {
@@ -150,11 +153,22 @@ model OrganizationMember {
   @@unique([userId, organizationId])
 }
 
+model Course {
+  id          String   @id @default(cuid())
+  title       String
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  problems Problem[]
+}
+
 model Problem {
-  id              String @id @default(cuid())
-  organizationId  String // 作成した団体
+  id              String  @id @default(cuid())
+  organizationId  String? // 作成した団体
   title           String
-  slug            String @unique // URL用のスラッグ
+  slug            String  @unique // URL用のスラッグ
   description     String // 問題の説明（Markdown）
   difficultyLevel Int // 難易度（1-5等）
   constraints     String // 制約条件（時間、メモリ、入力値の範囲など）
@@ -179,13 +193,14 @@ model Problem {
   updatedAt   DateTime @updatedAt
 
   // Relations
-  organization Organization        @relation(fields: [organizationId], references: [id])
+  organization Organization?       @relation(fields: [organizationId], references: [id])
   createdBy    User                @relation("ProblemCreator", fields: [createdById], references: [id])
   updatedBy    User                @relation("ProblemUpdater", fields: [updatedById], references: [id])
   submissions  Submission[]
   testCases    TestCase[]
   tags         ProblemTag[]
   sampleCodes  ProblemSampleCode[]
+  Course       Course[]
 }
 
 model ProblemSampleCode {
@@ -216,19 +231,18 @@ model TestCase {
 }
 
 model Submission {
-  id             String   @id @default(cuid())
-  userId         String
-  problemId      String
-  organizationId String
-  code           String
-  language       String   @default("python3")
-  status         String // "accepted", "wrong_answer", "time_limit_exceeded", etc.
-  executionTime  Float? // 実行時間（ミリ秒）
-  memoryUsage    Int? // メモリ使用量（MB）
-  errorMessage   String? // エラーメッセージ
-  testResults    Json? // 各テストケースの結果
-  score          Float? // 得点（必要な場合）
-  createdAt      DateTime @default(now())
+  id            String   @id @default(cuid())
+  userId        String
+  problemId     String
+  code          String
+  language      String   @default("python3")
+  status        String // "accepted", "wrong_answer", "time_limit_exceeded", etc.
+  executionTime Float? // 実行時間（ミリ秒）
+  memoryUsage   Int? // メモリ使用量（MB）
+  errorMessage  String? // エラーメッセージ
+  testResults   Json? // 各テストケースの結果
+  score         Float? // 得点（必要な場合）
+  createdAt     DateTime @default(now())
 
   // Relations
   user    User    @relation(fields: [userId], references: [id])
@@ -392,4 +406,68 @@ model SkillProgress {
   skill Skill @relation(fields: [skillId], references: [id])
 
   @@unique([userId, skillId]) // ユーザーごとのスキル進捗を一意に識別
+}
+
+model Competition {
+  id               String   @id @default(cuid())
+  title            String // コンペのタイトル
+  description      String // コンペの概要
+  startAt          DateTime // 開始日時
+  endAt            DateTime // 終了日時
+  evaluationMetric String // 評価指標（"accuracy", "f1-score", "rmse" など）
+  createdById      String // 作成者 (User)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  // Relations
+  createdBy              User                     @relation(fields: [createdById], references: [id])
+  datasets               CompetitionDataset[]
+  submissions            CompetitionSubmission[]
+  CompetitionParticipant CompetitionParticipant[]
+}
+
+model CompetitionDataset {
+  id            String   @id @default(cuid())
+  competitionId String
+  fileType      String // 例: "csv", "zip"
+  filePath      String // 保存先の URL
+  uploadedAt    DateTime @default(now())
+
+  // Relations
+  competition Competition @relation(fields: [competitionId], references: [id])
+}
+
+model CompetitionSubmission {
+  id            String                      @id @default(cuid())
+  userId        String
+  competitionId String
+  filePath      String // 提出ファイル（CSV）の保存先 URL
+  status        CompetitionSubmissionStatus
+  score         Float? // 評価スコア
+  submittedAt   DateTime                    @default(now())
+
+  // Relations
+  user        User        @relation(fields: [userId], references: [id])
+  competition Competition @relation(fields: [competitionId], references: [id])
+
+  @@index([competitionId, score])
+}
+
+model CompetitionParticipant {
+  id            String   @id @default(cuid())
+  userId        String
+  competitionId String
+  joinedAt      DateTime @default(now())
+
+  // Relations
+  user        User        @relation(fields: [userId], references: [id])
+  competition Competition @relation(fields: [competitionId], references: [id])
+
+  @@unique([userId, competitionId]) // ユーザーは1つのコンペに1回だけ参加
+}
+
+enum CompetitionSubmissionStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
 }
