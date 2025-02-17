@@ -40,9 +40,9 @@ const problem: Problem = {
 };
 
 // biome-ignore lint/correctness/noUnusedVariables: <explanation>
-export default function ProblemDetail({ params }: { params: Promise<{ id: string }> }) {
+export default function ProblemDetail({ params }: { params: Promise<{ courseId: string }> }) {
   // TODO: 問題情報を取得
-  // const { data, error } = useSWR(`/api/problems/${params.id}`, fetcher)
+  // const { data, error } = useSWR(`/api/problems/${params.courseId}`, fetcher)
 
   return (
     <>
