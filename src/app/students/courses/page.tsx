@@ -1,70 +1,23 @@
 "use client";
-import CardCarousel from "@/components/ui/CardCarousel";
 import {} from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { SidebarTrigger } from "@/components/ui/sidebar";
+import CardCarousel from "@/features/courses/components/CardCarousel";
+import type { Course } from "@/features/courses/components/CardCarousel";
 import {} from "react";
 
 // TODO: dummy
-// dummy
-const allCourses = [
-  {
-    id: 1,
+const allCourses: Course[] = [];
+
+for (let i = 0; i < 10; i++) {
+  allCourses.push({
+    id: i + 1,
     title: "Beginner Programming",
     description: "Learn how to resolve problem by using programming",
     achievementLevel: 10,
     maxAchievementLevel: 23,
-  },
-  {
-    id: 2,
-    title: "Beginner Programming",
-    description: "Learn how to resolve problem by using programming",
-    achievementLevel: 10,
-    maxAchievementLevel: 23,
-  },
-  {
-    id: 3,
-    title: "Beginner Programming",
-    description: "Learn how to resolve problem by using programming",
-    achievementLevel: 10,
-    maxAchievementLevel: 23,
-  },
-  {
-    id: 4,
-    title: "Beginner Programming",
-    description: "Learn how to resolve problem by using programming",
-    achievementLevel: 10,
-    maxAchievementLevel: 23,
-  },
-  {
-    id: 5,
-    title: "Beginner Programming",
-    description: "Learn how to resolve problem by using programming",
-    achievementLevel: 10,
-    maxAchievementLevel: 23,
-  },
-  {
-    id: 6,
-    title: "Beginner Programming",
-    description: "Learn how to resolve problem by using programming",
-    achievementLevel: 10,
-    maxAchievementLevel: 23,
-  },
-  {
-    id: 7,
-    title: "Beginner Programming",
-    description: "Learn how to resolve problem by using programming",
-    achievementLevel: 10,
-    maxAchievementLevel: 23,
-  },
-  {
-    id: 8,
-    title: "Beginner Programming",
-    description: "Learn how to resolve problem by using programming",
-    achievementLevel: 10,
-    maxAchievementLevel: 23,
-  },
-];
+  });
+}
 
 export default function ProblemList() {
   return (
