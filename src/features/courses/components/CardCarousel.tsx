@@ -6,20 +6,9 @@ import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
 import { Button } from "@/components/ui/button";
+import type { CardCarouselProps } from "@/features/courses/types/CardCarousel";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import SlideCard from "./SlideCard";
-
-export type Course = {
-  id: number;
-  title: string;
-  description: string;
-  achievementLevel: number;
-  maxAchievementLevel: number;
-};
-
-type CardCarouselProps = {
-  courses: Course[];
-};
 
 export default function CardCarousel({ courses }: CardCarouselProps) {
   return (

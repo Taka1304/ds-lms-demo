@@ -6,10 +6,9 @@ import CardCarousel from "@/features/courses/components/CardCarousel";
 import type { Course } from "@/features/courses/components/CardCarousel";
 import {} from "react";
 
-// TODO: dummy
+// TODO: dummy data
 const allCourses: Course[] = [];
-
-for (let i = 1; i < 10; i++) {
+for (let i = 1; i <= 10; i++) {
   allCourses.push({
     id: i,
     title: "Beginner Programming",
