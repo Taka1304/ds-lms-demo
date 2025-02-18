@@ -14,45 +14,40 @@ type SlideCardProps = {
 
 export default function SlideCard({ id, title, description, achievementLevel, maxAchievementLevel }: SlideCardProps) {
   const router = useRouter();
-  // 達成度の計算（%）
   const progressValue = (achievementLevel / maxAchievementLevel) * 100;
 
   return (
-    <Card className="w-[255px] h-[316px] shadow-md rounded-xl mb-11">
+    <Card className="w-full max-w-[255px] shadow-md rounded-xl mb-11">
       <div className="relative w-full h-[184px]">
         <Image src={"/courseLogo.webp"} alt={title} layout="fill" objectFit="cover" className="rounded-t-xl" />
       </div>
-      <div className="flex flex-col gap-1">
-        <CardHeader className="pl-3 pb-2 pt-2">
-          <div className="h-[19px]">
-            <CardTitle className="text-lg font-semibold leading-tight">{title}</CardTitle>
-          </div>
-          <div className="h-[15px] pl-3">
-            <CardDescription className="text-sm text-gray-500 leading-normal">{description}</CardDescription>
-          </div>
-        </CardHeader>
-        <CardContent className="flex flex-col gap-1">
-          {/* プログレスバー */}
-          <div className="w-full flex center justify-between">
-            <Progress value={progressValue} className="h-2 bg-gray-200 w-full" />
-            <p className="w-[70px] text-[9px] text-right text-gray-500 ml-2">
-              {achievementLevel} / {maxAchievementLevel} 完了
-            </p>
-          </div>
 
-          {/* ボタン */}
-          <div className="w-full flex justify-center">
-            <Button
-              className="w-[93px] h-[40px]"
-              onClick={() => {
-                router.push(`/students/courses/${id}`);
-              }}
-            >
-              はじめる
-            </Button>
-          </div>
-        </CardContent>
-      </div>
+      <CardHeader className="pl-3 pb-2 pt-2">
+        <CardTitle className="text-lg font-semibold leading-tight">{title}</CardTitle>
+        <CardDescription className="text-sm text-gray-500 leading-normal">{description}</CardDescription>
+      </CardHeader>
+
+      <CardContent className="flex flex-col gap-2">
+        {/* プログレスバー */}
+        <div className="w-full flex items-center justify-between">
+          <Progress value={progressValue} className="h-2 bg-gray-200 w-full" />
+          <p className="min-w-[50px] max-w-[70px] text-[9px] text-right text-gray-500 ml-2">
+            {achievementLevel} / {maxAchievementLevel} 完了
+          </p>
+        </div>
+
+        {/* ボタン */}
+        <div className="w-full flex justify-center mt-2">
+          <Button
+            className="w-[93px] h-[40px]"
+            onClick={() => {
+              router.push(`/students/courses/${id}`);
+            }}
+          >
+            はじめる
+          </Button>
+        </div>
+      </CardContent>
     </Card>
   );
 }
