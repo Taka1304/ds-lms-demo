@@ -1,10 +1,8 @@
 "use client";
-import {} from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import CardCarousel from "@/features/courses/components/CardCarousel";
-import type { Course } from "@/features/courses/components/CardCarousel";
-import {} from "react";
+import type { Course } from "@/features/courses/types/CardCarousel";
 
 // TODO: dummy data
 const allCourses: Course[] = [];
