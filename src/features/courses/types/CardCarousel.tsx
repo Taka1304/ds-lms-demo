@@ -7,5 +7,6 @@ export type Course = {
 };
 
 export type CardCarouselProps = {
+  id: number;
   courses: Course[];
 };

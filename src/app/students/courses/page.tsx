@@ -4,10 +4,21 @@ import { SidebarTrigger } from "@/components/ui/sidebar";
 import CardCarousel from "@/features/courses/components/CardCarousel";
 import type { Course } from "@/features/courses/types/CardCarousel";
 
-// TODO: dummy data
+// ダミーデータ
 const allCourses: Course[] = [];
 for (let i = 1; i <= 10; i++) {
   allCourses.push({
+    id: i,
+    title: "Data Analysis",
+    description: "Learn how to analyze data",
+    achievementLevel: 10,
+    maxAchievementLevel: 23,
+  });
+}
+
+const relatedCourses: Course[] = [];
+for (let i = 11; i <= 20; i++) {
+  relatedCourses.push({
     id: i,
     title: "Data Analysis",
     description: "Learn how to analyze data",
@@ -28,8 +39,12 @@ export default function CourseList() {
       </header>
       <div className="space-y-6 container mx-auto px-4 py-8 min-h-[calc(100vh-60px)]">
         {/* カードスライダー */}
-        <CardCarousel courses={allCourses} />
-        {/* TODO: Pagination */}
+        {/* Most Popular */}
+        <h1 className="text-xl font-bold pl-6">Most Popular</h1>
+        <CardCarousel courses={allCourses} id={1} />
+        {/* Related Courses */}
+        <h1 className="text-xl font-bold pl-6">Related Courses</h1>
+        <CardCarousel courses={relatedCourses} id={2} />
       </div>
     </>
   );
