@@ -1,5 +1,3 @@
-"use client";
-
 import { Navigation, Pagination } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
@@ -48,12 +46,6 @@ export default function CardCarousel({ courses }: CardCarouselProps) {
           </SwiperSlide>
         ))}
       </Swiper>
-      {/* 
-      <div
-        id="customPagination"
-        className="swiper-pagination absolute bottom-[20px] left-1/2 transform -translate-x-1/2"
-      />
-       */}
     </div>
   );
 }
