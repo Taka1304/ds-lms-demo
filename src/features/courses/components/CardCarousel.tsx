@@ -16,14 +16,14 @@ export default function CardCarousel({ courses }: CardCarouselProps) {
       {/* カスタムナビゲーションボタン */}
       <Button
         variant="ghost"
-        className="absolute left-0 z-10 -ml-4 top-1/2 transform -translate-y-1/2 bg-white/90 rounded-full shadow-md"
+        className="absolute left-[-80px] z-10 top-1/2 transform -translate-y-1/2 bg-white/90"
         id="prevButton"
       >
         <ChevronLeft className="w-6 h-6" />
       </Button>
       <Button
         variant="ghost"
-        className="absolute right-0 z-10 -mr-4 top-1/2 transform -translate-y-1/2 bg-white/90 rounded-full shadow-md"
+        className="absolute right-[-80px] z-10 top-1/2 transform -translate-y-1/2 bg-white/90"
         id="nextButton"
       >
         <ChevronRight className="w-6 h-6" />
