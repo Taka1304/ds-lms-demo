@@ -1,6 +1,9 @@
+"use client";
+
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
+import { useRouter } from "next/navigation";
 
 type SlideCardProps = {
   id: number;
@@ -10,7 +13,8 @@ type SlideCardProps = {
   maxAchievementLevel: number;
 };
 
-export default function SlideCard({ title, description, achievementLevel, maxAchievementLevel }: SlideCardProps) {
+export default function SlideCard({ id, title, description, achievementLevel, maxAchievementLevel }: SlideCardProps) {
+  const router = useRouter();
   // 達成度の計算（%）
   const progressValue = (achievementLevel / maxAchievementLevel) * 100;
 
@@ -28,7 +32,14 @@ export default function SlideCard({ title, description, achievementLevel, maxAch
             {achievementLevel} / {maxAchievementLevel} 完了
           </p>
         </div>
-        <Button className="mt-4 w-full">はじめる</Button>
+        <Button
+          className="mt-4 w-full"
+          onClick={() => {
+            router.push(`/students/courses/${id}`);
+          }}
+        >
+          はじめる
+        </Button>
       </CardContent>
     </Card>
   );
