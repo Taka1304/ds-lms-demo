@@ -30,9 +30,9 @@ export default function CardCarousel({ courses }: CardCarouselProps) {
       <Swiper
         modules={[Navigation, Pagination]}
         spaceBetween={1}
-        slidesPerView={1.5}
+        slidesPerView={3}
         breakpoints={{
-          640: { slidesPerView: 2 },
+          640: { slidesPerView: 3, spaceBetween: 3 },
           1024: { slidesPerView: 4 },
         }}
         navigation={{ prevEl: "#prevButton", nextEl: "#nextButton" }}
