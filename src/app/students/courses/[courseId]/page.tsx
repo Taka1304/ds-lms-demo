@@ -7,6 +7,7 @@ import { SidebarTrigger } from "@/components/ui/sidebar";
 import type { ColumnDef } from "@tanstack/react-table";
 import Link from "next/link";
 import { useMemo, useState } from "react";
+import { use } from "react";
 
 // TODO: dummy
 const allProblems = [
@@ -17,12 +18,13 @@ const allProblems = [
 
 const difficulties = ["全て", "簡単", "普通", "難しい"];
 
-export default function ProblemList() {
+export default function ProblemList({ params }: { params: Promise<{ courseId: string }> }) {
   const [filterDifficulty, setFilterDifficulty] = useState(difficulties[0]);
   const filteredProblems =
     filterDifficulty === difficulties[0]
       ? allProblems
       : allProblems.filter((p) => p.difficultyLevel === difficulties.indexOf(filterDifficulty));
+  const resolvedParams = use(params);
 
   const columns: ColumnDef<(typeof allProblems)[0]>[] = useMemo(
     () => [
@@ -51,7 +53,7 @@ export default function ProblemList() {
         cell: ({ row }) => {
           const problem = row.original;
           return (
-            <Link href={`/students/courses/${problem.id}`}>
+            <Link href={`/students/courses/${resolvedParams.courseId}/${problem.id}`}>
               <Button size="sm" className="w-full">
                 挑戦する
               </Button>
@@ -60,7 +62,7 @@ export default function ProblemList() {
         },
       },
     ],
-    [],
+    [resolvedParams.courseId],
   );
 
   return (
