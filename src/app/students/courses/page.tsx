@@ -9,8 +9,8 @@ const allCourses: Course[] = [];
 for (let i = 1; i <= 10; i++) {
   allCourses.push({
     id: i,
-    title: "Beginner Programming",
-    description: "Learn how to resolve problem by using programming",
+    title: "Data Analysis",
+    description: "Learn how to analyze data",
     achievementLevel: 10,
     maxAchievementLevel: 23,
   });
