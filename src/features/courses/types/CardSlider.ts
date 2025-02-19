@@ -1,5 +1,5 @@
 // カードの型
-type SlideCard = {
+export type SlideCard = {
   id: number;
   title: string;
   description: string;
@@ -8,11 +8,7 @@ type SlideCard = {
 };
 
 // カードスライダーの型
-type CardCarousel = {
+export type SlideCarousel = {
   id: number;
   courses: SlideCard[];
 };
-
-export type Course = SlideCard;
-export type CardCarouselProps = CardCarousel;
-export type SlideCardProps = SlideCard;
