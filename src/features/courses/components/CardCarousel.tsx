@@ -1,15 +1,9 @@
-import { Navigation, Pagination } from "swiper/modules";
-import { Swiper, SwiperSlide } from "swiper/react";
-import "swiper/css";
-import "swiper/css/navigation";
-import "swiper/css/pagination";
 import { Button } from "@/components/ui/button";
-import SlideCard from "@/features/courses/components/SlideCard";
 import type { CardCarouselProps } from "@/features/courses/types/CardCarousel";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
 // カードスライダー(カルーセル)コンポーネント
-export default function CardCarousel({ courses, id }: CardCarouselProps) {
+export default function CardCarousel({ id }: CardCarouselProps) {
   return (
     <div className="relative w-full max-w-[1150px] h-auto mx-auto">
       {/* カスタムナビゲーションボタン */}
@@ -31,25 +25,6 @@ export default function CardCarousel({ courses, id }: CardCarouselProps) {
       </Button>
 
       {/* スライダー */}
-      <Swiper
-        modules={[Navigation, Pagination]}
-        spaceBetween={1}
-        slidesPerView={1}
-        breakpoints={{
-          640: { slidesPerView: 2, spaceBetween: 3 },
-          1024: { slidesPerView: 4 },
-        }}
-        navigation={{ prevEl: `#prevButton${id}`, nextEl: `#nextButton${id}` }}
-        pagination={{ clickable: true }}
-        loop={true}
-        mousewheel={true}
-      >
-        {courses.map((course) => (
-          <SwiperSlide key={course.id}>
-            <SlideCard {...course} />
-          </SwiperSlide>
-        ))}
-      </Swiper>
     </div>
   );
 }
