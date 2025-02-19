@@ -1,20 +1,14 @@
 "use client";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
-import { Progress } from "@/components/ui/progress";
 import { Separator } from "@/components/ui/separator";
 import { SidebarTrigger } from "@/components/ui/sidebar";
-import type { SlideCard } from "@/features/courses/types/CardSlider";
-import Image from "next/image";
-import Link from "next/link";
-import { useCallback, useEffect, useRef, useState } from "react";
+import CardCarousel from "@/features/courses/components/CoursesCarousel";
+import type { CoursesCard } from "@/features/courses/types/Courses";
 
 // ダミーデータ
 // ダミーデータのallCoursesとrelatedCoursesはidが重複してはいけません。
 // ここでは、allCoursesのidは1から10、relatedCoursesのidは11から20としています。
 // // START:dummy
-const allCourses: SlideCard[] = [];
+const allCourses: CoursesCard[] = [];
 for (let i = 1; i <= 10; i++) {
   allCourses.push({
     id: i,
@@ -25,7 +19,7 @@ for (let i = 1; i <= 10; i++) {
   });
 }
 
-const relatedCourses: SlideCard[] = [];
+const relatedCourses: CoursesCard[] = [];
 for (let i = 11; i <= 20; i++) {
   relatedCourses.push({
     id: i,
@@ -64,119 +58,5 @@ export default function CoursesPage() {
         {/* カードスライダー */}
       </div>
     </>
-  );
-}
-
-// ✅ カードスライダーコンポーネント
-function CardCarousel({ courses, cardWidth }: { courses: SlideCard[]; cardWidth: number }) {
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [visibleSlides, setVisibleSlides] = useState(1); // 表示枚数
-  const containerRef = useRef<HTMLDivElement>(null);
-
-  // ✅ 現在の表示枚数を計算する関数
-  const updateVisibleSlides = useCallback(() => {
-    if (containerRef.current) {
-      const containerWidth = containerRef.current.offsetWidth;
-      setVisibleSlides(Math.floor(containerWidth / cardWidth)); // コンテナの幅 ÷ カードの幅
-    }
-  }, [cardWidth]);
-
-  // ✅ 画面リサイズ時に表示枚数を更新
-  useEffect(() => {
-    updateVisibleSlides(); // 初回実行
-    window.addEventListener("resize", updateVisibleSlides);
-    return () => window.removeEventListener("resize", updateVisibleSlides);
-  }, [updateVisibleSlides]);
-
-  const handleNext = () => {
-    setCurrentIndex((prev) => Math.min(prev + visibleSlides, courses.length - visibleSlides));
-  };
-
-  const handlePrev = () => {
-    setCurrentIndex((prev) => Math.max(prev - visibleSlides, 0));
-  };
-
-  const goToSlide = (index: number) => {
-    setCurrentIndex(index);
-  };
-
-  return (
-    <div ref={containerRef} className="w-full flex flex-col items-center">
-      <Carousel
-        opts={{
-          align: "start",
-        }}
-        className="w-full max-w-5xl"
-      >
-        <CarouselContent
-          className="flex transition-transform duration-500"
-          style={{ transform: `translateX(-${currentIndex * (100 / visibleSlides)}%)` }}
-        >
-          {courses.map((item) => (
-            <CarouselItem key={item.id} className="md:basis-1/2 lg:basis-1/4">
-              <CardSlider {...item} />
-            </CarouselItem>
-          ))}
-        </CarouselContent>
-        <CarouselPrevious onClick={handlePrev} />
-        <CarouselNext onClick={handleNext} />
-      </Carousel>
-
-      {/* ✅ ページネーション（ドットナビゲーション） */}
-      <div className="flex mt-4 space-x-2">
-        {courses.map((item) => (
-          <Button
-            key={item.id}
-            onClick={() => goToSlide(item.id)}
-            variant="ghost"
-            size="icon"
-            className={`w-[20px] h-[20px] rounded-full transition-all duration-301 ${
-              currentIndex === item.id ? "bg-gray-800" : "bg-gray-400"
-            }`}
-          />
-        ))}
-      </div>
-    </div>
-  );
-}
-
-// カードコンポーネント
-function CardSlider({
-  id,
-  title,
-  description,
-  achievementLevel,
-  maxAchievementLevel,
-}: { id: number; title: string; description: string; achievementLevel: number; maxAchievementLevel: number }) {
-  const progressValue = (achievementLevel / maxAchievementLevel) * 100;
-
-  return (
-    <Card className="w-full max-w-[255px] shadow-md rounded-[36px] mb-11">
-      <div className="relative w-full h-[184px]">
-        <Image src={"/courseLogo.webp"} alt={title} layout="fill" objectFit="cover" className="rounded-t-[36px]" />
-      </div>
-
-      <CardHeader className="pl-3 pb-2 pt-2">
-        <CardTitle className="text-lg font-semibold leading-tight">{title}</CardTitle>
-        <CardDescription className="text-sm text-gray-500 leading-normal">{description}</CardDescription>
-      </CardHeader>
-
-      <CardContent className="flex flex-col gap-2">
-        {/* プログレスバー */}
-        <div className="w-full flex items-center justify-between">
-          <Progress value={progressValue} className="h-2 bg-gray-200 w-full" />
-          <p className="min-w-[50px] max-w-[70px] text-[9px] text-right text-gray-500 ml-2">
-            {achievementLevel} / {maxAchievementLevel} 完了
-          </p>
-        </div>
-
-        {/* ボタン */}
-        <div className="w-full flex justify-center mt-2">
-          <Link href={`/students/courses/${id}`} className="rounded-md shadow-md">
-            <Button className="w-[93px] h-[40px] bg-[#327fd6]">はじめる</Button>
-          </Link>
-        </div>
-      </CardContent>
-    </Card>
   );
 }
