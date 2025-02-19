@@ -12,6 +12,7 @@ type SlideCardProps = {
   maxAchievementLevel: number;
 };
 
+// カードコンポーネント
 export default function SlideCard({ id, title, description, achievementLevel, maxAchievementLevel }: SlideCardProps) {
   const router = useRouter();
   const progressValue = (achievementLevel / maxAchievementLevel) * 100;
