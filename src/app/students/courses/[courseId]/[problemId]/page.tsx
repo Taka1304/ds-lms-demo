@@ -73,7 +73,7 @@ export default function ProblemDetail({ params }: { params: Promise<{ courseId: 
               </CardHeader>
             </Card>
           </div>
-          <Link href={`/students/courses/${resolvedParams.courseId}/${problem.id}`}>
+          <Link href={`/students/courses/${resolvedParams.courseId}/${problem.id}/challenge`}>
             <Button className="w-full">挑戦する</Button>
           </Link>
         </div>
