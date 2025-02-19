@@ -4,9 +4,9 @@ import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
 import { Button } from "@/components/ui/button";
+import SlideCard from "@/features/courses/components/SlideCard";
 import type { CardCarouselProps } from "@/features/courses/types/CardCarousel";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import SlideCard from "./SlideCard";
 
 // カードスライダー(カルーセル)コンポーネント
 export default function CardCarousel({ courses, id }: CardCarouselProps) {
