@@ -18,9 +18,9 @@ export default function SlideCard({ id, title, description, achievementLevel, ma
   const progressValue = (achievementLevel / maxAchievementLevel) * 100;
 
   return (
-    <Card className="w-full max-w-[255px] shadow-md rounded-xl mb-11">
+    <Card className="w-full max-w-[255px] shadow-md rounded-[36px] mb-11">
       <div className="relative w-full h-[184px]">
-        <Image src={"/courseLogo.webp"} alt={title} layout="fill" objectFit="cover" className="rounded-t-xl" />
+        <Image src={"/courseLogo.webp"} alt={title} layout="fill" objectFit="cover" className="rounded-t-[36px]" />
       </div>
 
       <CardHeader className="pl-3 pb-2 pt-2">
