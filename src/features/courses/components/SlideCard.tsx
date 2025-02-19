@@ -38,8 +38,8 @@ export default function SlideCard({ id, title, description, achievementLevel, ma
 
         {/* ボタン */}
         <div className="w-full flex justify-center mt-2">
-          <Link href={`/students/courses/${id}`}>
-            <Button className="w-[93px] h-[40px]">はじめる</Button>
+          <Link href={`/students/courses/${id}`} className="rounded-md shadow-md">
+            <Button className="w-[93px] h-[40px] bg-[#327fd6]">はじめる</Button>
           </Link>
         </div>
       </CardContent>
