@@ -8,7 +8,7 @@ import type { CardCarouselProps } from "@/features/courses/types/CardCarousel";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import SlideCard from "./SlideCard";
 
-// カードカルーセルコンポーネント
+// カードスライダー(カルーセル)コンポーネント
 export default function CardCarousel({ courses, id }: CardCarouselProps) {
   return (
     <div className="relative w-full max-w-[1150px] h-auto mx-auto">

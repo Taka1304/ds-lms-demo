@@ -1,16 +1,9 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
+import type { SlideCardProps } from "@/features/courses/types/CardCarousel";
 import Image from "next/image";
 import Link from "next/link";
-
-type SlideCardProps = {
-  id: number;
-  title: string;
-  description: string;
-  achievementLevel: number;
-  maxAchievementLevel: number;
-};
 
 // カードコンポーネント
 export default function SlideCard({ id, title, description, achievementLevel, maxAchievementLevel }: SlideCardProps) {

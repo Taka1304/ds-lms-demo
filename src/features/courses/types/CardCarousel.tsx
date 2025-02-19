@@ -1,4 +1,5 @@
-export type Course = {
+// カードの型
+type SlideCard = {
   id: number;
   title: string;
   description: string;
@@ -6,7 +7,12 @@ export type Course = {
   maxAchievementLevel: number;
 };
 
-export type CardCarouselProps = {
+// カードスライダーの型
+type CardCarousel = {
   id: number;
-  courses: Course[];
+  courses: SlideCard[];
 };
+
+export type Course = SlideCard;
+export type CardCarouselProps = CardCarousel;
+export type SlideCardProps = SlideCard;
