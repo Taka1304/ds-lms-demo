@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 type SlideCardProps = {
   id: number;
@@ -14,7 +14,6 @@ type SlideCardProps = {
 
 // カードコンポーネント
 export default function SlideCard({ id, title, description, achievementLevel, maxAchievementLevel }: SlideCardProps) {
-  const router = useRouter();
   const progressValue = (achievementLevel / maxAchievementLevel) * 100;
 
   return (
@@ -39,14 +38,9 @@ export default function SlideCard({ id, title, description, achievementLevel, ma
 
         {/* ボタン */}
         <div className="w-full flex justify-center mt-2">
-          <Button
-            className="w-[93px] h-[40px]"
-            onClick={() => {
-              router.push(`/students/courses/${id}`);
-            }}
-          >
-            はじめる
-          </Button>
+          <Link href={`/students/courses/${id}`}>
+            <Button className="w-[93px] h-[40px]">はじめる</Button>
+          </Link>
         </div>
       </CardContent>
     </Card>
