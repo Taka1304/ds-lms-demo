@@ -5,6 +5,9 @@ import CardCarousel from "@/features/courses/components/CardCarousel";
 import type { Course } from "@/features/courses/types/CardCarousel";
 
 // ダミーデータ
+// ダミーデータのallCoursesとrelatedCoursesはidが重複してはいけません。
+// ここでは、allCoursesのidは1から10、relatedCoursesのidは11から20としています。
+// START:dummy
 const allCourses: Course[] = [];
 for (let i = 1; i <= 10; i++) {
   allCourses.push({
@@ -26,6 +29,7 @@ for (let i = 11; i <= 20; i++) {
     maxAchievementLevel: 23,
   });
 }
+// END:dummy
 
 // コースページ
 export default function CoursesPage() {
@@ -40,6 +44,10 @@ export default function CoursesPage() {
       </header>
       <div className="space-y-6 container mx-auto px-4 py-8 min-h-[calc(100vh-60px)]">
         {/* カードスライダー */}
+        {/* 
+        CardCarouselコンポーネントのidは一意にしてください。
+        そうしないとナビゲーションボタンの紐付けがうまくできません。
+        */}
         {/* Most Popular */}
         <h1 className="text-xl font-bold pl-6">Most Popular</h1>
         <CardCarousel courses={allCourses} id={1} />
