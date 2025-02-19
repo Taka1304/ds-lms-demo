@@ -8,11 +8,12 @@ import { SidebarTrigger } from "@/components/ui/sidebar";
 import type { SlideCard } from "@/features/courses/types/CardSlider";
 import Image from "next/image";
 import Link from "next/link";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 // ダミーデータ
 // ダミーデータのallCoursesとrelatedCoursesはidが重複してはいけません。
 // ここでは、allCoursesのidは1から10、relatedCoursesのidは11から20としています。
-// START:dummy
+// // START:dummy
 const allCourses: SlideCard[] = [];
 for (let i = 1; i <= 10; i++) {
   allCourses.push({
@@ -56,29 +57,86 @@ export default function CoursesPage() {
         {/* Most Popular */}
         <h1 className="text-xl font-bold pl-6">Most Popular</h1>
         {/* カードスライダー */}
-        <div>
-          <Carousel
-            opts={{
-              align: "start",
-            }}
-            className="w-full max-w-sm"
-          >
-            <CarouselContent>
-              {allCourses.map((item, _) => (
-                <CarouselItem key={item.id}>
-                  <CardSlider {...allCourses[item.id]} />
-                </CarouselItem>
-              ))}
-            </CarouselContent>
-            <CarouselPrevious />
-            <CarouselNext />
-          </Carousel>
-        </div>
+        <CardCarousel courses={allCourses} cardWidth={255} />
+
         {/* Related Courses */}
         <h1 className="text-xl font-bold pl-6">Related Courses</h1>
         {/* カードスライダー */}
       </div>
     </>
+  );
+}
+
+// ✅ カードスライダーコンポーネント
+function CardCarousel({ courses, cardWidth }: { courses: SlideCard[]; cardWidth: number }) {
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [visibleSlides, setVisibleSlides] = useState(1); // 表示枚数
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  // ✅ 現在の表示枚数を計算する関数
+  const updateVisibleSlides = useCallback(() => {
+    if (containerRef.current) {
+      const containerWidth = containerRef.current.offsetWidth;
+      setVisibleSlides(Math.floor(containerWidth / cardWidth)); // コンテナの幅 ÷ カードの幅
+    }
+  }, [cardWidth]);
+
+  // ✅ 画面リサイズ時に表示枚数を更新
+  useEffect(() => {
+    updateVisibleSlides(); // 初回実行
+    window.addEventListener("resize", updateVisibleSlides);
+    return () => window.removeEventListener("resize", updateVisibleSlides);
+  }, [updateVisibleSlides]);
+
+  const handleNext = () => {
+    setCurrentIndex((prev) => Math.min(prev + visibleSlides, courses.length - visibleSlides));
+  };
+
+  const handlePrev = () => {
+    setCurrentIndex((prev) => Math.max(prev - visibleSlides, 0));
+  };
+
+  const goToSlide = (index: number) => {
+    setCurrentIndex(index);
+  };
+
+  return (
+    <div ref={containerRef} className="w-full flex flex-col items-center">
+      <Carousel
+        opts={{
+          align: "start",
+        }}
+        className="w-full max-w-5xl"
+      >
+        <CarouselContent
+          className="flex transition-transform duration-500"
+          style={{ transform: `translateX(-${currentIndex * (100 / visibleSlides)}%)` }}
+        >
+          {courses.map((item) => (
+            <CarouselItem key={item.id} className="md:basis-1/2 lg:basis-1/4">
+              <CardSlider {...item} />
+            </CarouselItem>
+          ))}
+        </CarouselContent>
+        <CarouselPrevious onClick={handlePrev} />
+        <CarouselNext onClick={handleNext} />
+      </Carousel>
+
+      {/* ✅ ページネーション（ドットナビゲーション） */}
+      <div className="flex mt-4 space-x-2">
+        {courses.map((item) => (
+          <Button
+            key={item.id}
+            onClick={() => goToSlide(item.id)}
+            variant="ghost"
+            size="icon"
+            className={`w-[20px] h-[20px] rounded-full transition-all duration-301 ${
+              currentIndex === item.id ? "bg-gray-800" : "bg-gray-400"
+            }`}
+          />
+        ))}
+      </div>
+    </div>
   );
 }
 
