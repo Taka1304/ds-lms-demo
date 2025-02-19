@@ -38,7 +38,6 @@
 		"react-markdown": "^9.0.1",
 		"rehype-katex": "^7.0.1",
 		"remark-math": "^6.0.0",
-		"swiper": "^11.2.4",
 		"tailwind-merge": "^2.5.5",
 		"tailwindcss-animate": "^1.0.7",
 		"zod": "^3.24.1"
@@ -48,7 +47,6 @@
 		"@types/node": "^20",
 		"@types/react": "^19",
 		"@types/react-dom": "^19",
-		"@types/swiper": "^6.0.0",
 		"lefthook": "^1.9.0",
 		"postcss": "^8",
 		"prisma": "^6.1.0",
