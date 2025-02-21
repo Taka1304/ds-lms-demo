@@ -1,6 +1,7 @@
 "use client";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import CoursesCarouselCard from "@/features/courses/components/CoursesCarouselCard";
+import Pagination from "@/features/courses/components/Pagination";
 import type { CoursesCard } from "@/features/courses/types/Courses";
 import { useCallback, useEffect, useRef, useState } from "react";
 
@@ -32,6 +33,10 @@ export default function CoursesCarousel({ courses, cardWidth }: { courses: Cours
     setCurrentIndex((prev) => Math.min(prev + 1, courses.length - visibleSlides));
   };
 
+  const goToSlide = (index: number) => {
+    setCurrentIndex(index);
+  };
+
   return (
     <div ref={containerRef} className="w-full flex flex-col items-center">
       <Carousel
@@ -55,6 +60,9 @@ export default function CoursesCarousel({ courses, cardWidth }: { courses: Cours
       </Carousel>
 
       {/* TODO: ページネーション（ドットナビゲーション） */}
+      <div className="flex mt-4 space-x-2">
+        <Pagination courses={courses} currentIndex={currentIndex} visibleSlides={visibleSlides} goToSlide={goToSlide} />
+      </div>
     </div>
   );
 }
