@@ -7,13 +7,12 @@ import { useCallback, useEffect, useRef, useState } from "react";
 
 export default function CoursesCarousel({ courses }: { courses: CoursesCard[] }) {
   const cardWidth = 255;
-  const [currentIndex, setCurrentIndex] = useState(0);
+  const [currentIndex, setCurrentIndex] = useState<number>(0);
   const [visibleSlides, setVisibleSlides] = useState<number>(4);
 
   const containerRef = useRef<HTMLDivElement>(null);
 
   // 現在の表示枚数を計算する関数
-
   const updateVisibleSlides = useCallback(() => {
     if (!containerRef.current) return;
     const containerWidth = containerRef.current.offsetWidth;
@@ -25,7 +24,7 @@ export default function CoursesCarousel({ courses }: { courses: CoursesCard[] })
   // 画面リサイズ時に表示枚数を更新
   useEffect(() => {
     if (!containerRef.current) return;
-    updateVisibleSlides(); // 初回実行
+    updateVisibleSlides();
     window.addEventListener("resize", updateVisibleSlides);
     return () => window.removeEventListener("resize", updateVisibleSlides);
   }, [updateVisibleSlides]);
