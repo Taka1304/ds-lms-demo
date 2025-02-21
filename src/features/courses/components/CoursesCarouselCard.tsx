@@ -4,7 +4,6 @@ import { Progress } from "@/components/ui/progress";
 import Image from "next/image";
 import Link from "next/link";
 
-// カードコンポーネント
 export default function CoursesCarouselCard({
   id,
   title,
@@ -34,7 +33,7 @@ export default function CoursesCarouselCard({
           </p>
         </div>
 
-        {/* ボタン */}
+        {/* コース開始ボタン */}
         <div className="w-full flex justify-center mt-2">
           <Link href={`/students/courses/${id}`} className="rounded-md shadow-md">
             <Button className="w-[93px] h-[40px] bg-[#327fd6]">はじめる</Button>

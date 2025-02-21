@@ -7,9 +7,9 @@ import type { CoursesCard } from "@/features/courses/types/Courses";
 // ダミーデータ
 // ダミーデータのallCoursesとrelatedCoursesはidが重複してはいけません。
 // ここでは、allCoursesのidは1から10、relatedCoursesのidは11から20としています。
-// // START:dummy
+// START:dummy
 const allCourses: CoursesCard[] = [];
-for (let i = 1; i <= 10; i++) {
+for (let i = 0; i < 10; i++) {
   allCourses.push({
     id: i,
     title: "Data Analysis",
@@ -20,7 +20,7 @@ for (let i = 1; i <= 10; i++) {
 }
 
 const relatedCourses: CoursesCard[] = [];
-for (let i = 11; i <= 20; i++) {
+for (let i = 10; i < 20; i++) {
   relatedCourses.push({
     id: i,
     title: "Data Analysis",
@@ -43,19 +43,10 @@ export default function CoursesPage() {
         </div>
       </header>
       <div className="space-y-6 container mx-auto px-4 py-8 min-h-[calc(100vh-60px)]">
-        {/* カードスライダー */}
-        {/* 
-        CardCarouselコンポーネントのidは一意にしてください。
-        そうしないとナビゲーションボタンの紐付けがうまくできません。
-        */}
-        {/* Most Popular */}
         <h1 className="text-xl font-bold pl-6">Most Popular</h1>
-        {/* カードスライダー */}
         <CardCarousel courses={allCourses} cardWidth={255} />
-
-        {/* Related Courses */}
         <h1 className="text-xl font-bold pl-6">Related Courses</h1>
-        {/* カードスライダー */}
+        <CardCarousel courses={relatedCourses} cardWidth={255} />
       </div>
     </>
   );
