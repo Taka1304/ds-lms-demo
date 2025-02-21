@@ -13,6 +13,7 @@ export default function CoursesCarousel({ courses }: { courses: CoursesCard[] })
   const containerRef = useRef<HTMLDivElement>(null);
 
   // 現在の表示枚数を計算する関数
+  // TODO: 画面サイズ更新時にカードの個数は再計算出来ているが、カード間のスペースも再計算する必要がある。
   const updateVisibleSlides = useCallback(() => {
     if (!containerRef.current) return;
     const containerWidth = containerRef.current.offsetWidth;
@@ -22,6 +23,7 @@ export default function CoursesCarousel({ courses }: { courses: CoursesCard[] })
   }, []);
 
   // 画面リサイズ時に表示枚数を更新
+  // REVIEW: biomeに言われて入れましたが、入れなくても動くように見えます。
   useEffect(() => {
     if (!containerRef.current) return;
     updateVisibleSlides();
