@@ -5,7 +5,6 @@ import Pagination from "@/features/courses/components/Pagination";
 import type { CoursesCard } from "@/features/courses/types/Courses";
 import { useCallback, useEffect, useRef, useState } from "react";
 
-// カードスライダーコンポーネント
 export default function CoursesCarousel({ courses }: { courses: CoursesCard[] }) {
   const cardWidth = 255;
   const [currentIndex, setCurrentIndex] = useState(0);
