@@ -44,9 +44,9 @@ export default function CoursesPage() {
       </header>
       <div className="space-y-6 container mx-auto px-4 py-8 min-h-[calc(100vh-60px)]">
         <h1 className="text-xl font-bold pl-6">Most Popular</h1>
-        <CardCarousel courses={allCourses} cardWidth={255} />
+        <CardCarousel courses={allCourses} />
         <h1 className="text-xl font-bold pl-6">Related Courses</h1>
-        <CardCarousel courses={relatedCourses} cardWidth={255} />
+        <CardCarousel courses={relatedCourses} />
       </div>
     </>
   );
