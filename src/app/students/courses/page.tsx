@@ -39,6 +39,7 @@ export default function CoursesPage() {
         <div className="flex items-center gap-2 px-4">
           <SidebarTrigger className="-ml-1" />
           <Separator orientation="vertical" className="mr-2 h-4" />
+          {/* TODO:日本語化 */}
           <h2 className="text-3xl font-bold">COURSES</h2>
         </div>
       </header>
