@@ -7,6 +7,7 @@ import { Separator } from "@/components/ui/separator";
 import type { Problem } from "@prisma/client";
 import dayjs from "dayjs";
 import Link from "next/link";
+import { use } from "react";
 
 // TODO: dummy
 const problem: Problem = {
@@ -39,10 +40,11 @@ const problem: Problem = {
   acceptCount: 80,
 };
 
-// biome-ignore lint/correctness/noUnusedVariables: <explanation>
-export default function ProblemDetail({ params }: { params: Promise<{ id: string }> }) {
+export default function ProblemDetail({ params }: { params: Promise<{ courseId: string }> }) {
   // TODO: 問題情報を取得
-  // const { data, error } = useSWR(`/api/problems/${params.id}`, fetcher)
+  // const { data, error } = useSWR(`/api/problems/${params.courseId}`, fetcher)
+
+  const resolvedParams = use(params);
 
   return (
     <>
@@ -71,7 +73,7 @@ export default function ProblemDetail({ params }: { params: Promise<{ id: string
               </CardHeader>
             </Card>
           </div>
-          <Link href={`/students/courses/${problem.id}/challenge`}>
+          <Link href={`/students/courses/${resolvedParams.courseId}/${problem.id}/challenge`}>
             <Button className="w-full">挑戦する</Button>
           </Link>
         </div>
