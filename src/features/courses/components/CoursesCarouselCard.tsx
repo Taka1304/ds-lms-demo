@@ -16,7 +16,7 @@ export default function CoursesCarouselCard({
   return (
     <Card className="w-full max-w-[255px] shadow-md rounded-[36px] mb-11">
       <div className="relative w-full h-[184px]">
-        <Image src={"/courseLogo.webp"} alt={title} layout="fill" objectFit="cover" className="rounded-t-[36px]" />
+        <Image src={"/courseLogo.webp"} alt={title} fill className="object-cover rounded-t-[36px]" />
       </div>
 
       <CardHeader className="pl-3 pb-2 pt-2">
