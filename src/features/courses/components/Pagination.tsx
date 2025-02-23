@@ -27,8 +27,7 @@ export default function Pagination({
         const safeIndex = Math.min(index * visibleSlides, maxSlideIndex);
         return (
           <Button
-            // biome-ignore lint/suspicious/noArrayIndexKey: This list is static and does not change
-            key={index}
+            key={courses[index * visibleSlides]?.id}
             onClick={() => {
               goToSlide(safeIndex);
             }}
