@@ -59,6 +59,7 @@ model User {
   CompetitionSubmission  CompetitionSubmission[]
   Competition            Competition[]
   CompetitionParticipant CompetitionParticipant[]
+  UserProgress           UserProgress[]
 }
 
 model Account {
@@ -154,14 +155,35 @@ model OrganizationMember {
 }
 
 model Course {
+  id            String   @id @default(cuid())
+  title         String
+  image         String? // サムネイル画像のURL
+  description   String?
+  totalProblems Int
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  // Relations
+  problems Problem[]
+
+  UserProgress UserProgress[]
+}
+
+// ユーザーの進捗情報
+model UserProgress {
   id          String   @id @default(cuid())
-  title       String
-  description String?
+  userId      String
+  courseId    String
+  progress    Int
+  isCompleted Boolean  @default(false)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
   // Relations
-  problems Problem[]
+  user   User   @relation(fields: [userId], references: [id])
+  course Course @relation(fields: [courseId], references: [id])
+
+  @@unique([userId, courseId])
 }
 
 model Problem {
