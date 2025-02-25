@@ -49,7 +49,7 @@ const Page = ({ params }: { params: Promise<{ id: string }> }) => {
 
   const handleSubmit = async () => {
     const _code = codeRef.current;
-    // TODO: 
+    // TODO:
     // const _res = await fetch("/api/problems/submit", {
     //   method: "POST",
     //   body: JSON.stringify({ code }),
