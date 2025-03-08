@@ -115,13 +115,12 @@ model Authenticator {
 }
 
 model Course {
-  id            String   @id @default(cuid())
-  title         String
-  image         String? // サムネイル画像のURL
-  description   String?
-  totalProblems Int
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  id          String   @id @default(cuid())
+  title       String
+  image       String? // サムネイル画像のURL
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
   // Relations
   problems     Problem[]
