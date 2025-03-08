@@ -11,7 +11,6 @@ import { useRef } from "react";
 // TODO: dummy
 const problem: Problem = {
   id: "1",
-  organizationId: "1",
   title: "Two Sum",
   slug: "two-sum",
   timeLimit: 3,
