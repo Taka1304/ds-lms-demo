@@ -8,7 +8,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Bell, Book, Home, User } from "lucide-react";
-import { useSession, signOut } from "next-auth/react";
+import { signIn, signOut, useSession } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -77,11 +77,9 @@ export function Header() {
                 </DropdownMenuContent>
               </DropdownMenu>
             ) : (
-              <Link href="/auth/signin">
-                <Button variant="ghost" size="sm">
-                  Sign in
-                </Button>
-              </Link>
+              <Button variant="ghost" size="sm" onClick={() => signIn("azure-ad-b2c")}>
+                Sign in
+              </Button>
             )}
           </nav>
         </div>

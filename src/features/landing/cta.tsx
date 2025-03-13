@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
-import Link from "next/link";
+import { signIn } from "next-auth/react";
 
 export default function CTA() {
   return (
@@ -31,8 +31,8 @@ export default function CTA() {
             viewport={{ once: true }}
             className="space-x-4"
           >
-            <Button asChild size={"lg"}>
-              <Link href="/auth/signin">無料で始める</Link>
+            <Button asChild size={"lg"} onClick={() => signIn("azure-ad-b2c")}>
+              無料で始める
             </Button>
           </motion.div>
         </div>
