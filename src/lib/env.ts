@@ -11,6 +11,8 @@ export const env = createEnv({
     AZURE_AD_B2C_CLIENT_ID: z.string(),
     AZURE_AD_B2C_CLIENT_SECRET: z.string(),
     AZURE_AD_B2C_PRIMARY_USER_FLOW: z.string(),
+    SUPABASE_URL: z.string().url(),
+    SUPABASE_KEY: z.string(),
   },
   client: {
     NEXT_PUBLIC_APP_URL: z.string().url(),
@@ -25,5 +27,7 @@ export const env = createEnv({
     AZURE_AD_B2C_CLIENT_ID: process.env.AZURE_AD_B2C_CLIENT_ID,
     AZURE_AD_B2C_CLIENT_SECRET: process.env.AZURE_AD_B2C_CLIENT_SECRET,
     AZURE_AD_B2C_PRIMARY_USER_FLOW: process.env.AZURE_AD_B2C_PRIMARY_USER_FLOW,
+    SUPABASE_URL: process.env.SUPABASE_URL,
+    SUPABASE_KEY: process.env.SUPABASE_KEY,
   },
 });
