@@ -1,6 +1,8 @@
+"use client";
+
 import { Button } from "@/components/ui/button";
 import { FlipWords } from "@/components/ui/flip-words";
-import Link from "next/link";
+import { signIn } from "next-auth/react";
 
 const words = ["In somnis esne?", "Somnia tua germinantne?", "Somnia tua perficisne?"];
 
@@ -17,8 +19,8 @@ export default function Hero() {
             </span>
             <p className="mx-auto max-w-[700px] text-gray-200 md:text-xl">あなたはデータサイエンスの夢を見ますか？</p>
             <div className="space-x-4">
-              <Button variant="default" size={"lg"}>
-                <Link href="/auth/signin">無料で始める</Link>
+              <Button variant="default" size={"lg"} onClick={() => signIn("azure-ad-b2c")}>
+                無料で始める
               </Button>
             </div>
           </div>
