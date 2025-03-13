@@ -1,9 +1,9 @@
-import { withAdmin } from "@/app/api/[[...route]]/middleware/auth";
 import { prisma } from "@/lib/prisma";
 import { zValidator } from "@hono/zod-validator";
 import { createFactory } from "hono/factory";
 import type { Session } from "next-auth";
 import { z } from "zod";
+import { withAdmin } from "~/middleware/auth";
 
 type Variables = {
   session: Session;
@@ -39,7 +39,7 @@ export const createProblem = factory.createHandlers(
           Course: {
             connect: {
               id: courseId,
-            }
+            },
           },
           ...rest,
           createdById: session.user.id,
@@ -48,7 +48,13 @@ export const createProblem = factory.createHandlers(
       });
       return c.json(data);
     } catch (error) {
-      return c.json({ error: "問題の作成中にエラーが発生しました", details: error instanceof Error ? error.message : String(error) }, 500);
+      return c.json(
+        {
+          error: "問題の作成中にエラーが発生しました",
+          details: error instanceof Error ? error.message : String(error),
+        },
+        500,
+      );
     }
   },
 );

@@ -1,9 +1,9 @@
-import { withSession } from "@/app/api/[[...route]]/middleware/auth";
 import { prisma } from "@/lib/prisma";
 import { zValidator } from "@hono/zod-validator";
 import { createFactory } from "hono/factory";
 import type { Session } from "next-auth";
 import { z } from "zod";
+import { withSession } from "~/middleware/auth";
 
 type Variables = {
   session: Session;
