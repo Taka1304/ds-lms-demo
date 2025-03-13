@@ -1,13 +1,17 @@
 import { Hono } from "hono"
 import { handle } from "hono/vercel"
-import problems from "./problems"
+import { courses } from "./courses"
 
-export const runtime = "edge"
+export const runtime = "nodejs"
 
-const app = new Hono().basePath("/api")
-const route = app.route("/problems", problems)
+const app = new Hono()
+  .basePath("/api")
+  .route("/courses", courses)
 
-export type AppType = typeof route
+export type AppType = typeof app
 
 export const GET = handle(app)
 export const POST = handle(app)
+export const PUT = handle(app)
+export const DELETE = handle(app)
+export const PATCH = handle(app)
