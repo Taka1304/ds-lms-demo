@@ -26,6 +26,7 @@
 		"@radix-ui/react-separator": "^1.1.1",
 		"@radix-ui/react-slot": "^1.1.2",
 		"@radix-ui/react-tooltip": "^1.1.6",
+		"@supabase/supabase-js": "^2.49.1",
 		"@t3-oss/env-nextjs": "^0.11.1",
 		"@tanstack/react-table": "^8.20.6",
 		"class-variance-authority": "^0.7.1",
