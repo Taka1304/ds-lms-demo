@@ -1,13 +1,18 @@
-import { authOptions } from "@/lib/auth";
+import { withSession } from "@/app/api/[[...route]]/middleware/auth";
 import { prisma } from "@/lib/prisma";
 import { zValidator } from "@hono/zod-validator";
 import { createFactory } from "hono/factory";
-import { getServerSession } from "next-auth";
+import type { Session } from "next-auth";
 import { z } from "zod";
 
-const factory = createFactory();
+type Variables = {
+  session: Session;
+};
+
+const factory = createFactory<{ Variables: Variables }>();
 
 export const getCourse = factory.createHandlers(
+  withSession,
   zValidator(
     "param",
     z.object({
@@ -17,7 +22,7 @@ export const getCourse = factory.createHandlers(
   async (c) => {
     const { course_id } = c.req.valid("param");
 
-    const session = await getServerSession(authOptions);
+    const session = c.get("session");
     const isAdmin = session?.user.role === "ADMIN";
 
     try {
@@ -26,13 +31,15 @@ export const getCourse = factory.createHandlers(
           problems: {
             include: {
               tags: true,
-            }
-          },
-          UserProgress: isAdmin ? true : {
-            where: {
-              userId: session?.user.id,
             },
-          }
+          },
+          UserProgress: isAdmin
+            ? true
+            : {
+                where: {
+                  userId: session?.user.id,
+                },
+              },
         },
         where: {
           id: course_id,

@@ -1,14 +1,18 @@
-import { authOptions } from "@/lib/auth";
+import { withAdmin } from "@/app/api/[[...route]]/middleware/auth";
 import { prisma } from "@/lib/prisma";
 import { zValidator } from "@hono/zod-validator";
-import { $Enums } from "@prisma/client";
 import { createFactory } from "hono/factory";
-import { getServerSession } from "next-auth";
+import type { Session } from "next-auth";
 import { z } from "zod";
 
-const factory = createFactory();
+type Variables = {
+  session: Session;
+};
+
+const factory = createFactory<{ Variables: Variables }>();
 
 export const createCourse = factory.createHandlers(
+  withAdmin,
   zValidator(
     "json",
     z.object({
@@ -20,15 +24,6 @@ export const createCourse = factory.createHandlers(
   ),
   async (c) => {
     const json = c.req.valid("json");
-    const session = await getServerSession(authOptions);
-
-    // TODO: middleware に置き換える
-    if (!session) {
-      return c.json({ error: "認証されていません" }, 401);
-    }
-    if (session.user.role !== $Enums.SystemRole.ADMIN) {
-      return c.json({ error: "権限がありません" }, 403);
-    }
 
     try {
       const data = await prisma.course.create({

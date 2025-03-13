@@ -1,12 +1,18 @@
+import { withAdmin } from "@/app/api/[[...route]]/middleware/auth";
 import { prisma } from "@/lib/prisma";
 import { zValidator } from "@hono/zod-validator";
 import { createFactory } from "hono/factory";
-import { getServerSession } from "next-auth";
+import type { Session } from "next-auth";
 import { z } from "zod";
 
-const factory = createFactory();
+type Variables = {
+  session: Session;
+};
+
+const factory = createFactory<{ Variables: Variables }>();
 
 export const createProblem = factory.createHandlers(
+  withAdmin,
   zValidator(
     "json",
     z.object({
@@ -20,28 +26,29 @@ export const createProblem = factory.createHandlers(
       version: z.number(),
       isPublic: z.boolean(),
       isArchived: z.boolean(),
-      courseId: z.number(),
+      courseId: z.string().cuid(),
     }),
   ),
   async (c) => {
-    const json = c.req.valid("json");
-    const session = await getServerSession();
+    const { courseId, ...rest } = c.req.valid("json");
+    const session = c.get("session");
 
-    if (!session) {
-      return c.json({ error: "Unauthorized" }, 401);
-    }
     try {
       const data = await prisma.problem.create({
         data: {
-          ...json,
+          Course: {
+            connect: {
+              id: courseId,
+            }
+          },
+          ...rest,
           createdById: session.user.id,
           updatedById: session.user.id,
         },
       });
       return c.json(data);
     } catch (error) {
-      console.error("問題の作成中にエラーが発生しました:", error);
-      return c.json({ error: "問題の作成中にエラーが発生しました", details: error as string }, 500);
+      return c.json({ error: "問題の作成中にエラーが発生しました", details: error instanceof Error ? error.message : String(error) }, 500);
     }
   },
 );
