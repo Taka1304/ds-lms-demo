@@ -2,10 +2,13 @@
 
 import { Button } from "@/components/ui/button";
 import { MarkdownViewer } from "@/components/ui/markdown";
-import { Separator } from "@/components/ui/separator";
+import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/components/ui/resizable";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { cn } from "@/lib/utils";
 import Editor from "@monaco-editor/react";
 import type { Problem } from "@prisma/client";
 import dayjs from "dayjs";
+import { ChevronDown, ChevronUp, Code, FileText, Maximize2, Minimize2 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { usePython } from "react-py";
 
@@ -68,6 +71,9 @@ type HistoryEntry = {
 
 const Page = ({ params }: { params: Promise<{ id: string }> }) => {
   const { runPython, sendInput, isReady, isRunning, isAwaitingInput, stderr, stdout } = usePython();
+  const [viewMode, setViewMode] = useState<"tabs" | "split">("tabs");
+  const [consoleExpanded, setConsoleExpanded] = useState(false);
+  const [activeTab, setActiveTab] = useState("problem");
   const [history, setHistory] = useState<HistoryEntry[]>([]);
   const codeRef = useRef<string | null>(null);
 
@@ -139,63 +145,86 @@ const Page = ({ params }: { params: Promise<{ id: string }> }) => {
   }, []);
 
   return (
-    <div className="flex flex-col container mx-auto px-4 py-8 min-h-[calc(100vh-60px)]">
-      <h1 className="text-3xl font-bold">{problem.title}</h1>
-      <Separator className="my-6" />
-
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="space-y-2 md:col-span-2">
-          <p>
-            実行時間制限: {problem.timeLimit} sec / メモリ制限: {problem.memoryLimit} MB
-          </p>
-          <h2 className="text-2xl font-bold mb-6">問題文</h2>
-          <MarkdownViewer content={problem.description} />
-
-          <h2 className="text-2xl font-bold mb-6">制約</h2>
-          <MarkdownViewer content={problem.constraints} />
-
-          <h2 className="text-2xl font-bold mb-6">提出</h2>
-          <div className="w-full h-96">
-            <Editor language="python" theme="vs-dark" onChange={handleEditorChange} />
+    <div className="flex flex-col container mx-auto px-4 py-4 h-[100vh]">
+      <main className="flex flex-1 flex-col overflow-hidden">
+        <Tabs defaultValue="problem" className="flex h-full flex-col" value={activeTab} onValueChange={setActiveTab}>
+          <div className="flex items-center justify-between border-b bg-muted/40 px-4">
+            <TabsList className="h-10">
+              <TabsTrigger value="problem" className="flex items-center gap-2">
+                <FileText className="h-4 w-4" />
+                問題文
+              </TabsTrigger>
+              <TabsTrigger value="editor" className="flex items-center gap-2">
+                <Code className="h-4 w-4" />
+                Editor
+              </TabsTrigger>
+            </TabsList>
+            <div className="flex items-center gap-2">
+              <Button variant="outline" size="sm" onClick={() => setViewMode(viewMode === "tabs" ? "split" : "tabs")}>
+                {viewMode === "tabs" ? <Maximize2 className="h-4 w-4" /> : <Minimize2 className="h-4 w-4" />}
+                <span className="">{viewMode === "tabs" ? "Split" : "Tab"}</span>
+              </Button>
+              <Button variant="default" size="sm">
+                <Code className="h-4 w-4" />
+                Run Test
+              </Button>
+            </div>
           </div>
+          {viewMode === "tabs" ? (
+            <>
+              <TabsContent value="problem" className="flex-1 overflow-auto p-4">
+                <h2 className="text-2xl font-bold mb-6">問題文</h2>
+                <MarkdownViewer content={problem.description} />
 
-          <div>
-            テストケース
-            <Button onClick={handleRunTest} disabled={isRunning || !isReady}>
-              {isRunning ? "実行中..." : isReady ? "テスト" : "準備中..."}
-            </Button>
-            {history.map((h, i) => (
-              <div key={`${h.code + i}`} className="mt-4">
-                <h3 className="text-xl font-bold">コード履歴 {i + 1}</h3>
-                <pre className="bg-gray-100 p-2 rounded">{h.code}</pre>
-                <table className="table-auto w-full mt-2">
-                  <thead>
-                    <tr>
-                      <th className="px-4 py-2">入力</th>
-                      <th className="px-4 py-2">期待される出力</th>
-                      <th className="px-4 py-2">実際の出力</th>
-                      <th className="px-4 py-2">結果</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {h.results.map((result) => (
-                      <tr key={result.expect} className="border-t">
-                        <td className="px-4 py-2 whitespace-pre">{result.input}</td>
-                        <td className="px-4 py-2 whitespace-pre">{result.expect}</td>
-                        <td className="px-4 py-2 whitespace-pre">{result.output}</td>
-                        <td className="px-4 py-2">{result.result}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            ))}
-          </div>
+                <h2 className="text-2xl font-bold mb-6">制約</h2>
+                <MarkdownViewer content={problem.constraints} />
+              </TabsContent>
+              <TabsContent value="editor" className="flex-1 overflow-hidden">
+                <div className="h-full bg-muted/20">
+                  <Editor language="python" theme="vs-dark" onChange={handleEditorChange} />
+                </div>
+              </TabsContent>
+            </>
+          ) : (
+            <ResizablePanelGroup direction="horizontal" className="flex-1">
+              <ResizablePanel defaultSize={50} minSize={30}>
+                <div className="overflow-auto h-full p-4">
+                  <h2 className="text-2xl font-bold mb-6">問題文</h2>
+                  <MarkdownViewer content={problem.description} />
 
-          <Button className="mt-4" onClick={handleSubmit}>
-            提出
+                  <h2 className="text-2xl font-bold mb-6">制約</h2>
+                  <MarkdownViewer content={problem.constraints} />
+                </div>
+              </ResizablePanel>
+              <ResizableHandle withHandle />
+              <ResizablePanel defaultSize={50} minSize={30}>
+                <div className="overflow-hidden h-full">
+                  <Editor language="python" theme="vs-dark" onChange={handleEditorChange} />
+                </div>
+              </ResizablePanel>
+            </ResizablePanelGroup>
+          )}
+        </Tabs>
+      </main>
+
+      {/* Console Section */}
+      <div className={cn("border-t bg-muted/30 transition-all duration-300", consoleExpanded ? "h-[30vh]" : "h-10")}>
+        <div className="flex items-center justify-between border-b bg-muted/50 px-4 py-1">
+          <h2 className="text-sm font-medium">出力結果</h2>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => setConsoleExpanded(!consoleExpanded)}
+            className="h-7 w-7 p-0"
+          >
+            {consoleExpanded ? <ChevronDown className="h-4 w-4" /> : <ChevronUp className="h-4 w-4" />}
           </Button>
         </div>
+        {consoleExpanded && (
+          <div className="h-[calc(100%-28px)] overflow-auto p-4">
+            <div className="space-y-2">{/* TODO: Testcases */}</div>
+          </div>
+        )}
       </div>
     </div>
   );
