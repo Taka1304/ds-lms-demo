@@ -4,8 +4,8 @@
 	"private": true,
 	"scripts": {
 		"postinstall": "prisma generate && cp node_modules/react-py/dist/workers/service-worker.js public/react-py-sw.js",
-		"dev": "next dev --turbopack",
-		"dev:n": "next dev",
+		"dev": "next dev",
+		"dev-t": "next dev --turbopack",
 		"build": "next build",
 		"start": "next start",
 		"lint": "next lint",
