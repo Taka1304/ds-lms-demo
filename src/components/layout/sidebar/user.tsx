@@ -37,7 +37,7 @@ export function NavUser() {
                   <AvatarFallback className="rounded-lg">{user?.name?.slice(0, 2)}</AvatarFallback>
                 </Avatar>
               ) : (
-                <Avatar className="h-8 w-8 rounded-lg">
+                <Avatar className="h-8 w-8 rounded-lg mt-2 group-data-[collapsible=icon]:justify-center">
                   <User />
                 </Avatar>
               )}
