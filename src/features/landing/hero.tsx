@@ -19,7 +19,11 @@ export default function Hero() {
             </span>
             <p className="mx-auto max-w-[700px] text-gray-200 md:text-xl">あなたはデータサイエンスの夢を見ますか？</p>
             <div className="space-x-4">
-              <Button variant="default" size={"lg"} onClick={() => signIn("azure-ad-b2c")}>
+              <Button
+                variant="default"
+                size={"lg"}
+                onClick={() => signIn("azure-ad-b2c", { callbackUrl: "/students" })}
+              >
                 無料で始める
               </Button>
             </div>
