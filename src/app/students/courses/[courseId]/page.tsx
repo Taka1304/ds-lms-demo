@@ -4,6 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Progress } from "@/components/ui/progress";
 import { Separator } from "@/components/ui/separator";
 import { SidebarTrigger } from "@/components/ui/sidebar";
+import { Check, TriangleAlert } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { use } from "react";
@@ -98,7 +99,7 @@ export default function ProblemList({ params }: { params: Promise<{ courseId: st
             <CardContent className="p-6 w-1/3 flex flex-col justify-center">
               {/* TODO: ヒントボタンの挙動実装 */}
               <Button className="bg-white border border-[#FF0000] rounded-none text-[#FF0000] w-full mb-3 text-xs min-h-5 max-h-7 hover:bg-gray-100 hover:font-bold">
-                <Image src={"/students/courses/Danger.png"} width={16} height={17} alt="DangerIcon" />
+                <TriangleAlert size={16} />
                 <span>ヒント</span>
               </Button>
               <div className="relative">
@@ -107,7 +108,7 @@ export default function ProblemList({ params }: { params: Promise<{ courseId: st
                 </Button>
                 {problem.completed ? (
                   <div className="absolute inset-0 flex items-center justify-center opacity-90 hover:bg-green-200">
-                    <Image src={"/students/courses/checkIcon.png"} alt="checkIcon" width={36} height={36} />
+                    <Check size={36} />
                   </div>
                 ) : null}
               </div>
