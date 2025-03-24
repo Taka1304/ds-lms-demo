@@ -1,7 +1,6 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { Loader2 } from "lucide-react";
 import { ChevronDown, ChevronUp } from "lucide-react";
@@ -59,24 +58,22 @@ export function ConsoleView({
       </div>
       {isExpanded && (
         <div className="h-[calc(100%-28px)] overflow-auto p-4">
-          <Card className="h-full border p-4">
-            {currentHistory.isRunning ? (
-              <div className="flex flex-col items-center justify-center h-full">
-                <Loader2 className="h-8 w-8 animate-spin text-primary mb-4" />
-                <p className="text-sm">テストケースを実行中...</p>
-              </div>
-            ) : currentHistory.results.length === 0 ? (
-              <div className="flex flex-col items-center justify-center h-full text-muted-foreground">
-                <p className="text-sm">テストケースを実行するには「Run Code」ボタンを押してください</p>
-              </div>
-            ) : (
-              <div className="space-y-4">
-                {currentHistory.results.map((result) => (
-                  <TestResultItem key={result.id} result={result} />
-                ))}
-              </div>
-            )}
-          </Card>
+          {currentHistory.isRunning ? (
+            <div className="flex flex-col items-center justify-center h-full">
+              <Loader2 className="h-8 w-8 animate-spin text-primary mb-4" />
+              <p className="text-sm">テストケースを実行中...</p>
+            </div>
+          ) : currentHistory.results.length === 0 ? (
+            <div className="flex flex-col items-center justify-center h-full text-muted-foreground">
+              <p className="text-sm">テストケースを実行するには「Run Test」ボタンを押してください</p>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {currentHistory.results.map((result) => (
+                <TestResultItem key={result.id} result={result} />
+              ))}
+            </div>
+          )}
         </div>
       )}
     </div>
