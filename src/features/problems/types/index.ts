@@ -1,6 +1,6 @@
 // テストケース結果の型定義
 export type TestResult = {
-  id: number;
+  id: string;
   status: "AC" | "WA" | "CE" | "RE" | "TLE";
   input: string;
   expectedOutput: string;
@@ -11,7 +11,7 @@ export type TestResult = {
 // 実行履歴の型定義
 export type ExecutionHistory = {
   id: number;
-  timestamp: Date;
+  timestamp: string; // hh:mm:ss
   results: TestResult[];
   isRunning: boolean;
   hasError: boolean;

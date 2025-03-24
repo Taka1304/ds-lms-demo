@@ -12,7 +12,7 @@ import { useRef, useState } from "react";
 import { PythonProvider } from "react-py";
 import type { Packages } from "react-py/dist/types/Packages";
 import { ConsoleView } from "../components/console-view";
-import { TestExecutionProvider } from "../components/test-execution-provider";
+import { PythonExecutionProvider } from "../components/python-execution-provider";
 
 const packages: Packages = {
   official: ["numpy"],
@@ -25,7 +25,7 @@ type Props = {
   problem: InferResponseType<typeof req, 200>;
 };
 
-export default function ProgrammingInterfaceContainer({ problem }: Props) {
+export default function ProgrammingInterface({ problem }: Props) {
   const [viewMode, setViewMode] = useState<"tabs" | "split">("tabs");
   const [consoleExpanded, setConsoleExpanded] = useState(true);
   const [activeTab, setActiveTab] = useState("problem");
@@ -36,12 +36,12 @@ export default function ProgrammingInterfaceContainer({ problem }: Props) {
   };
 
   return (
-    <PythonProvider packages={packages} timeout={problem.timeLimit} lazy>
-      <TestExecutionProvider>
-        {({ isRunning, executionHistories, activeHistoryIndex, runTestCases, setActiveHistoryIndex }) => (
+    <PythonProvider packages={packages} timeout={problem.timeLimit * 1000} lazy>
+      <PythonExecutionProvider testCases={problem.testCases}>
+        {({ isRunning, executionHistories, activeHistoryIndex, runCode, setActiveHistoryIndex }) => (
           <div className="flex h-screen flex-col overflow-hidden p-4">
             {/* Main Content Area */}
-            <main className="flex flex-1 flex-col">
+            <main className="flex flex-1 flex-col overflow-hidden">
               <Tabs
                 defaultValue="problem"
                 className="flex h-full flex-col"
@@ -52,54 +52,64 @@ export default function ProgrammingInterfaceContainer({ problem }: Props) {
                   <TabsList className="h-10">
                     <TabsTrigger value="problem" className="flex items-center gap-2">
                       <FileText className="h-4 w-4" />
-                      問題文
+                      問題
                     </TabsTrigger>
                     <TabsTrigger value="editor" className="flex items-center gap-2">
                       <Code className="h-4 w-4" />
-                      Editor
+                      Code
                     </TabsTrigger>
                   </TabsList>
                   <ActionBar
                     viewMode={viewMode}
                     isRunning={isRunning}
                     onToggleViewMode={() => setViewMode((prev) => (prev === "tabs" ? "split" : "tabs"))}
-                    onRunCode={() => runTestCases(codeRef.current || "")}
+                    onRunCode={() => runCode(codeRef.current || "")}
                   />
                 </div>
-                {viewMode === "tabs" ? (
-                  <>
-                    <TabsContent value="problem" className="flex-1 overflow-auto p-4">
-                      <h2 className="text-2xl font-bold mb-6">問題文</h2>
-                      <MarkdownViewer content={problem.description} />
-
-                      <h2 className="text-2xl font-bold mb-6">制約</h2>
-                      <MarkdownViewer content={problem.constraints} />
-                    </TabsContent>
-                    <TabsContent value="editor" className="flex-1 overflow-hidden">
-                      <div className="h-full bg-muted/20">
-                        <Editor language="python" theme="vs-dark" onChange={handleEditorChange} />
-                      </div>
-                    </TabsContent>
-                  </>
-                ) : (
-                  <ResizablePanelGroup direction="horizontal" className="flex-1">
-                    <ResizablePanel defaultSize={50} minSize={30}>
-                      <div className="overflow-auto h-full p-4">
-                        <h2 className="text-2xl font-bold mb-6">問題文</h2>
+                <div className="flex-1 flex flex-col">
+                  {viewMode === "tabs" ? (
+                    <>
+                      <TabsContent value="problem" className="flex-1 overflow-auto px-4">
+                        <h2 className="text-2xl font-bold mt-2">問題</h2>
                         <MarkdownViewer content={problem.description} />
 
-                        <h2 className="text-2xl font-bold mb-6">制約</h2>
+                        <h2 className="text-2xl font-bold mt-2">制約</h2>
                         <MarkdownViewer content={problem.constraints} />
-                      </div>
-                    </ResizablePanel>
-                    <ResizableHandle withHandle />
-                    <ResizablePanel defaultSize={50} minSize={30}>
-                      <div className="overflow-hidden h-full">
-                        <Editor language="python" theme="vs-dark" onChange={handleEditorChange} />
-                      </div>
-                    </ResizablePanel>
-                  </ResizablePanelGroup>
-                )}
+                      </TabsContent>
+                      <TabsContent value="editor" className="flex-1 overflow-hidden">
+                        <Editor
+                          value={codeRef.current || ""}
+                          language="python"
+                          theme="vs-dark"
+                          onChange={handleEditorChange}
+                          className="h-full"
+                        />
+                      </TabsContent>
+                    </>
+                  ) : (
+                    <ResizablePanelGroup direction="horizontal" className="flex-1">
+                      <ResizablePanel defaultSize={50} minSize={30}>
+                        <div className="overflow-auto h-full px-4 py-2">
+                          <h2 className="text-2xl font-bold mt-2">問題</h2>
+                          <MarkdownViewer content={problem.description} />
+
+                          <h2 className="text-2xl font-bold mt-2">制約</h2>
+                          <MarkdownViewer content={problem.constraints} />
+                        </div>
+                      </ResizablePanel>
+                      <ResizableHandle withHandle />
+                      <ResizablePanel defaultSize={50} minSize={30}>
+                        <Editor
+                          value={codeRef.current || ""}
+                          language="python"
+                          theme="vs-dark"
+                          onChange={handleEditorChange}
+                          className="h-full"
+                        />
+                      </ResizablePanel>
+                    </ResizablePanelGroup>
+                  )}
+                </div>
               </Tabs>
             </main>
 
@@ -113,7 +123,7 @@ export default function ProgrammingInterfaceContainer({ problem }: Props) {
             />
           </div>
         )}
-      </TestExecutionProvider>
+      </PythonExecutionProvider>
     </PythonProvider>
   );
 }
