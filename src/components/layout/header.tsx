@@ -77,7 +77,7 @@ export function Header() {
                 </DropdownMenuContent>
               </DropdownMenu>
             ) : (
-              <Button variant="ghost" size="sm" onClick={() => signIn("azure-ad-b2c")}>
+              <Button variant="ghost" size="sm" onClick={() => signIn("azure-ad-b2c", { callbackUrl: "/students" })}>
                 Sign in
               </Button>
             )}
