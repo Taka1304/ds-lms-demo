@@ -114,7 +114,7 @@ export function PythonExecutionProvider({ testCases, timeLimit, children }: Pyth
         ),
       ]);
 
-      // 出力が得られるまで待機
+      // 出力が終わるまで待機
       await waitForOutput();
 
       // 出力を評価
@@ -154,22 +154,36 @@ export function PythonExecutionProvider({ testCases, timeLimit, children }: Pyth
   // 出力を待機する関数
   const waitForOutput = async (): Promise<string> => {
     return new Promise((resolve) => {
+      let lastStdout = stdoutRef.current;
+      let lastStderr = stderrRef.current;
+      let stableTime = 0;
+
       const timeout = setTimeout(() => {
-        resolve("");
-      }, 500); // 0.5秒でタイムアウト
+        resolve(stdoutRef.current.trim()); // タイムアウト時に現在の出力を返す
+      }, 1000); // 1秒でタイムアウト
 
       const interval = setInterval(() => {
-        if (stdoutRef.current.trim() || stderrRef.current.trim()) {
+        // 出力が変化しているか確認
+        if (stdoutRef.current !== lastStdout || stderrRef.current !== lastStderr) {
+          lastStdout = stdoutRef.current;
+          lastStderr = stderrRef.current;
+          stableTime = 0; // 安定時間をリセット
+        } else {
+          stableTime += 100; // 安定時間を増加
+        }
+
+        // 出力が0.5秒間変化しなかった場合に終了
+        if (stableTime >= 500) {
           clearInterval(interval);
           clearTimeout(timeout);
           resolve(stdoutRef.current.trim());
         }
-      }, 100);
+      }, 100); // 100msごとにチェック
     });
   };
 
   return children({
-    isRunning,
+    isRunning: executionHistories[0]?.isRunning || false,
     isReady,
     executionHistories,
     activeHistoryIndex,
