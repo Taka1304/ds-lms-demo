@@ -1,4 +1,4 @@
-import ProgrammingInterface from "@/features/problems/container";
+import ProgrammingInterface from "@/features/problems/components/programming-interface";
 import { client } from "@/lib/hono";
 import { notFound } from "next/navigation";
 
