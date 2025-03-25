@@ -152,6 +152,7 @@ model Problem {
   description     String // 問題の説明（Markdown）
   difficultyLevel Int // 難易度（1-5等）
   constraints     String // 制約条件（時間、メモリ、入力値の範囲など）
+  courseId        String
 
   // 実行制限
   timeLimit   Int // ミリ秒単位
@@ -175,11 +176,11 @@ model Problem {
   // Relations
   createdBy   User                @relation("ProblemCreator", fields: [createdById], references: [id])
   updatedBy   User                @relation("ProblemUpdater", fields: [updatedById], references: [id])
+  course      Course              @relation(fields: [courseId], references: [id])
   submissions Submission[]
   testCases   TestCase[]
   tags        ProblemTag[]
   sampleCodes ProblemSampleCode[]
-  Course      Course[]
 }
 
 model ProblemSampleCode {
