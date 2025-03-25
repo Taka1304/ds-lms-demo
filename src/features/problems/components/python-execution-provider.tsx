@@ -59,7 +59,6 @@ export function PythonExecutionProvider({ testCases, children }: PythonExecution
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
     if (isAwaitingInput) {
-      console.log("Send input: ", testCases[testCaseIndex].input);
       sendInput(testCases[testCaseIndex].input);
     }
   }, [isAwaitingInput, testCaseIndex, sendInput]);
@@ -78,14 +77,14 @@ export function PythonExecutionProvider({ testCases, children }: PythonExecution
         const currentHistory = updatedHistories[0]; // 最新の履歴を取得
 
         // すでに結果が追加されている場合は何もしない
-        const isAlreadyProcessed = currentHistory.results.some((result) => result.id === currentTestCase.id);
+        const isAlreadyProcessed = currentHistory.results.some((result) => result.id <= testCaseIndex);
         if (isAlreadyProcessed) return prevHistories;
 
         // 出力を評価
         const status: "AC" | "WA" | "CE" | "RE" | "TLE" = stdout.trim() === currentTestCase.output.trim() ? "AC" : "WA";
 
         currentHistory.results.push({
-          id: currentTestCase.id,
+          id: testCaseIndex,
           status,
           input: currentTestCase.input,
           expectedOutput: currentTestCase.output,

@@ -1,6 +1,6 @@
 // テストケース結果の型定義
 export type TestResult = {
-  id: string;
+  id: number;
   status: "AC" | "WA" | "CE" | "RE" | "TLE";
   input: string;
   expectedOutput: string;
