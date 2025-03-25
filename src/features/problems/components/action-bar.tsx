@@ -6,27 +6,33 @@ import { Loader2, Maximize2, Play, SquareSplitHorizontal } from "lucide-react";
 interface ActionBarProps {
   viewMode: "tabs" | "split";
   isRunning: boolean;
+  isReady: boolean;
   onToggleViewMode: () => void;
   onRunCode: () => void;
 }
 
-export function ActionBar({ viewMode, isRunning, onToggleViewMode, onRunCode }: ActionBarProps) {
+export function ActionBar({ viewMode, isRunning, isReady, onToggleViewMode, onRunCode }: ActionBarProps) {
   return (
     <div className="flex items-center gap-2">
       <Button variant="outline" size="sm" onClick={onToggleViewMode}>
         {viewMode === "tabs" ? <SquareSplitHorizontal className="h-4 w-4" /> : <Maximize2 className="h-4 w-4" />}
         <span className="ml-2">{viewMode === "tabs" ? "Split View" : "Tab View"}</span>
       </Button>
-      <Button variant="default" size="sm" onClick={onRunCode} disabled={isRunning}>
+      <Button variant="default" size="sm" onClick={onRunCode} disabled={isRunning || !isReady}>
         {isRunning ? (
           <>
             <Loader2 className="h-4 w-4 mr-2 animate-spin" />
             Running...
           </>
-        ) : (
+        ) : isReady ? (
           <>
             <Play className="h-4 w-4 mr-2" />
             Run Code
+          </>
+        ) : (
+          <>
+            <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+            Loading...
           </>
         )}
       </Button>
