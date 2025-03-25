@@ -28,7 +28,7 @@ export function TestResultItem({ result }: TestResultItemProps) {
         </div>
         <div className="space-y-1">
           <div className="text-xs font-medium">実際の出力:</div>
-          <pre className="text-xs bg-muted p-2 rounded overflow-auto max-h-20">{result.actualOutput}</pre>
+          <pre className="text-xs bg-muted p-2 rounded overflow-auto max-h-20 min-h-8">{result.actualOutput}</pre>
         </div>
         <div className="space-y-1">
           <div className="text-xs font-medium">エラー:</div>
