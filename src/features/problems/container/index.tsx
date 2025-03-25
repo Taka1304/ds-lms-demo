@@ -36,8 +36,8 @@ export default function ProgrammingInterface({ problem }: Props) {
   };
 
   return (
-    <PythonProvider packages={packages} timeout={problem.timeLimit * 1000}>
-      <PythonExecutionProvider testCases={problem.testCases}>
+    <PythonProvider packages={packages}>
+      <PythonExecutionProvider testCases={problem.testCases} timeLimit={problem.timeLimit * 1000}>
         {({ isRunning, isReady, executionHistories, activeHistoryIndex, runCode, setActiveHistoryIndex }) => (
           <div className="flex h-screen flex-col overflow-hidden p-4">
             {/* Main Content Area */}

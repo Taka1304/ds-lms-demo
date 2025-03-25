@@ -13,6 +13,7 @@ type TestCaseWithStringDate = ConvertDateToString<TestCase>;
 
 interface PythonExecutionProviderProps {
   testCases: TestCaseWithStringDate[];
+  timeLimit: number;
   children: (props: {
     isRunning: boolean;
     isReady: boolean;
@@ -23,7 +24,7 @@ interface PythonExecutionProviderProps {
   }) => React.ReactNode;
 }
 
-export function PythonExecutionProvider({ testCases, children }: PythonExecutionProviderProps) {
+export function PythonExecutionProvider({ testCases, timeLimit, children }: PythonExecutionProviderProps) {
   const { runPython, sendInput, isRunning, isReady, isAwaitingInput, stderr, stdout } = usePython();
   const [executionHistories, setExecutionHistories] = useState<ExecutionHistory[]>([]);
   const [activeHistoryIndex, setActiveHistoryIndex] = useState(0);
@@ -106,8 +107,12 @@ export function PythonExecutionProvider({ testCases, children }: PythonExecution
       stdoutRef.current = "";
       stderrRef.current = "";
 
-      // コードを実行
-      await runPython(code);
+      await Promise.race([
+        runPython(code),
+        new Promise((_, reject) =>
+          setTimeout(() => reject(new Error("Execution timed out", { cause: "TLE" })), timeLimit),
+        ),
+      ]);
 
       // 出力が得られるまで待機
       await waitForOutput();
@@ -118,16 +123,26 @@ export function PythonExecutionProvider({ testCases, children }: PythonExecution
 
       return {
         id: index + 1,
-        status: status as "AC" | "WA" | "CE" | "RE" | "TLE",
+        status: status,
         input: testCase.input,
         expectedOutput: testCase.output,
         actualOutput: stdoutRef.current.trim(),
         errorLog: stderrRef.current.trim(),
       };
     } catch (error) {
+      if (error instanceof Error && error.message === "Execution timed out") {
+        return {
+          id: index + 1,
+          status: "TLE" as const,
+          input: testCase.input,
+          expectedOutput: testCase.output,
+          actualOutput: stdoutRef.current.trim(),
+          errorLog: error.message,
+        };
+      }
       return {
         id: index + 1,
-        status: "RE" as "AC" | "WA" | "CE" | "RE" | "TLE",
+        status: "RE" as const,
         input: testCase.input,
         expectedOutput: testCase.output,
         actualOutput: stdoutRef.current.trim(),
@@ -141,7 +156,7 @@ export function PythonExecutionProvider({ testCases, children }: PythonExecution
     return new Promise((resolve) => {
       const timeout = setTimeout(() => {
         resolve("");
-      }, 1000); // 1秒でタイムアウト
+      }, 500); // 0.5秒でタイムアウト
 
       const interval = setInterval(() => {
         if (stdoutRef.current.trim() || stderrRef.current.trim()) {
@@ -149,7 +164,7 @@ export function PythonExecutionProvider({ testCases, children }: PythonExecution
           clearTimeout(timeout);
           resolve(stdoutRef.current.trim());
         }
-      }, 100); // 100ms ごとにチェック
+      }, 100);
     });
   };
 
