@@ -36,9 +36,9 @@ export default function ProgrammingInterface({ problem }: Props) {
   };
 
   return (
-    <PythonProvider packages={packages} timeout={problem.timeLimit * 1000} lazy>
+    <PythonProvider packages={packages} timeout={problem.timeLimit * 1000}>
       <PythonExecutionProvider testCases={problem.testCases}>
-        {({ isRunning, executionHistories, activeHistoryIndex, runCode, setActiveHistoryIndex }) => (
+        {({ isRunning, isReady, executionHistories, activeHistoryIndex, runCode, setActiveHistoryIndex }) => (
           <div className="flex h-screen flex-col overflow-hidden p-4">
             {/* Main Content Area */}
             <main className="flex flex-1 flex-col overflow-hidden">
@@ -62,6 +62,7 @@ export default function ProgrammingInterface({ problem }: Props) {
                   <ActionBar
                     viewMode={viewMode}
                     isRunning={isRunning}
+                    isReady={isReady}
                     onToggleViewMode={() => setViewMode((prev) => (prev === "tabs" ? "split" : "tabs"))}
                     onRunCode={() => runCode(codeRef.current || "")}
                   />
