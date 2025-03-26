@@ -30,18 +30,13 @@ export const createProblem = factory.createHandlers(
     }),
   ),
   async (c) => {
-    const { courseId, ...rest } = c.req.valid("json");
+    const json = c.req.valid("json");
     const session = c.get("session");
 
     try {
       const data = await prisma.problem.create({
         data: {
-          Course: {
-            connect: {
-              id: courseId,
-            },
-          },
-          ...rest,
+          ...json,
           createdById: session.user.id,
           updatedById: session.user.id,
         },

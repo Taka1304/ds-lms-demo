@@ -12,6 +12,7 @@ import { use } from "react";
 // TODO: dummy
 const problem: Problem = {
   id: "1",
+  courseId: "1",
   title: "Two Sum",
   slug: "two-sum",
   timeLimit: 3,

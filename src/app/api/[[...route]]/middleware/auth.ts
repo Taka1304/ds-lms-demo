@@ -1,19 +1,30 @@
 import { authOptions } from "@/lib/auth";
 import { $Enums } from "@prisma/client";
-import type { MiddlewareHandler } from "hono";
+import { createFactory } from "hono/factory";
 import { getServerSession } from "next-auth";
 
-export const withSession: MiddlewareHandler = async (c, next) => {
+const factory = createFactory();
+
+export const getSession = factory.createMiddleware(async (c, next) => {
   const session = await getServerSession(authOptions);
+
+  c.set("session", session);
+  await next();
+});
+
+export const withSession = factory.createMiddleware(async (c, next) => {
+  const session = await getServerSession(authOptions);
+
   if (!session) {
     return c.json({ error: "Unauthorized" }, 401);
   }
   c.set("session", session);
   await next();
-};
+});
 
-export const withAdmin: MiddlewareHandler = async (c, next) => {
+export const withAdmin = factory.createMiddleware(async (c, next) => {
   const session = await getServerSession(authOptions);
+  
   if (!session) {
     return c.json({ error: "Unauthorized" }, 401);
   }
@@ -22,4 +33,4 @@ export const withAdmin: MiddlewareHandler = async (c, next) => {
   }
   c.set("session", session);
   await next();
-};
+});

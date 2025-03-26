@@ -1,14 +1,14 @@
 import { Hono } from "hono"
 import { handle } from "hono/vercel"
-import { courses } from "~/courses"
 import { assets } from "~/assets"
+import { courses } from "~/courses"
 
 export const runtime = "nodejs"
 
 const app = new Hono()
   .basePath("/api")
   .route("/courses", courses)
-.route("/assets", assets)
+  .route("/assets", assets)
 
 export type AppType = typeof app
 
