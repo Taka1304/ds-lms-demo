@@ -55,16 +55,18 @@ export function PythonExecutionProvider({ testCases, timeLimit, children }: Pyth
     if (isRunning) return; // 実行中の場合は何もしない
 
     // 新しい履歴を追加
-    setExecutionHistories((prevHistories) => [
-      {
-        id: prevHistories.length + 1,
-        timestamp: dayjs().format("HH:mm:ss"),
-        results: [],
-        isRunning: true,
-        hasError: false,
-      },
-      ...prevHistories,
-    ]);
+    setExecutionHistories((prevHistories) =>
+      [
+        {
+          id: prevHistories.length + 1,
+          timestamp: dayjs().format("HH:mm:ss"),
+          results: [],
+          isRunning: true,
+          hasError: false,
+        },
+        ...prevHistories,
+      ].slice(0, 5),
+    ); // 履歴を5件に制限
 
     for (const [index, testCase] of testCases.entries()) {
       // 入力を設定
