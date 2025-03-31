@@ -7,7 +7,7 @@ import { ActionBar } from "@/features/problems/components/action-bar";
 import { client } from "@/lib/hono";
 import { Editor } from "@monaco-editor/react";
 import type { InferResponseType } from "hono";
-import { Code, FileText } from "lucide-react";
+import { Code, FileText, SquareSplitHorizontal } from "lucide-react";
 import { useRef, useState } from "react";
 import { PythonProvider } from "react-py";
 import type { Packages } from "react-py/dist/types/Packages";
@@ -26,20 +26,24 @@ type Props = {
 };
 
 export default function ProgrammingInterface({ problem }: Props) {
-  const [viewMode, setViewMode] = useState<"tabs" | "split">("tabs");
   const [consoleExpanded, setConsoleExpanded] = useState(true);
-  const [activeTab, setActiveTab] = useState("problem");
+  const [activeTab, setActiveTab] = useState("split");
   const codeRef = useRef<string | null>(null);
 
   const handleEditorChange = (value: string | undefined) => {
     codeRef.current = value || "";
   };
 
+  const onSubmitCode = async () => {
+    // TODO: 提出処理
+    // await client.api.courses.problems[":problem_id"].submit.post({
+  };
+
   return (
     <PythonProvider packages={packages}>
       <PythonExecutionProvider testCases={problem.testCases} timeLimit={problem.timeLimit * 1000}>
         {({ isRunning, isReady, executionHistories, activeHistoryIndex, runCode, setActiveHistoryIndex }) => (
-          <div className="flex h-screen flex-col overflow-hidden p-4">
+          <div className="flex h-screen flex-col overflow-hidden py-2">
             {/* Main Content Area */}
             <main className="flex flex-1 flex-col overflow-hidden">
               <Tabs
@@ -49,48 +53,53 @@ export default function ProgrammingInterface({ problem }: Props) {
                 onValueChange={setActiveTab}
               >
                 <div className="flex items-center justify-between border-b bg-muted/40 px-4">
-                  <TabsList className="h-10">
-                    <TabsTrigger value="problem" className="flex items-center gap-2">
-                      <FileText className="h-4 w-4" />
-                      問題
-                    </TabsTrigger>
-                    <TabsTrigger value="editor" className="flex items-center gap-2">
-                      <Code className="h-4 w-4" />
-                      Code
-                    </TabsTrigger>
-                  </TabsList>
+                  <span>
+                    <TabsList className="h-10">
+                      <TabsTrigger value="problem" className="flex items-center gap-2">
+                        <FileText className="h-4 w-4" />
+                        問題
+                      </TabsTrigger>
+                      <TabsTrigger value="editor" className="flex items-center gap-2">
+                        <Code className="h-4 w-4" />
+                        コード
+                      </TabsTrigger>
+                      <TabsTrigger value="split" className="flex items-center gap-2">
+                        <SquareSplitHorizontal className="h-4 w-4" />
+                        分割
+                      </TabsTrigger>
+                    </TabsList>
+                  </span>
                   <ActionBar
-                    viewMode={viewMode}
                     isRunning={isRunning}
                     isReady={isReady}
-                    onToggleViewMode={() => setViewMode((prev) => (prev === "tabs" ? "split" : "tabs"))}
                     onRunCode={() => runCode(codeRef.current || "")}
+                    recentHistory={executionHistories[0]}
+                    onSubmitCode={onSubmitCode}
                   />
                 </div>
                 <div className="flex-1 flex flex-col">
-                  {viewMode === "tabs" ? (
-                    <>
-                      <TabsContent value="problem" className="flex-1 overflow-auto px-4">
-                        <h2 className="text-2xl font-bold mt-2">問題</h2>
-                        <MarkdownViewer content={problem.description} />
+                  <TabsContent value="problem" className="flex-1 overflow-auto px-4">
+                    {/* TODO: 内容 */}
+                    <h2 className="text-2xl font-bold mt-2">問題</h2>
+                    <MarkdownViewer content={problem.description} />
 
-                        <h2 className="text-2xl font-bold mt-2">制約</h2>
-                        <MarkdownViewer content={problem.constraints} />
-                      </TabsContent>
-                      <TabsContent value="editor" className="flex-1 overflow-hidden">
-                        <Editor
-                          value={codeRef.current || ""}
-                          language="python"
-                          theme="vs-dark"
-                          onChange={handleEditorChange}
-                          className="h-full"
-                        />
-                      </TabsContent>
-                    </>
-                  ) : (
+                    <h2 className="text-2xl font-bold mt-2">制約</h2>
+                    <MarkdownViewer content={problem.constraints} />
+                  </TabsContent>
+                  <TabsContent value="editor" className="flex-1 overflow-hidden">
+                    {/* TODO: themeのカスタマイズ */}
+                    <Editor
+                      value={codeRef.current || ""}
+                      language="python"
+                      theme="vs-dark"
+                      onChange={handleEditorChange}
+                      className="h-full"
+                    />
+                  </TabsContent>
+                  <TabsContent value="split" className="flex-1">
                     <ResizablePanelGroup direction="horizontal" className="flex-1">
                       <ResizablePanel defaultSize={50} minSize={30}>
-                        <div className="overflow-auto h-full px-4 py-2">
+                        <div className="overflow-auto h-full px-4">
                           <h2 className="text-2xl font-bold mt-2">問題</h2>
                           <MarkdownViewer content={problem.description} />
 
@@ -100,6 +109,7 @@ export default function ProgrammingInterface({ problem }: Props) {
                       </ResizablePanel>
                       <ResizableHandle withHandle />
                       <ResizablePanel defaultSize={50} minSize={30}>
+                        {/* TODO: themeのカスタマイズ */}
                         <Editor
                           value={codeRef.current || ""}
                           language="python"
@@ -109,7 +119,7 @@ export default function ProgrammingInterface({ problem }: Props) {
                         />
                       </ResizablePanel>
                     </ResizablePanelGroup>
-                  )}
+                  </TabsContent>
                 </div>
               </Tabs>
             </main>

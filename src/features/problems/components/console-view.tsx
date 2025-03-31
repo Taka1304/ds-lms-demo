@@ -65,7 +65,7 @@ export function ConsoleView({
             </div>
           ) : currentHistory.results.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-full text-muted-foreground">
-              <p className="text-sm">テストケースを実行するには「Run Code」ボタンを押してください</p>
+              <p className="text-sm">テストケースを実行するには「実行する」ボタンを押してください</p>
             </div>
           ) : (
             <div className="space-y-4">
