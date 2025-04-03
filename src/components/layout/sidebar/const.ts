@@ -7,16 +7,18 @@ export type NavItem = {
   icon?: ForwardRefExoticComponent<Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>>;
   disabled?: boolean;
   badge?: string;
-  isActive?: boolean;
-  items?: (NavItem & { url: string })[];
+  defaultOpen?: boolean;
+  url: string;
+  items?: NavItem[];
 };
 
 export const userNavItems: NavItem[] = [
   {
     title: "Learning",
-    ja: "プログラミング",
+    ja: "プログラミングを学ぶ",
+    url: "/students/courses",
     icon: SquareTerminal,
-    isActive: false,
+    defaultOpen: false,
     items: [
       {
         title: "Courses",
@@ -32,6 +34,9 @@ export const userNavItems: NavItem[] = [
   },
   {
     title: "Dashboard",
+    ja: "ダッシュボード",
+    url: "/students/dashboard",
+    disabled: true,
     icon: Bot,
     items: [
       {
@@ -51,27 +56,11 @@ export const userNavItems: NavItem[] = [
   {
     title: "Competitions",
     ja: "コンペティション",
+    url: "/students/competitions",
     disabled: true,
     badge: "Coming Soon",
     icon: Trophy,
-    items: [
-      {
-        title: "Introduction",
-        url: "#",
-      },
-      {
-        title: "Get Started",
-        url: "#",
-      },
-      {
-        title: "Tutorials",
-        url: "#",
-      },
-      {
-        title: "Changelog",
-        url: "#",
-      },
-    ],
+    items: [],
   },
 ];
 
@@ -80,7 +69,8 @@ export const adminNavItems: NavItem[] = [
     title: "Dashboard",
     ja: "ダッシュボード",
     icon: Bot,
-    isActive: false,
+    url: "/manage/dashboard",
+    defaultOpen: false,
     items: [
       {
         title: "Genesis",
@@ -98,24 +88,17 @@ export const adminNavItems: NavItem[] = [
   },
   {
     title: "Competitions",
-    ja: "コンペティション",
+    ja: "コンペティション管理",
+    url: "/manage/competitions",
     disabled: true,
     badge: "Coming Soon",
     icon: Trophy,
   },
   {
     title: "Courses",
-    ja: "コース一覧",
+    ja: "コース管理",
     icon: SquareTerminal,
-    items: [
-      {
-        title: "Courses",
-        url: "/admin/courses",
-      },
-      {
-        title: "Ranking",
-        url: "/admin/ranking",
-      },
-    ],
+    url: "/manage/courses",
+    items: [],
   },
 ];
