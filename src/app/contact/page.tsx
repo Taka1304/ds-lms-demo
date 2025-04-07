@@ -1,10 +1,19 @@
 "use client";
 
-import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
+import { useToast } from "@/hooks/use-toast";
 
 export default function ContactPage() {
-  const [successMessage, setSuccessMessage] = useState(false);
+  const { toast } = useToast();
 
+  const handleClick = () => {
+    toast({
+      title: "送信完了",
+      description: "お問い合わせありがとうございます。送信が完了しました。",
+    });
+  };
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
@@ -16,11 +25,6 @@ export default function ContactPage() {
       mode: "no-cors",
     }).then(() => {
       form.reset();
-      setSuccessMessage(true);
-
-      setTimeout(() => {
-        setSuccessMessage(false);
-      }, 5000);
     });
   };
 
@@ -33,13 +37,6 @@ export default function ContactPage() {
         </h1>
       </div>
 
-      {/* メッセージ */}
-      {successMessage && (
-        <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
-          お問い合わせありがとうございます。送信が完了しました。
-        </div>
-      )}
-
       {/* フォーム部分 */}
       <div className="items-center justify-center mt-6  max-w-2xl mx-auto px-4">
         <h2 className="text-lg font-semibold mb-6">お問い合わせ詳細</h2>
@@ -50,26 +47,28 @@ export default function ContactPage() {
           target="_blank"
           className="space-y-4"
         >
-          {" "}
           {/* お問い合わせ内容 */}
           <div>
             <label htmlFor="field-category" className="block text-gray-700 font-semibold">
               お問い合わせ内容 <span className="text-red-500 font-medium">*必須</span>
             </label>
-            <select
-              name="entry.1363100018"
-              className="w-full border border-gray-300 p-2 rounded-md"
-              id="field-category"
-              required
-            >
-              <option value="">選択してください</option>
-              <option value="問題の内容に関するお問い合わせ">問題の内容に関するお問い合わせ</option>
-              <option value="バグ・不具合に関するお問い合わせ">バグ・不具合に関するお問い合わせ</option>
-              <option value="会員登録・ログインに関するお問い合わせ">会員登録・ログインに関するお問い合わせ</option>
-              <option value="要望・改善案に関するお問い合わせ">要望・改善案に関するお問い合わせ</option>
-              <option value="その他のお問い合わせ">その他のお問い合わせ</option>
-            </select>
+
+            <Select name="entry.1363100018" required>
+              <SelectTrigger className="w-full border border-gray-300 p-2 rounded-md">
+                <SelectValue placeholder="選択してください" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="問題の内容に関するお問い合わせ">問題の内容に関するお問い合わせ</SelectItem>
+                <SelectItem value="バグ・不具合に関するお問い合わせ">バグ・不具合に関するお問い合わせ</SelectItem>
+                <SelectItem value="会員登録・ログインに関するお問い合わせ">
+                  会員登録・ログインに関するお問い合わせ
+                </SelectItem>
+                <SelectItem value="要望・改善案に関するお問い合わせ">要望・改善案に関するお問い合わせ</SelectItem>
+                <SelectItem value="その他のお問い合わせ">その他のお問い合わせ</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
+
           {/* 件名 */}
           <div>
             <label htmlFor="field-subject" className="block text-gray-700 font-semibold">
@@ -84,6 +83,7 @@ export default function ContactPage() {
               required
             />
           </div>
+
           {/* 内容 */}
           <div>
             <label htmlFor="field-message" className="block text-gray-700 font-semibold">
@@ -96,7 +96,7 @@ export default function ContactPage() {
               当フォームでは対応いたしかねますのでご了承ください。
             </p>
 
-            <textarea
+            <Textarea
               name="entry.211667335"
               className="w-full border border-gray-300 p-2 rounded-md h-40"
               id="field-message"
@@ -104,6 +104,7 @@ export default function ContactPage() {
               required
             />
           </div>
+
           {/* メールアドレス */}
           <div>
             <label htmlFor="field-email" className="block text-gray-700 font-semibold">
@@ -120,9 +121,13 @@ export default function ContactPage() {
           </div>
           {/* 送信ボタン */}
           <div className="mt-5">
-            <button type="submit" className="bg-green-500 text-white py-2 rounded-md hover:bg-green-600 p-4">
+            <Button
+              onClick={handleClick}
+              type="submit"
+              className="bg-green-500 text-white py-2 rounded-md hover:bg-green-600 p-4"
+            >
               送信
-            </button>
+            </Button>
           </div>
         </form>
       </div>
