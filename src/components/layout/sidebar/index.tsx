@@ -1,13 +1,21 @@
 "use client";
 
-import { NavMain } from "./nav";
-import { NavUser } from "./user";
-import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarRail } from "@/components/ui/sidebar";
+import { ThemeSelector } from "@/components/layout/sidebar/theme-selector";
+import { ThemeSwitcher } from "@/components/layout/sidebar/theme-switcher";
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarFooter,
+  SidebarHeader,
+  SidebarRail,
+  SidebarSeparator,
+} from "@/components/ui/sidebar";
 import Image from "next/image";
 import Link from "next/link";
+import { NavMain } from "./nav";
+import { NavUser } from "./user";
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
@@ -19,6 +27,9 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <NavMain />
       </SidebarContent>
       <SidebarFooter>
+        <ThemeSelector />
+        <ThemeSwitcher />
+        <SidebarSeparator className="my-2" />
         <NavUser />
       </SidebarFooter>
       <SidebarRail />
