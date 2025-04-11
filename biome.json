@@ -7,7 +7,17 @@
 	},
 	"files": {
 		"ignoreUnknown": false,
-		"ignore": []
+		"ignore": [
+			"**/dist",
+			"**/.github",
+			"**/.vercel",
+			"**/.next",
+			"**/.turbo",
+			"**/.vscode",
+			"**/.storybook",
+			"**/node_modules",
+			"**/prisma"
+		]
 	},
 	"formatter": {
 		"enabled": true,
