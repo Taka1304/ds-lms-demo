@@ -66,6 +66,19 @@ export const userNavItems: NavItem[] = [
 
 export const adminNavItems: NavItem[] = [
   {
+    title: "Courses",
+    ja: "コース管理",
+    icon: SquareTerminal,
+    url: "/manage/courses",
+    items: [
+      {
+        title: "Courses",
+        ja: "コース一覧",
+        url: "/manage/courses",
+      },
+    ],
+  },
+  {
     title: "Dashboard",
     ja: "ダッシュボード",
     icon: Bot,
@@ -73,16 +86,9 @@ export const adminNavItems: NavItem[] = [
     defaultOpen: false,
     items: [
       {
-        title: "Genesis",
-        url: "#",
-      },
-      {
-        title: "Explorer",
-        url: "#",
-      },
-      {
-        title: "Quantum",
-        url: "#",
+        title: "Top",
+        ja: "トップ",
+        url: "/manage/dashboard",
       },
     ],
   },
@@ -93,12 +99,5 @@ export const adminNavItems: NavItem[] = [
     disabled: true,
     badge: "Coming Soon",
     icon: Trophy,
-  },
-  {
-    title: "Courses",
-    ja: "コース管理",
-    icon: SquareTerminal,
-    url: "/manage/courses",
-    items: [],
   },
 ];
