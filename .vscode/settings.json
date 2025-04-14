@@ -17,5 +17,65 @@
 		"source.organizeImports.biome": "explicit"
 	},
 	"typescript.preferences.importModuleSpecifier": "non-relative",
-	"editor.tabSize": 2
+	"editor.tabSize": 2,
+	"gitmoji.addCustomEmoji": [
+		{
+			"emoji": "Feat✨:",
+			"description": "新しい機能の追加"
+		},
+		{
+			"emoji": "Fix🐛:",
+			"description": "バグの修正"
+		},
+		{
+			"emoji": "Docs📝:",
+			"description": "ドキュメントの変更"
+		},
+		{
+			"emoji": "Style💄:",
+			"description": "フォーマットやスタイルの変更"
+		},
+		{
+			"emoji": "Refactor♻️:",
+			"description": "リファクタリング"
+		},
+		{
+			"emoji": "Perf⚡️:",
+			"description": "パフォーマンス改善"
+		},
+		{
+			"emoji": "Test✅:",
+			"description": "テストの追加や修正"
+		},
+		{
+			"emoji": "Build🔨:",
+			"description": "ビルド関連の変更"
+		},
+		{
+			"emoji": "Ci🚀:",
+			"description": "CI/CD関連の変更"
+		},
+		{
+			"emoji": "Chore🧹:",
+			"description": "雑多な変更"
+		},
+		{
+			"emoji": "Rev⏪️:",
+			"description": "変更の取り消し"
+		},
+		{
+			"emoji": "Wip🚧:",
+			"description": "作業中の変更"
+		},
+		{
+			"emoji": "Sec🔒:",
+			"description": "セキュリティ関連の変更"
+		},
+		{
+			"emoji": "⚙️:",
+			"description": "設定ファイルの変更"
+		}
+	],
+	"gitmoji.showEmojiCode": true,
+	"gitmoji.onlyUseCustomEmoji": true
 }
