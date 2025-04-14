@@ -27,6 +27,14 @@ enum SystemRole {
   USER
 }
 
+enum ResultStatus {
+  AC // All Correct, 全て正解
+  WA // Wrong Answer, 不正解
+  CE // Compile Error, コンパイルエラー
+  RE // Runtime Error, 実行時エラー
+  TLE // Time Limit Exceeded, タイムアウト
+}
+
 model User {
   id            String      @id @default(cuid())
   name          String?
@@ -207,29 +215,47 @@ model TestCase {
   createdAt   DateTime @default(now())
 
   // Relations
-  problem Problem @relation(fields: [problemId], references: [id])
+  problem    Problem      @relation(fields: [problemId], references: [id])
+  TestResult TestResult[]
 }
 
 model Submission {
-  id            String   @id @default(cuid())
+  id            String    @id @default(cuid())
   userId        String
   problemId     String
   code          String
-  language      String   @default("python3")
-  status        String // "accepted", "wrong_answer", "time_limit_exceeded", etc.
+  language      String    @default("python3")
+  status        String // "PENDING", "EVALUATED"
   executionTime Float? // 実行時間（ミリ秒）
   memoryUsage   Int? // メモリ使用量（MB）
   errorMessage  String? // エラーメッセージ
-  testResults   Json? // 各テストケースの結果
-  score         Float? // 得点（必要な場合）
-  createdAt     DateTime @default(now())
+  score         Float? // 得点
+  createdAt     DateTime  @default(now())
+  evaluatedAt   DateTime? // 評価日時
 
   // Relations
-  user    User    @relation(fields: [userId], references: [id])
-  problem Problem @relation(fields: [problemId], references: [id])
+  user       User         @relation(fields: [userId], references: [id])
+  problem    Problem      @relation(fields: [problemId], references: [id])
+  TestResult TestResult[]
 
   @@index([userId, problemId, status])
   @@index([problemId, status, executionTime])
+}
+
+model TestResult {
+  id           String       @id @default(cuid())
+  submissionId String
+  testCaseId   String
+  status       ResultStatus
+  actualOutput String? // 実際の出力
+  errorLog     String? // エラーログ（必要な場合）
+  createdAt    DateTime     @default(now())
+
+  // Relations
+  submission Submission @relation(fields: [submissionId], references: [id])
+  testCase   TestCase   @relation(fields: [testCaseId], references: [id])
+
+  @@unique([submissionId, testCaseId])
 }
 
 model Tag {
