@@ -9,8 +9,7 @@ const problems = new Hono()
   .get("/", ...getProblemList)
   .post("/", ...createProblem)
   .get("/:problem_id", ...getProblem)
-  .get("/:problem_id/submission", ...getSubmission)
-  
+  .get("/:problem_id/:submission_id", ...getSubmission)
   .post("/:problem_id/submit", ...submitProblem);
 
 export default problems;
