@@ -120,12 +120,8 @@ export default function ContactPage() {
             />
           </div>
           {/* 送信ボタン */}
-          <div className="mt-5">
-            <Button
-              onClick={handleClick}
-              type="submit"
-              className="bg-green-500 text-white py-2 rounded-md hover:bg-green-600 p-4"
-            >
+          <div className="my-5">
+            <Button onClick={handleClick} type="submit" variant="default" className="mb-5">
               送信
             </Button>
           </div>
