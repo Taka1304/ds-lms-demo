@@ -49,7 +49,7 @@ export default function ContactPage() {
         >
           {/* お問い合わせ内容 */}
           <div>
-            <label htmlFor="field-category" className="block text-gray-700 font-semibold">
+            <label htmlFor="field-category" className="block font-semibold">
               お問い合わせ内容 <span className="text-red-500 font-medium">*必須</span>
             </label>
 
@@ -71,7 +71,7 @@ export default function ContactPage() {
 
           {/* 件名 */}
           <div>
-            <label htmlFor="field-subject" className="block text-gray-700 font-semibold">
+            <label htmlFor="field-subject" className="block font-semibold">
               件名 <span className="text-red-500 font-medium">*必須</span>
             </label>
             <input
@@ -86,7 +86,7 @@ export default function ContactPage() {
 
           {/* 内容 */}
           <div>
-            <label htmlFor="field-message" className="block text-gray-700 font-semibold">
+            <label htmlFor="field-message" className="block font-semibold">
               内容 <span className="text-red-500 font-medium">*必須</span>
             </label>
 
@@ -107,7 +107,7 @@ export default function ContactPage() {
 
           {/* メールアドレス */}
           <div>
-            <label htmlFor="field-email" className="block text-gray-700 font-semibold">
+            <label htmlFor="field-email" className="block font-semibold">
               メールアドレス <span className="text-red-500 font-medium">*必須</span>
             </label>
             <input
