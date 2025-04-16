@@ -29,7 +29,7 @@ export default function ContactPage() {
         title: "送信完了",
         description: "お問い合わせありがとうございます。送信が完了しました。",
       });
-    } catch (_error) {
+    } catch (error) {
       toast({
         title: "通信に失敗",
         description: "時間を置いて再度お試しください。",
