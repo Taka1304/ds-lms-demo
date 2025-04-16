@@ -8,7 +8,7 @@ type RootLayoutProps = {
 export default function RootLayout({ children }: RootLayoutProps) {
   return (
     <>
-      <main>{children}</main>
+      {children}
       <Toaster />
     </>
   );

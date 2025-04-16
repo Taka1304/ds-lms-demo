@@ -8,24 +8,33 @@ import { useToast } from "@/hooks/use-toast";
 export default function ContactPage() {
   const { toast } = useToast();
 
-  const handleClick = () => {
-    toast({
-      title: "送信完了",
-      description: "お問い合わせありがとうございます。送信が完了しました。",
-    });
-  };
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     const form = e.currentTarget;
 
-    fetch(form.action, {
-      method: "POST",
-      body: new FormData(form),
-      mode: "no-cors",
-    }).then(() => {
-      form.reset();
+    const toastId = toast({
+      title: "送信しています...",
     });
+
+    try {
+      await fetch(form.action, {
+        method: "POST",
+        body: new FormData(form),
+        mode: "no-cors",
+      });
+      form.reset();
+
+      toast({
+        title: "送信完了",
+        description: "お問い合わせありがとうございます。送信が完了しました。",
+      });
+    } catch (error) {
+      toast({
+        title: "通信に失敗",
+        description: "時間を置いて再度お試しください。",
+      });
+    }
   };
 
   return (
@@ -121,7 +130,7 @@ export default function ContactPage() {
           </div>
           {/* 送信ボタン */}
           <div className="my-5">
-            <Button onClick={handleClick} type="submit" variant="default" className="mb-5">
+            <Button type="submit" variant="default" className="mb-5">
               送信
             </Button>
           </div>
