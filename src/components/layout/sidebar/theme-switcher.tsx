@@ -1,6 +1,6 @@
 "use client";
 
-import { Moon, Sun } from "lucide-react";
+import { Check, Moon, Sun } from "lucide-react";
 import { useTheme } from "next-themes";
 
 import {
@@ -12,7 +12,7 @@ import {
 import { SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar } from "@/components/ui/sidebar";
 
 export function ThemeSwitcher() {
-  const { setTheme } = useTheme();
+  const { setTheme, theme } = useTheme();
   const { state } = useSidebar();
   const isCollapsed = state === "collapsed";
 
@@ -28,9 +28,15 @@ export function ThemeSwitcher() {
             </SidebarMenuButton>
           </DropdownMenuTrigger>
           <DropdownMenuContent align={isCollapsed ? "center" : "end"} side={isCollapsed ? "right" : "bottom"}>
-            <DropdownMenuItem onClick={() => setTheme("light")}>ライト</DropdownMenuItem>
-            <DropdownMenuItem onClick={() => setTheme("dark")}>ダーク</DropdownMenuItem>
-            <DropdownMenuItem onClick={() => setTheme("system")}>システム</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => setTheme("light")} className="flex justify-between">
+              ライト{theme === "light" && <Check className="h-4 w-4 text-foreground" />}
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => setTheme("dark")} className="flex justify-between">
+              ダーク{theme === "dark" && <Check className="h-4 w-4 text-foreground" />}
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => setTheme("system")} className="flex justify-between">
+              システム{theme === "system" && <Check className="h-4 w-4 text-foreground" />}
+            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       </SidebarMenuItem>
