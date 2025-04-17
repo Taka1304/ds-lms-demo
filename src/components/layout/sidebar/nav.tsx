@@ -1,6 +1,7 @@
 "use client";
 
 import type { NavItem } from "@/components/layout/sidebar/const";
+import { Badge } from "@/components/ui/badge";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import {
   SidebarGroup,
@@ -36,6 +37,7 @@ export function NavMain({ items, label }: { items: NavItem[]; label: string }) {
                       <span className="truncate min-w-full text-primary">{item.ja || item.title}</span>
                     </div>
                   </div>
+                  {item.badge && <Badge>{item.badge}</Badge>}
                   <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
                 </SidebarMenuButton>
               </CollapsibleTrigger>
