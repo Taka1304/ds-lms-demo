@@ -35,6 +35,12 @@ enum ResultStatus {
   TLE // Time Limit Exceeded, タイムアウト
 }
 
+enum SubmissionStatus {
+  NOT_SUBMITTED // 未提出
+  PENDING // 未評価
+  EVALUATED // 評価済み
+}
+
 model User {
   id            String      @id @default(cuid())
   name          String?
@@ -220,18 +226,16 @@ model TestCase {
 }
 
 model Submission {
-  id            String    @id @default(cuid())
-  userId        String
-  problemId     String
-  code          String
-  language      String    @default("python3")
-  status        String // "PENDING", "EVALUATED"
-  executionTime Float? // 実行時間（ミリ秒）
-  memoryUsage   Int? // メモリ使用量（MB）
-  errorMessage  String? // エラーメッセージ
-  score         Float? // 得点
-  createdAt     DateTime  @default(now())
-  evaluatedAt   DateTime? // 評価日時
+  id          String    @id @default(cuid())
+  userId      String
+  problemId   String
+  code        String
+  language    String    @default("python3")
+  status      String // "PENDING", "EVALUATED"
+  score       Float? // 得点
+  createdAt   DateTime  @default(now())
+  evaluatedAt DateTime? // 評価日時
+  startedAt   DateTime? // 挑戦開始日時
 
   // Relations
   user       User         @relation(fields: [userId], references: [id])
@@ -239,7 +243,7 @@ model Submission {
   TestResult TestResult[]
 
   @@index([userId, problemId, status])
-  @@index([problemId, status, executionTime])
+  @@index([problemId, status])
 }
 
 model TestResult {
@@ -250,6 +254,8 @@ model TestResult {
   actualOutput String? // 実際の出力
   errorLog     String? // エラーログ（必要な場合）
   createdAt    DateTime     @default(now())
+  memoryUsage  Int? // メモリ使用量（KB単位）
+  timeUsage    Float? // 実行時間（ミリ秒単位）
 
   // Relations
   submission Submission @relation(fields: [submissionId], references: [id])
