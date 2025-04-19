@@ -31,7 +31,7 @@ export default function ProgrammingInterface({ problem }: Props) {
   const codeRef = useRef<string | null>(null);
 
   const handleEditorChange = (value: string | undefined) => {
-    codeRef.current = value || "";
+    codeRef.current = value || problem.defaultCode || "";
   };
 
   const onSubmitCode = async () => {
@@ -72,7 +72,7 @@ export default function ProgrammingInterface({ problem }: Props) {
                   <ActionBar
                     isRunning={isRunning}
                     isReady={isReady}
-                    onRunCode={() => runCode(codeRef.current || "")}
+                    onRunCode={() => runCode(codeRef.current || problem.defaultCode || "")}
                     recentHistory={executionHistories[0]}
                     onSubmitCode={onSubmitCode}
                   />
@@ -89,7 +89,7 @@ export default function ProgrammingInterface({ problem }: Props) {
                   <TabsContent value="editor" className="flex-1 overflow-hidden">
                     {/* TODO: themeのカスタマイズ */}
                     <Editor
-                      value={codeRef.current || ""}
+                      value={codeRef.current || problem.defaultCode || ""}
                       language="python"
                       theme="vs-dark"
                       onChange={handleEditorChange}
@@ -111,7 +111,7 @@ export default function ProgrammingInterface({ problem }: Props) {
                       <ResizablePanel defaultSize={50} minSize={30}>
                         {/* TODO: themeのカスタマイズ */}
                         <Editor
-                          value={codeRef.current || ""}
+                          value={codeRef.current || problem.defaultCode || ""}
                           language="python"
                           theme="vs-dark"
                           onChange={handleEditorChange}
