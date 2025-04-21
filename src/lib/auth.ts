@@ -34,6 +34,7 @@ export const authOptions: NextAuthOptions = {
         token.email = user.email;
         token.id = user.id;
         token.role = user.role;
+        token.picture = user.image;
       }
       return token;
     },
@@ -42,6 +43,7 @@ export const authOptions: NextAuthOptions = {
         session.user.id = token.id;
         session.user.role = token.role;
         session.user.displayName = token.displayName;
+        session.user.image = token.picture;
       }
       return session;
     },

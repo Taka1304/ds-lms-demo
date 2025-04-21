@@ -12,6 +12,7 @@ import { use } from "react";
 // TODO: dummy
 const problem: Problem = {
   id: "1",
+  courseId: "1",
   title: "Two Sum",
   slug: "two-sum",
   timeLimit: 3,
@@ -35,6 +36,7 @@ const problem: Problem = {
 - 入力は全て整数である
 - 1 <= nums.length <= 10^4
 `,
+  defaultCode: "",
   submitCount: 100,
   acceptCount: 80,
 };

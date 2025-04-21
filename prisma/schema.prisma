@@ -27,6 +27,20 @@ enum SystemRole {
   USER
 }
 
+enum ResultStatus {
+  AC // All Correct, 全て正解
+  WA // Wrong Answer, 不正解
+  CE // Compile Error, コンパイルエラー
+  RE // Runtime Error, 実行時エラー
+  TLE // Time Limit Exceeded, タイムアウト
+}
+
+enum SubmissionStatus {
+  NOT_SUBMITTED // 未提出
+  PENDING // 未評価
+  EVALUATED // 評価済み
+}
+
 model User {
   id            String      @id @default(cuid())
   name          String?
@@ -146,12 +160,14 @@ model UserProgress {
 }
 
 model Problem {
-  id              String @id @default(cuid())
+  id              String  @id @default(cuid())
   title           String
-  slug            String @unique // URL用のスラッグ
+  slug            String  @unique // URL用のスラッグ
   description     String // 問題の説明（Markdown）
   difficultyLevel Int // 難易度（1-5等）
   constraints     String // 制約条件（時間、メモリ、入力値の範囲など）
+  courseId        String
+  defaultCode     String? // デフォルトで回答欄に入力されているコード
 
   // 実行制限
   timeLimit   Int // ミリ秒単位
@@ -175,11 +191,11 @@ model Problem {
   // Relations
   createdBy   User                @relation("ProblemCreator", fields: [createdById], references: [id])
   updatedBy   User                @relation("ProblemUpdater", fields: [updatedById], references: [id])
+  course      Course              @relation(fields: [courseId], references: [id])
   submissions Submission[]
   testCases   TestCase[]
   tags        ProblemTag[]
   sampleCodes ProblemSampleCode[]
-  Course      Course[]
 }
 
 model ProblemSampleCode {
@@ -206,29 +222,47 @@ model TestCase {
   createdAt   DateTime @default(now())
 
   // Relations
-  problem Problem @relation(fields: [problemId], references: [id])
+  problem    Problem      @relation(fields: [problemId], references: [id])
+  TestResult TestResult[]
 }
 
 model Submission {
-  id            String   @id @default(cuid())
-  userId        String
-  problemId     String
-  code          String
-  language      String   @default("python3")
-  status        String // "accepted", "wrong_answer", "time_limit_exceeded", etc.
-  executionTime Float? // 実行時間（ミリ秒）
-  memoryUsage   Int? // メモリ使用量（MB）
-  errorMessage  String? // エラーメッセージ
-  testResults   Json? // 各テストケースの結果
-  score         Float? // 得点（必要な場合）
-  createdAt     DateTime @default(now())
+  id          String    @id @default(cuid())
+  userId      String
+  problemId   String
+  code        String
+  language    String    @default("python3")
+  status      String // "PENDING", "EVALUATED"
+  score       Float? // 得点
+  createdAt   DateTime  @default(now())
+  evaluatedAt DateTime? // 評価日時
+  startedAt   DateTime? // 挑戦開始日時
 
   // Relations
-  user    User    @relation(fields: [userId], references: [id])
-  problem Problem @relation(fields: [problemId], references: [id])
+  user       User         @relation(fields: [userId], references: [id])
+  problem    Problem      @relation(fields: [problemId], references: [id])
+  TestResult TestResult[]
 
   @@index([userId, problemId, status])
-  @@index([problemId, status, executionTime])
+  @@index([problemId, status])
+}
+
+model TestResult {
+  id           String       @id @default(cuid())
+  submissionId String
+  testCaseId   String
+  status       ResultStatus
+  actualOutput String? // 実際の出力
+  errorLog     String? // エラーログ（必要な場合）
+  createdAt    DateTime     @default(now())
+  memoryUsage  Int? // メモリ使用量（KB単位）
+  timeUsage    Float? // 実行時間（ミリ秒単位）
+
+  // Relations
+  submission Submission @relation(fields: [submissionId], references: [id])
+  testCase   TestCase   @relation(fields: [testCaseId], references: [id])
+
+  @@unique([submissionId, testCaseId])
 }
 
 model Tag {
