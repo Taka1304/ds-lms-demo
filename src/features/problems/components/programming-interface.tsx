@@ -1,13 +1,14 @@
 "use client";
 
+import ThemeEditor from "@/components/ui/editor";
 import { MarkdownViewer } from "@/components/ui/markdown";
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/components/ui/resizable";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ActionBar } from "@/features/problems/components/action-bar";
 import { client } from "@/lib/hono";
-import { Editor } from "@monaco-editor/react";
 import type { InferResponseType } from "hono";
 import { Code, FileText, SquareSplitHorizontal } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useRef, useState } from "react";
 import { PythonProvider } from "react-py";
 import type { Packages } from "react-py/dist/types/Packages";
@@ -15,7 +16,7 @@ import { ConsoleView } from "../components/console-view";
 import { PythonExecutionProvider } from "../components/python-execution-provider";
 
 const packages: Packages = {
-  official: ["numpy"],
+  official: ["numpy", "pandas", "matplotlib"],
   micropip: [],
 };
 
@@ -29,14 +30,31 @@ export default function ProgrammingInterface({ problem }: Props) {
   const [consoleExpanded, setConsoleExpanded] = useState(true);
   const [activeTab, setActiveTab] = useState("split");
   const codeRef = useRef<string | null>(null);
+  const router = useRouter();
 
   const handleEditorChange = (value: string | undefined) => {
     codeRef.current = value || problem.defaultCode || "";
   };
 
   const onSubmitCode = async () => {
-    // TODO: 提出処理
-    // await client.api.courses.problems[":problem_id"].submit.post({
+    // TODO: トースト表示
+
+    const res = await client.api.courses.problems[":problem_id"].submit.$post({
+      param: {
+        problem_id: problem.id,
+      },
+      json: {
+        code: codeRef.current || problem.defaultCode || "",
+      },
+    });
+
+    if (res.status !== 200) {
+      console.error("Error submitting code:", res.statusText);
+      return;
+    }
+    const submissionId = (await res.json()).id;
+    console.log("Submission ID:", submissionId);
+    router.push(`/students/courses/${problem.courseId}/${problem.id}/${submissionId}`);
   };
 
   return (
@@ -88,10 +106,9 @@ export default function ProgrammingInterface({ problem }: Props) {
                   </TabsContent>
                   <TabsContent value="editor" className="flex-1 overflow-hidden">
                     {/* TODO: themeのカスタマイズ */}
-                    <Editor
+                    <ThemeEditor
                       value={codeRef.current || problem.defaultCode || ""}
                       language="python"
-                      theme="vs-dark"
                       onChange={handleEditorChange}
                       className="h-full"
                     />
@@ -110,10 +127,9 @@ export default function ProgrammingInterface({ problem }: Props) {
                       <ResizableHandle withHandle />
                       <ResizablePanel defaultSize={50} minSize={30}>
                         {/* TODO: themeのカスタマイズ */}
-                        <Editor
+                        <ThemeEditor
                           value={codeRef.current || problem.defaultCode || ""}
                           language="python"
-                          theme="vs-dark"
                           onChange={handleEditorChange}
                           className="h-full"
                         />
