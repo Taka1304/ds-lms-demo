@@ -4,7 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Progress } from "@/components/ui/progress";
 import { Separator } from "@/components/ui/separator";
 import { SidebarTrigger } from "@/components/ui/sidebar";
-import { Check, TriangleAlert } from "lucide-react";
+import { Check } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { use } from "react";
@@ -97,11 +97,6 @@ export default function ProblemList({ params }: { params: Promise<{ courseId: st
               </CardDescription>
             </CardHeader>
             <CardContent className="p-6 w-1/3 flex flex-col justify-center">
-              {/* TODO: ヒントボタンの挙動実装 */}
-              <Button className="bg-white border border-[#FF0000] rounded-none text-[#FF0000] w-full mb-3 text-xs min-h-5 max-h-7 hover:bg-gray-100 hover:font-bold">
-                <TriangleAlert size={16} />
-                <span>ヒント</span>
-              </Button>
               <div className="relative">
                 <Button asChild size="sm" className="w-full rounded-sm h-14 font-bold text-lg bg-[#5BBBE1] drop-shadow">
                   <Link href={`/students/courses/${courseId}/${problem.problemId}`}>挑戦する</Link>
