@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
 import { Providers } from "@/app/providers";
+import { ThemeProvider } from "@/components/layout/theme-provider";
 
 const notoSans = localFont({
   src: "./fonts/NotoSansJP-Medium.ttf",
@@ -11,7 +12,7 @@ const notoSans = localFont({
 
 export const metadata: Metadata = {
   title: "Sigza",
-  description: "Learn to code with Sigza",
+  description: "プログラミング学習を支援するアプリケーション",
 };
 
 export default function RootLayout({
@@ -20,11 +21,13 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="ja">
+    <html lang="ja" suppressHydrationWarning>
       <body className={`${notoSans.variable} antialiased`}>
-        <Providers>
-          <main>{children}</main>
-        </Providers>
+        <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
+          <Providers>
+            <main>{children}</main>
+          </Providers>
+        </ThemeProvider>
       </body>
     </html>
   );
