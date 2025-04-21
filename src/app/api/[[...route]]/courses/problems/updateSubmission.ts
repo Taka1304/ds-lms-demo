@@ -17,6 +17,7 @@ export const updateSubmission = factory.createHandlers(
   zValidator(
     "param",
     z.object({
+      problem_id: z.string().cuid(),
       submission_id: z.string().cuid(),
     }),
   ),
