@@ -28,7 +28,8 @@ export function PythonExecutionProvider({ testCases, timeLimit, children }: Pyth
   const { runPython, sendInput, isRunning, isReady, isAwaitingInput, stderr, stdout } = usePython();
   const [executionHistories, setExecutionHistories] = useState<ExecutionHistory[]>([]);
   const [activeHistoryIndex, setActiveHistoryIndex] = useState(0);
-  const nextInputRef = useRef<string>("");
+  const nextInputRef = useRef<string[]>([]);
+  const nextInputIndexRef = useRef(0);
   const stdoutRef = useRef<string>("");
   const stderrRef = useRef<string>("");
 
@@ -47,7 +48,11 @@ export function PythonExecutionProvider({ testCases, timeLimit, children }: Pyth
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
     if (isAwaitingInput) {
-      sendInput(nextInputRef.current);
+      const inputText =
+        nextInputRef.current.length < nextInputIndexRef.current ? "" : nextInputRef.current[nextInputIndexRef.current];
+
+      sendInput(inputText);
+      nextInputIndexRef.current += 1;
     }
   }, [isAwaitingInput, nextInputRef.current, sendInput]);
 
@@ -70,7 +75,8 @@ export function PythonExecutionProvider({ testCases, timeLimit, children }: Pyth
 
     for (const [index, testCase] of testCases.entries()) {
       // 入力を設定
-      nextInputRef.current = testCase.input;
+      nextInputRef.current = testCase.input.split("\r\n");
+      nextInputIndexRef.current = 0;
 
       // コードを実行
       const result = await executeTestCase(code, testCase, index);
