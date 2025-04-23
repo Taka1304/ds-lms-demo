@@ -87,7 +87,7 @@ export function PythonExecutionProvider({ testCases, timeLimit, children }: Pyth
         const currentHistory = updatedHistories[0]; // 最新の履歴を取得
 
         // すでに結果が追加されている場合は何もしない
-        const isAlreadyProcessed = currentHistory.results.some((result) => result.id === index + 1);
+        const isAlreadyProcessed = currentHistory.results.some((result) => result.index === index + 1);
         if (isAlreadyProcessed) return prevHistories;
 
         currentHistory.results.push(result);
@@ -130,7 +130,8 @@ export function PythonExecutionProvider({ testCases, timeLimit, children }: Pyth
         stdoutRef.current.trim() === testCase.output.trim() ? "AC" : "WA";
 
       return {
-        id: index + 1,
+        id: testCase.id,
+        index: index + 1,
         status: status,
         input: testCase.input,
         expectedOutput: testCase.output,
@@ -140,7 +141,8 @@ export function PythonExecutionProvider({ testCases, timeLimit, children }: Pyth
     } catch (error) {
       if (error instanceof Error && error.message === "Execution timed out") {
         return {
-          id: index + 1,
+          id: testCase.id,
+          index: index + 1,
           status: "TLE" as const,
           input: testCase.input,
           expectedOutput: testCase.output,
@@ -149,7 +151,8 @@ export function PythonExecutionProvider({ testCases, timeLimit, children }: Pyth
         };
       }
       return {
-        id: index + 1,
+        id: testCase.id,
+        index: index + 1,
         status: "RE" as const,
         input: testCase.input,
         expectedOutput: testCase.output,

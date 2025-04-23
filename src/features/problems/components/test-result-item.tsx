@@ -11,7 +11,7 @@ export function TestResultItem({ result }: TestResultItemProps) {
   return (
     <div className="rounded border p-3">
       <div className="flex items-center justify-between mb-2">
-        <h3 className="text-sm font-medium">テストケース {result.id}</h3>
+        <h3 className="text-sm font-medium">テストケース {result.index}</h3>
         <div className="flex items-center gap-1">
           <div className={`h-2 w-2 rounded-full ${statusInfo.color}`} />
           <span className={`text-xs font-medium ${statusInfo.text}`}>{statusInfo.label}</span>

@@ -19,7 +19,7 @@ export default async function ({ params }: { params: Promise<{ submissionId: str
       <h1 className="text-2xl font-bold">{submission.problem.title}</h1>
       <Card className="p-4 h-[300px] flex flex-col">
         <CardTitle className="text-lg font-bold">提出されたコード</CardTitle>
-        <CardContent className="flex-1 overflow-hidden">
+        <CardContent className="flex-1 overflow-hidden p-4">
           <ThemeEditor
             className="w-full h-full"
             defaultValue={submission.code}
@@ -30,7 +30,15 @@ export default async function ({ params }: { params: Promise<{ submissionId: str
           />
         </CardContent>
       </Card>
-      <EvaluationResultContainer submission={submission} />
+      {
+        submission.status === "PENDING" ? (
+          <EvaluationResultContainer submission={submission} />
+        ): (
+          // TODO: 採点済みの場合の結果を表示
+          <>
+          </>
+        )
+      }
     </div>
   );
 }
