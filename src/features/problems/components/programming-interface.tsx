@@ -16,7 +16,7 @@ import { ConsoleView } from "../components/console-view";
 import { PythonExecutionProvider } from "../components/python-execution-provider";
 
 const packages: Packages = {
-  official: ["numpy", "pandas", "matplotlib"],
+  official: ["numpy", "pandas"],
   micropip: [],
 };
 
@@ -29,11 +29,11 @@ type Props = {
 export default function ProgrammingInterface({ problem }: Props) {
   const [consoleExpanded, setConsoleExpanded] = useState(true);
   const [activeTab, setActiveTab] = useState("split");
-  const codeRef = useRef<string | null>(null);
+  const codeRef = useRef<string | null>(problem.defaultCode || null);
   const router = useRouter();
 
   const handleEditorChange = (value: string | undefined) => {
-    codeRef.current = value || problem.defaultCode || "";
+    codeRef.current = value || "";
   };
 
   const onSubmitCode = async () => {
@@ -44,7 +44,7 @@ export default function ProgrammingInterface({ problem }: Props) {
         problem_id: problem.id,
       },
       json: {
-        code: codeRef.current || problem.defaultCode || "",
+        code: codeRef.current || "",
       },
     });
 
@@ -53,7 +53,6 @@ export default function ProgrammingInterface({ problem }: Props) {
       return;
     }
     const submissionId = (await res.json()).id;
-    console.log("Submission ID:", submissionId);
     router.push(`/students/courses/${problem.courseId}/${problem.id}/${submissionId}`);
   };
 
@@ -90,7 +89,7 @@ export default function ProgrammingInterface({ problem }: Props) {
                   <ActionBar
                     isRunning={isRunning}
                     isReady={isReady}
-                    onRunCode={() => runCode(codeRef.current || problem.defaultCode || "")}
+                    onRunCode={() => runCode(codeRef.current || "")}
                     recentHistory={executionHistories[0]}
                     onSubmitCode={onSubmitCode}
                   />
