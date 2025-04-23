@@ -63,7 +63,7 @@ export function PythonExecutionProvider({ testCases, timeLimit, children }: Pyth
     setExecutionHistories((prevHistories) =>
       [
         {
-          id: prevHistories[0].id + 1,
+          id: prevHistories[0]?.id ?? 0 + 1,
           timestamp: dayjs().format("HH:mm:ss"),
           results: [],
           isRunning: true,
