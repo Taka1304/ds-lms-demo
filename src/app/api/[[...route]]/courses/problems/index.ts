@@ -12,7 +12,7 @@ const problems = new Hono()
   .post("/", ...createProblem)
   .get("/:problem_id", ...getProblem)
   .get("/submission/:submission_id", ...getSubmission)
-  .patch("/:problem_id/:submission_id", ...updateSubmission)
+  .patch("/submission/:submission_id", ...updateSubmission)
   .post("/:problem_id/submit", ...submitProblem);
 
 export default problems;
