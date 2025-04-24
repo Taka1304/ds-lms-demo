@@ -1,13 +1,13 @@
 "use client";
 
 import { PythonExecutionProvider } from "@/features/problems/components/python-execution-provider";
-import { getStatusInfo } from "@/features/problems/utils";
-import { useToast } from "@/hooks/use-toast";
+import { TestResultItem } from "@/features/problems/components/test-result-item";
 import { client } from "@/lib/hono";
 import type { InferResponseType } from "hono";
-import { useState } from "react";
+import { useRef } from "react";
 import { PythonProvider } from "react-py";
 import type { Packages } from "react-py/dist/types/Packages";
+import { toast } from "sonner";
 
 const req = client.api.courses.problems.submission[":submission_id"].$get;
 
@@ -28,13 +28,10 @@ type TestResult = {
 };
 
 const EvaluationResultContainer = ({ submission }: ContainerProps) => {
-  const toast = useToast();
-  const [isSubmissionUpdated, setIsSubmissionUpdated] = useState(false);
+  const submissionRef = useRef(false);
 
   const updateSubmission = async (testResults: TestResult[], score: number) => {
-    toast.toast({
-      title: "採点結果を更新しています...",
-    });
+    const toastId = toast.loading("採点結果を更新しています...");
     const res = await client.api.courses.problems.submission[":submission_id"].$patch({
       param: { submission_id: submission.id },
       json: {
@@ -45,15 +42,14 @@ const EvaluationResultContainer = ({ submission }: ContainerProps) => {
     });
 
     if (res.status !== 200) {
-      toast.toast({
-        title: "採点結果の更新に失敗しました",
-        variant: "destructive",
+      toast.error("採点結果の更新に失敗しました", {
+        id: toastId,
       });
-      console.error("Error updating submission:", res.statusText);
+      console.error("Error updating submission:", await res.json());
       return;
     }
-    toast.toast({
-      title: "採点結果を更新しました",
+    toast.success("採点結果を更新しました", {
+      id: toastId,
     });
   };
 
@@ -62,7 +58,7 @@ const EvaluationResultContainer = ({ submission }: ContainerProps) => {
       <PythonExecutionProvider testCases={submission.problem.testCases} timeLimit={submission.problem.timeLimit * 1000}>
         {({ isRunning, isReady, executionHistories, runCode }) => {
           if (isReady && executionHistories.length < 1) runCode(submission.code); // 初回実行
-          if (!isRunning && executionHistories.length > 0 && !isSubmissionUpdated) {
+          if (!isRunning && executionHistories.length > 0 && !submissionRef.current) {
             const results = executionHistories[0].results.map((result) => ({
               testCaseId: result.id,
               status: result.status,
@@ -75,26 +71,20 @@ const EvaluationResultContainer = ({ submission }: ContainerProps) => {
               100;
 
             updateSubmission(results, score);
-            setIsSubmissionUpdated(true); // フラグを更新して再実行を防ぐ
+            submissionRef.current = true; // 2回目以降の実行を防ぐ
           }
 
           return (
             <>
               {executionHistories.length > 0 &&
                 executionHistories[0].results.map((result, index) => {
-                  const statusInfo = getStatusInfo(result.status);
-
                   return (
-                    <div
+                    <TestResultItem
                       key={result.id}
-                      className="flex items-center justify-between gap-2 p-4 border-b border-gray-200"
-                    >
-                      <h3 className="text-lg font-bold">Test Case {index + 1}</h3>
-                      <div className="flex items-center gap-1">
-                        <div className={`h-2 w-2 rounded-full ${statusInfo.color}`} />
-                        <span className={`text-xs font-medium ${statusInfo.text}`}>{statusInfo.label}</span>
-                      </div>
-                    </div>
+                      index={index}
+                      result={result}
+                      testCase={{ input: result.input, output: result.expectedOutput }}
+                    />
                   );
                 })}
             </>

@@ -3,6 +3,7 @@ import localFont from "next/font/local";
 import "./globals.css";
 import { Providers } from "@/app/providers";
 import { ThemeProvider } from "@/components/layout/theme-provider";
+import { Toaster } from "@/components/ui/sonner";
 
 const notoSans = localFont({
   src: "./fonts/NotoSansJP-Medium.ttf",
@@ -25,7 +26,10 @@ export default function RootLayout({
       <body className={`${notoSans.variable} antialiased`}>
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
           <Providers>
-            <main>{children}</main>
+            <main>
+              {children}
+              <Toaster richColors />
+            </main>
           </Providers>
         </ThemeProvider>
       </body>
