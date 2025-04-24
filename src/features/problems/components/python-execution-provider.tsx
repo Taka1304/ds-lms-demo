@@ -126,8 +126,23 @@ export function PythonExecutionProvider({ testCases, timeLimit, children }: Pyth
       await waitForOutput();
 
       // 出力を評価
-      const status: "AC" | "WA" | "CE" | "RE" | "TLE" =
-        stdoutRef.current.trim() === testCase.output.trim() ? "AC" : "WA";
+      let status: "AC" | "WA" | "CE" | "RE" | "TLE" = "RE";
+
+      if (stdoutRef.current.trim() === "" && stderrRef.current.trim() === "") {
+        status = "RE"; // 実行エラー
+      } else if (
+        testCase.output.length > 0 &&
+        stdoutRef.current.length > 0 &&
+        stdoutRef.current.trim() === testCase.output.trim()
+      ) {
+        status = "AC"; // 正解
+      } else if (
+        testCase.output.length > 0 &&
+        stdoutRef.current.length > 0 &&
+        stdoutRef.current.trim() !== testCase.output.trim()
+      ) {
+        status = "WA"; // 不正解
+      }
 
       return {
         id: testCase.id,
