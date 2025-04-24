@@ -72,7 +72,7 @@ export function ConsoleView({
               {currentHistory.results.map((result) => (
                 <TestResultItem
                   key={result.id}
-                  index={result.index + 1}
+                  index={result.index}
                   result={result}
                   testCase={{ input: result.input, output: result.expectedOutput }}
                 />
