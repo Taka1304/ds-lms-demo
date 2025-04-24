@@ -28,6 +28,11 @@ export const getSubmission = factory.createHandlers(
     try {
       const data = await prisma.submission.findFirst({
         include: {
+          TestResult: {
+            include: {
+              testCase: true,
+            },
+          },
           problem: {
             include: {
               tags: true,
