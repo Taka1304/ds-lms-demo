@@ -1,6 +1,7 @@
 import { Card, CardContent, CardTitle } from "@/components/ui/card";
 import ThemeEditor from "@/components/ui/editor";
 import EvaluationResultContainer from "@/features/problems/components/evaluation-result";
+import { TestResultItem } from "@/features/problems/components/test-result-item";
 import { client } from "@/lib/hono";
 import { notFound } from "next/navigation";
 
@@ -36,6 +37,9 @@ export default async function ({ params }: { params: Promise<{ submissionId: str
         ): (
           // TODO: 採点済みの場合の結果を表示
           <>
+            {submission.TestResult.map((result, index) => (
+              <TestResultItem key={result.id} index={index + 1} result={result} testCase={result.testCase} />
+            ))}
           </>
         )
       }
