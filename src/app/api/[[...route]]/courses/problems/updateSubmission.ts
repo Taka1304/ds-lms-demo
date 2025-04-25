@@ -43,28 +43,40 @@ export const updateSubmission = factory.createHandlers(
   ),
   async (c) => {
     const { submission_id } = c.req.valid("param");
-    const json = c.req.valid("json");
+    const { TestResult, ...json }= c.req.valid("json");
     const session = c.get("session");
 
     try {
+      const upsertTestResults = TestResult.map((result) => {
+        return prisma.testResult.upsert({
+          where: {
+            submissionId_testCaseId: {
+              submissionId: submission_id,
+              testCaseId: result.testCaseId,
+            },
+          },
+          create: {
+            testCaseId: result.testCaseId,
+            submissionId: submission_id,
+            status: result.status,
+            actualOutput: result.output,
+            errorLog: result.error ?? null,
+          },
+          update: {
+            status: result.status,
+            actualOutput: result.output,
+            errorLog: result.error ?? null,
+          },
+        });
+      });
+      await prisma.$transaction(upsertTestResults);
+
       const data = await prisma.submission.update({
         where: {
           id: submission_id,
           userId: session.user.role === "ADMIN" ? undefined : session.user.id,
         },
-        data: {
-          ...json,
-          TestResult: {
-            createMany: {
-              data: json.TestResult.map((result) => ({
-                testCaseId: result.testCaseId,
-                status: result.status,
-                actualOutput: result.output,
-                errorLog: result.error ?? null,
-              })),
-            },
-          },
-        },
+        data: json,
       });
       return c.json(data);
     } catch (error) {

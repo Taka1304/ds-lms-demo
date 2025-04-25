@@ -70,7 +70,12 @@ export function ConsoleView({
           ) : (
             <div className="space-y-4">
               {currentHistory.results.map((result) => (
-                <TestResultItem key={result.id} result={result} />
+                <TestResultItem
+                  key={result.id}
+                  index={result.index}
+                  result={result}
+                  testCase={{ input: result.input, output: result.expectedOutput }}
+                />
               ))}
             </div>
           )}
