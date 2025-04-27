@@ -1,62 +1,31 @@
-"use client";
 import { Button } from "@/components/ui/button";
+// import ProblemCard from "@/features/courses/[courseId]/components/card-content";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Separator } from "@/components/ui/separator";
 import { SidebarTrigger } from "@/components/ui/sidebar";
-import { Check } from "lucide-react";
+import { client } from "@/lib/hono";
 import Image from "next/image";
 import Link from "next/link";
-import { use } from "react";
+import { notFound } from "next/navigation";
 
-type Problem = {
-  id: string;
-  title: string;
-  learner: number; // 学習者数
-  accuracy: number; // 正答率
-  average: number; // 平均点
-  problemId: string; // 問題のID(cuid)
-  completed: boolean; // 問題を解いたかどうか
-};
+export default async function ProblemList({ params }: { params: Promise<{ courseId: string }> }) {
+  const { courseId } = await params;
+  const res = await client.api.courses[":course_id"].$get({ param: { course_id: courseId } });
 
-function getProblems(): Problem[] {
-  /*TODO:
-    - この関数の引数にcourseIdを実装
-    - サーバーサイドからコースの問題データをフェッチしallProblemsに格納
-   */
-
-  // ダミーデータ
-  const allProblems: Problem[] = [];
-  for (let i = 0; i < 10; i++) {
-    allProblems.push({
-      id: i.toString(),
-      title: `${i}`,
-      learner: 1000,
-      accuracy: Math.min(90, 100), // 最大値 100
-      average: Math.min(80, 100), // 最大値 100
-      problemId: "uuid",
-      completed: i % 2 === 0,
-    });
+  if (res.status === 404) return notFound();
+  if (!res.ok) {
+    return (
+      <div className="p-8">
+        <h1>問題の取得に失敗しました。</h1>
+        <p>しばらくしてからもう一度お試しください。</p>
+      </div>
+    );
   }
-  return allProblems;
-}
-
-function getProgressValues(problems: Problem[]): {
-  progress: number;
-  completedProblems: number;
-  totalProblems: number;
-} {
-  const totalProblems = problems.length;
-  const completedProblems = problems.filter((problem) => problem.completed).length;
-  const progress = (completedProblems / totalProblems) * 100;
-  return { progress, completedProblems, totalProblems };
-}
-
-export default function ProblemList({ params }: { params: Promise<{ courseId: string }> }) {
-  const { courseId } = use(params);
-
-  const allProblems = getProblems();
-  const { progress, completedProblems, totalProblems } = getProgressValues(allProblems);
+  const course = await res.json();
+  const allProblems = course.problems;
+  const progress = course.UserProgress.filter((p) => p.courseId === courseId).length;
+  const totalProblems = allProblems.length;
 
   return (
     <>
@@ -73,7 +42,7 @@ export default function ProblemList({ params }: { params: Promise<{ courseId: st
         <h2 className="text-sm font-bold text-black">問題集の進捗状況</h2>
         <div className="flex flex-row items-center space-x-4">
           <p className="text-center min-w-36 text-xl font-bold">
-            {completedProblems} / {totalProblems}問
+            {progress} / {totalProblems}問
           </p>
           <Image src={"/students/courses/AskingAQuestion2.png"} alt="AskingAQuestion2" width={96} height={102} />
           <Progress value={progress} />
@@ -91,21 +60,14 @@ export default function ProblemList({ params }: { params: Promise<{ courseId: st
             <CardHeader className="w-full justify-around">
               <CardTitle>問題: {problem.title}</CardTitle>
               <CardDescription className="flex flex-row items-around space-x-10">
-                <span>受験者数: {problem.learner}人</span>
-                <span>正解率: {problem.accuracy}%</span>
-                <span>平均スコア: {problem.average} 点</span>
+                <h1>a</h1>
               </CardDescription>
             </CardHeader>
             <CardContent className="p-6 w-1/3 flex flex-col justify-center">
               <div className="relative">
                 <Button asChild size="sm" className="w-full rounded-sm h-14 font-bold text-lg bg-[#5BBBE1] drop-shadow">
-                  <Link href={`/students/courses/${courseId}/${problem.problemId}`}>挑戦する</Link>
+                  <Link href={`/students/courses/${courseId}/${problem.id}`}>挑戦する</Link>
                 </Button>
-                {problem.completed ? (
-                  <div className="absolute inset-0 flex items-center justify-center opacity-90 hover:bg-green-200">
-                    <Check size={36} />
-                  </div>
-                ) : null}
               </div>
             </CardContent>
           </Card>
