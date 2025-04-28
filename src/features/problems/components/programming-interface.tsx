@@ -131,6 +131,11 @@ export default function ProgrammingInterface({ problem }: Props) {
                           language="python"
                           onChange={handleEditorChange}
                           className="h-full"
+                          onMount={(editor, monaco) => {
+                            editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.Enter, () => {
+                              runCode(codeRef.current || problem.defaultCode || "");
+                            });
+                          }}
                         />
                       </ResizablePanel>
                     </ResizablePanelGroup>
