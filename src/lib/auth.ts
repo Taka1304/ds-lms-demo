@@ -7,6 +7,10 @@ import { env } from "./env";
 // Check if the email is from the university
 const checkDomain = (email: string) => {
   const arrowDomains = ["@planet.kanazawa-it.ac.jp", "@st.kanazawa-it.ac.jp"];
+  const arrowEmails = env.ARROW_EMAILS.split(",");
+  if (arrowEmails.includes(email)) {
+    return true;
+  }
   return arrowDomains.some((domain) => email.endsWith(domain));
 };
 

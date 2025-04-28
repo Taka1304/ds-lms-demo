@@ -13,6 +13,7 @@ export const env = createEnv({
     AZURE_AD_B2C_PRIMARY_USER_FLOW: z.string(),
     SUPABASE_URL: z.string().url(),
     SUPABASE_KEY: z.string(),
+    ARROW_EMAILS: z.string(),
   },
   client: {
     NEXT_PUBLIC_APP_URL: z.string().url(),
@@ -31,5 +32,6 @@ export const env = createEnv({
     SUPABASE_URL: process.env.SUPABASE_URL,
     SUPABASE_KEY: process.env.SUPABASE_KEY,
     NEXT_PUBLIC_UMAMI_WEBSITE_ID: process.env.NEXT_PUBLIC_UMAMI_WEBSITE_ID,
+    ARROW_EMAILS: process.env.ARROW_EMAILS,
   },
 });
