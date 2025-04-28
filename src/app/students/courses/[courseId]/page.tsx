@@ -5,23 +5,28 @@ import { Progress } from "@/components/ui/progress";
 import { Separator } from "@/components/ui/separator";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { client } from "@/lib/hono";
+import { cookies } from "next/headers";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
 export default async function ProblemList({ params }: { params: Promise<{ courseId: string }> }) {
+  const cookieStore = await cookies();
+  const sessionToken = cookieStore.get("next-auth.session-token")?.value || "";
   const { courseId } = await params;
-  const res = await client.api.courses[":course_id"].$get({ param: { course_id: courseId } });
+  const res = await client.api.courses[":course_id"].$get(
+    { param: { course_id: courseId } },
+    {
+      headers: {
+        Cookie: `next-auth.session-token=${sessionToken}`,
+      },
+    },
+  );
 
-  if (res.status === 404) return notFound();
   if (!res.ok) {
-    return (
-      <div className="p-8">
-        <h1>問題の取得に失敗しました。</h1>
-        <p>しばらくしてからもう一度お試しください。</p>
-      </div>
-    );
+    notFound();
   }
+
   const course = await res.json();
   const allProblems = course.problems;
   const progress = course.UserProgress.filter((p) => p.courseId === courseId).length;
@@ -33,8 +38,7 @@ export default async function ProblemList({ params }: { params: Promise<{ course
         <div className="flex items-center gap-2 px-4">
           <SidebarTrigger className="-ml-1" />
           <Separator orientation="vertical" className="mr-2 h-4" />
-          {/* TODO:日本語化 */}
-          <h2 className="text-3xl font-bold">DATA ANALISYS</h2>
+          <h2 className="text-3xl font-bold">{course.title}</h2>
         </div>
       </header>
 
@@ -60,7 +64,7 @@ export default async function ProblemList({ params }: { params: Promise<{ course
             <CardHeader className="w-full justify-around">
               <CardTitle>問題: {problem.title}</CardTitle>
               <CardDescription className="flex flex-row items-around space-x-10">
-                <h1>a</h1>
+                <span>{problem.description}</span>
               </CardDescription>
             </CardHeader>
             <CardContent className="p-6 w-1/3 flex flex-col justify-center">
