@@ -4,7 +4,12 @@ import type { Problem } from "@/features/courses/[courseId]/types/problems";
 import Image from "next/image";
 import Link from "next/link";
 
-export default function ProblemCard({ problem, courseId }: { problem: Problem; courseId: string }) {
+interface Props {
+  problem: Problem;
+  courseId: string;
+}
+
+export default function ProblemCard({ problem, courseId }: Props) {
   return (
     <Card key={problem.id} className="flex flex-row space-around space-x-5">
       <Image
@@ -17,7 +22,7 @@ export default function ProblemCard({ problem, courseId }: { problem: Problem; c
       <CardHeader className="w-full justify-around">
         <CardTitle>問題: {problem.title}</CardTitle>
         <CardDescription className="flex flex-row items-around space-x-10">
-          <h1>a</h1>
+          <span>{problem.description}</span>
         </CardDescription>
       </CardHeader>
       <CardContent className="p-6 w-1/3 flex flex-col justify-center">
