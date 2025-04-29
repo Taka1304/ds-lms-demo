@@ -51,7 +51,7 @@ export default async function ProblemList({ params }: { params: Promise<{ course
           <Image src={"/students/courses/BeingVip.png"} alt="BeingVip" width={105} height={102} />
         </div>
         {allProblems.map((problem) => (
-          <ProblemCard courseId={courseId} problem={problem} />
+          <ProblemCard key={problem.id} courseId={courseId} problem={problem} />
         ))}
       </div>
     </>

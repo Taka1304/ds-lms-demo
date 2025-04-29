@@ -1,15 +1,18 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import type { Problem } from "@/features/courses/[courseId]/types/problems";
+import { client } from "@/lib/hono";
+import type { InferResponseType } from "hono";
 import Image from "next/image";
 import Link from "next/link";
 
-interface Props {
-  problem: Problem;
-  courseId: string;
-}
+const req = client.api.courses[":course_id"].$get;
 
-export default function ProblemCard({ problem, courseId }: Props) {
+export type Props = {
+  courseId: string;
+  problem: InferResponseType<typeof req, 200>["problems"][number];
+};
+
+export default function ProblemCard({ courseId, problem }: Props) {
   return (
     <Card key={problem.id} className="flex flex-row space-around space-x-5">
       <Image
