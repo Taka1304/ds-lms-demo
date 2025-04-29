@@ -39,7 +39,7 @@ export default async function ProblemList({ params }: { params: Promise<{ course
         </div>
       </header>
 
-      <div className="space-y-6 container mx-auto px-4 py-8 min-h-[100vh-60px]">
+      <div className="space-y-6 container mx-auto px-4 py-8 min-h-[calc(100vh-60px)]">
         <h2 className="text-sm font-bold text-black">問題集の進捗状況</h2>
         <div className="flex flex-row items-center space-x-4">
           <p className="text-center min-w-36 text-xl font-bold">
