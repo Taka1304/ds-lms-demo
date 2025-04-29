@@ -24,7 +24,7 @@ export default function ProblemCard({ courseId, problem }: Props) {
       />
       <CardHeader className="w-full justify-around">
         <CardTitle>問題: {problem.title}</CardTitle>
-        <CardDescription className="flex flex-row items-around space-x-10">
+        <CardDescription className="flex flex-row items-center space-x-10">
           <span>{problem.description}</span>
         </CardDescription>
       </CardHeader>
