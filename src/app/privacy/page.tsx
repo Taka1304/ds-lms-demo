@@ -14,7 +14,7 @@ export default function PrivacyPolicyPage() {
           </CardHeader>
           <CardContent>
             <p>
-              プロジェクト名：<strong>Data Dreamers</strong>
+              プロジェクト名：<strong>夢考房データサイエンスプロジェクト Data Dreamers（以下：Data Dreamers）</strong>
             </p>
             <p>
               代表者：<strong>吉本悠真</strong>
@@ -28,7 +28,7 @@ export default function PrivacyPolicyPage() {
           </CardHeader>
           <CardContent>
             <p>
-              当プロジェクトはユーザーが利用登録をするとき、氏名・メールアドレス・研修の進捗度・スコアなど
+              Data Dreamersはユーザーが利用登録をするとき、氏名・メールアドレス・研修の進捗度・スコアなど
               個人を特定できる情報を取得します。
             </p>
           </CardContent>
@@ -39,7 +39,8 @@ export default function PrivacyPolicyPage() {
             <CardTitle className="text-xl">３．個人情報の利用目的</CardTitle>
           </CardHeader>
           <CardContent>
-            <p>研修の進捗度、コンペのスコアなどの情報を分析し、ユーザー別の能力やLMSの改善に使用します。</p>
+            <p>研修の進捗度、コンペのスコアなどの情報を分析し、ユーザー別の能力やアプリ開発の改善に使用します。</p>
+            <p>その他の用途には使用いたしません。</p>
           </CardContent>
           <Separator />
 
@@ -49,60 +50,50 @@ export default function PrivacyPolicyPage() {
           </CardHeader>
           <CardContent>
             <p>
-              当プロジェクトは個人情報を正確かつ最新の内容に保つよう努め、不正なアクセス・改ざん・漏えい・
-              滅失及び毀損から保護するため全従業員及び役員に対して教育研修を実施しています。個人情報保護規程を
-              設け、現場での管理についても定期的に点検を行っています。
+              Data
+              Dreamersは個人情報を正確かつ最新の内容に保つよう努め、不正なアクセス・改ざん・漏えいが起こらないような設計を心がけています。
             </p>
           </CardContent>
           <Separator />
 
           {/* Section 5 */}
           <CardHeader>
-            <CardTitle className="text-xl">５．個人データの共同利用</CardTitle>
+            <CardTitle className="text-xl">5．個人データの第三者提供について</CardTitle>
           </CardHeader>
           <CardContent>
-            <p>当プロジェクトは、以下のとおり共同利用を行います。</p>
+            <p>
+              Data Dreamersは法令及びガイドラインに別段の定めがある場合を除き、同意を得ないで第三者に個人情
+              報を提供することは致しません。
+            </p>
           </CardContent>
           <Separator />
 
           {/* Section 6 */}
           <CardHeader>
-            <CardTitle className="text-xl">６．個人データの第三者提供について</CardTitle>
+            <CardTitle className="text-xl">6．保有個人データの開示、訂正</CardTitle>
           </CardHeader>
           <CardContent>
             <p>
-              当プロジェクトは法令及びガイドラインに別段の定めがある場合を除き、同意を得ないで第三者に個人情
-              報を提供することは致しません。
+              本人からの開示請求には遅滞なく対応し、利用目的の通知や訂正、追加、削除、利用停止を希望される方はアプリ開発開発班までご連絡ください。
+            </p>
+            <p>
+              アプリ開発班代表者名: <strong>勝木隆也</strong>
             </p>
           </CardContent>
           <Separator />
 
           {/* Section 7 */}
           <CardHeader>
-            <CardTitle className="text-xl">７．保有個人データの開示、訂正</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p>
-              本人からの開示請求には遅滞なく対応し、利用目的の通知や訂正、追加、削除、利用停止を希望される方はLMS開発班までご連絡ください。
-            </p>
-            <p>
-              LMS班代表者名: <strong>勝木隆也</strong>
-            </p>
-          </CardContent>
-          <Separator />
-
-          {/* Section 8 */}
-          <CardHeader>
-            <CardTitle className="text-xl">８．個人情報取り扱いに関する相談や苦情の連絡先</CardTitle>
+            <CardTitle className="text-xl">7．個人情報取り扱いに関する相談や苦情の連絡先</CardTitle>
           </CardHeader>
           <CardContent>
             <p>個人情報の取り扱いに関するお問い合わせはお問い合わせフォームよりご連絡ください。</p>
           </CardContent>
           <Separator />
 
-          {/* Section 9 */}
+          {/* Section 8 */}
           <CardHeader>
-            <CardTitle className="text-xl">９．SSL（Secure Socket Layer）について</CardTitle>
+            <CardTitle className="text-xl">8．SSL（Secure Socket Layer）について</CardTitle>
           </CardHeader>
           <CardContent>
             <p>
@@ -111,18 +102,18 @@ export default function PrivacyPolicyPage() {
           </CardContent>
           <Separator />
 
-          {/* Section 10 */}
+          {/* Section 9 */}
           <CardHeader>
-            <CardTitle className="text-xl">１０．cookieについて</CardTitle>
+            <CardTitle className="text-xl">9．cookieについて</CardTitle>
           </CardHeader>
           <CardContent>
             <p>cookieは個人特定情報を含まず、ブラウザ設定により無効化可能です。</p>
           </CardContent>
           <Separator />
 
-          {/* Section 11 */}
+          {/* Section 10 */}
           <CardHeader>
-            <CardTitle className="text-xl">１１．プライバシーポリシーの制定日及び改定日</CardTitle>
+            <CardTitle className="text-xl">10．プライバシーポリシーの制定日及び改定日</CardTitle>
           </CardHeader>
           <CardContent>
             <p>
@@ -131,9 +122,9 @@ export default function PrivacyPolicyPage() {
           </CardContent>
           <Separator />
 
-          {/* Section 12 */}
+          {/* Section 11 */}
           <CardHeader>
-            <CardTitle className="text-xl">１２．免責事項</CardTitle>
+            <CardTitle className="text-xl">11．免責事項</CardTitle>
           </CardHeader>
           <CardContent>
             <p>当サイト掲載情報の正確性には万全を期していますが、利用者の行為に対する責任は負いません。</p>
@@ -141,18 +132,18 @@ export default function PrivacyPolicyPage() {
           </CardContent>
           <Separator />
 
-          {/* Section 13 */}
+          {/* Section 12 */}
           <CardHeader>
-            <CardTitle className="text-xl">１３．著作権・肖像権</CardTitle>
+            <CardTitle className="text-xl">12．著作権・肖像権</CardTitle>
           </CardHeader>
           <CardContent>
             <p>Webサイト内の文章や画像などの無断使用や転用は禁止されています。</p>
           </CardContent>
           <Separator />
 
-          {/* Section 14 */}
+          {/* Section 13 */}
           <CardHeader>
-            <CardTitle className="text-xl">１４．リンク</CardTitle>
+            <CardTitle className="text-xl">13．リンク</CardTitle>
           </CardHeader>
           <CardContent>
             <p>リンクはData Dreamersに所属する人のみに共有可能です。第三者への共有はご遠慮ください。</p>
