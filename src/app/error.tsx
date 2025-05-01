@@ -5,7 +5,7 @@ import Link from "next/link";
 
 export default function ErrorPage() {
   return (
-    <div className="text-center flex flex-col items-center justify-center text-center py-20">
+    <div className="flex flex-col items-center justify-center text-center py-20">
       <h1 className="text-5xl font-bold pb-6">500 Internal Server Error</h1>
       <p className="text-2xl font-bold pb-12">予期せぬエラーが発生しました</p>
       <p className="pb-4">

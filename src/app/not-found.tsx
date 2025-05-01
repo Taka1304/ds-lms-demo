@@ -3,7 +3,7 @@ import Link from "next/link";
 
 export default async function NotFoundPage() {
   return (
-    <div className="text-center flex flex-col items-center justify-center text-center py-20">
+    <div className="flex flex-col items-center justify-center text-center py-20">
       <h1 className="text-5xl font-bold pb-6">404 Not Found</h1>
       <p className="text-2xl font-bold pb-12">お探しのページは見つかりませんでした</p>
       <p className="pb-4">
