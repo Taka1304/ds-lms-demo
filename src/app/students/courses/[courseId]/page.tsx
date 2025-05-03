@@ -26,12 +26,12 @@ export default async function ProblemList({ params }: { params: Promise<{ course
 
   const course = await res.json();
   const allProblems = course.problems;
-  const progress = course.UserProgress.filter((p) => p.courseId === courseId).length;
+  const progress = course.UserProgress.length;
   const totalProblems = allProblems.length;
 
   return (
     <>
-      <header className="flex h-16 items-center gap-2 ease-linear bg-[#5198de] bg-opacity-40">
+      <header className="flex h-16 items-center gap-2 ease-linear bg-primary/20 dark:bg-primary/40">
         <div className="flex items-center gap-2 px-4">
           <SidebarTrigger className="-ml-1" />
           <Separator orientation="vertical" className="mr-2 h-4" />
@@ -40,7 +40,7 @@ export default async function ProblemList({ params }: { params: Promise<{ course
       </header>
 
       <div className="space-y-6 container mx-auto px-4 py-8 min-h-[calc(100vh-60px)]">
-        <h2 className="text-sm font-bold text-black">問題集の進捗状況</h2>
+        <h2 className="text-sm font-bold">問題集の進捗状況</h2>
         <div className="flex flex-row items-center space-x-4">
           <p className="text-center min-w-36 text-xl font-bold">
             {progress} / {totalProblems}問

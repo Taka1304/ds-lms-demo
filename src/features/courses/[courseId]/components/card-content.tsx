@@ -30,7 +30,7 @@ export default function ProblemCard({ courseId, problem }: Props) {
       </CardHeader>
       <CardContent className="p-6 w-1/3 flex flex-col justify-center">
         <div className="relative">
-          <Button asChild size="sm" className="w-full rounded-sm h-14 font-bold text-lg bg-[#5BBBE1] drop-shadow">
+          <Button asChild size="sm" className="w-full rounded-sm h-14 font-bold text-lg drop-shadow">
             <Link href={`/students/courses/${courseId}/${problem.id}`}>挑戦する</Link>
           </Button>
         </div>
