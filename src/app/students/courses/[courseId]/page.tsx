@@ -39,15 +39,15 @@ export default async function ProblemList({ params }: { params: Promise<{ course
         </div>
       </header>
 
-      <div className="space-y-6 container mx-auto px-4 py-8 min-h-[calc(100vh-60px)]">
+      <div className="space-y-6 container mx-auto px-4 py-8">
         <h2 className="text-sm font-bold">問題集の進捗状況</h2>
         <div className="flex flex-row items-center space-x-4">
           <p className="text-center min-w-36 text-xl font-bold">
             {progress} / {totalProblems}問
           </p>
-          <Image src={"/students/courses/AskingAQuestion2.png"} alt="AskingAQuestion2" width={96} height={102} />
+          <Image src={"/students/courses/AskingAQuestion2.svg"} alt="AskingAQuestion2" width={96} height={102} />
           <Progress value={progress} />
-          <Image src={"/students/courses/BeingVip.png"} alt="BeingVip" width={105} height={102} />
+          <Image src={"/students/courses/BeingVip.svg"} alt="BeingVip" width={105} height={102} />
         </div>
         {allProblems.map((problem) => (
           <ProblemCard key={problem.id} courseId={courseId} problem={problem} />

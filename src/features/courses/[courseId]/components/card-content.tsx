@@ -17,7 +17,7 @@ export default function ProblemCard({ courseId, problem }: Props) {
     <Card key={problem.id} className="flex flex-row justify-around space-x-5">
       <Image
         className="p-6 min-w-min"
-        src={"/students/courses/AskingAQuestion.png"}
+        src={"/students/courses/AskingAQuestion.svg"}
         width={91}
         height={101}
         alt="sample"
