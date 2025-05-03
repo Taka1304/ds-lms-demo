@@ -14,7 +14,7 @@ export type Props = {
 
 export default function ProblemCard({ courseId, problem }: Props) {
   return (
-    <Card key={problem.id} className="flex flex-row justify-around space-x-5">
+    <Card className="flex flex-row justify-around space-x-5">
       <Image
         className="p-6 min-w-min"
         src={"/students/courses/AskingAQuestion.svg"}
