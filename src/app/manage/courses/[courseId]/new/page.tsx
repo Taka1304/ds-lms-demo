@@ -1,5 +1,5 @@
 import ProblemCreator from "@/features/manage/problem/components";
-import { createClient } from "@/lib/hono";
+import { client } from "@/lib/hono";
 import { cookies } from "next/headers";
 import { notFound } from "next/navigation";
 
@@ -7,7 +7,12 @@ export default async function NewProblemPage({ params }: { params: Promise<{ cou
   const cookieStore = await cookies();
   const sessionToken = cookieStore.get("next-auth.session-token")?.value || "";
   const { courseId } = await params;
-  const client = createClient(sessionToken);
+
+  // problemsで /api/courses/problems にリクエストを送ってしまうため、ここで除外する
+  if (courseId === "problems") {
+    notFound();
+  }
+
   const res = await client.api.courses[":course_id"].$get(
     {
       param: { course_id: courseId },
@@ -16,7 +21,7 @@ export default async function NewProblemPage({ params }: { params: Promise<{ cou
       headers: {
         Cookie: `next-auth.session-token=${sessionToken}`,
       },
-    }
+    },
   );
 
   if (!res.ok) {
