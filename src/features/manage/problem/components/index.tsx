@@ -3,18 +3,18 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
+import ThemeEditor from "@/components/ui/editor";
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { MarkdownViewer } from "@/components/ui/markdown";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
-import { useToast } from "@/hooks/use-toast";
 import { client } from "@/lib/hono";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Plus, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useFieldArray, useForm } from "react-hook-form";
+import { toast } from "sonner";
 import type { z } from "zod";
 import { formSchema } from "../types/schema";
 
@@ -25,7 +25,6 @@ const difficultyLevels = [
 ];
 
 export default function ProblemCreator({ courseId }: { courseId: string }) {
-  const toast = useToast();
   const router = useRouter();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -48,27 +47,26 @@ export default function ProblemCreator({ courseId }: { courseId: string }) {
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    toast.toast({
-      title: "問題を作成中...",
+    const toastId = toast.loading("問題を作成中...", {
       description: "しばらくお待ちください",
     });
-    // ここで問題をAPIに送信する処理を実装
+
     const res = await client.api.courses.problems.$post({
       json: {
         title: values.title,
         description: values.problemStatement,
-        constraints: values.constraints,
-        slug: "",
+        constraints: values.constraints || "",
+        slug: "", // TODO:
         defaultCode: values.defaultCode,
-        difficultyLevel: values.difficultyLevel,
+        difficultyLevel: Number(values.difficultyLevel),
         timeLimit: 3,
         memoryLimit: 1024,
         isPublic: false, // この時点では公開しない
         isArchived: false,
         courseId: courseId,
         testCases: values.testCases.map((testCase) => ({
-          input: testCase.input,
-          output: testCase.expectedOutput,
+          input: testCase.input || "",
+          output: testCase.expectedOutput || "",
           isSample: testCase.isSample,
           isHidden: testCase.isHidden,
         })),
@@ -76,9 +74,9 @@ export default function ProblemCreator({ courseId }: { courseId: string }) {
     });
 
     if (res.ok) {
-      toast.toast({
-        title: "問題を作成しました",
+      toast.success("問題を作成しました", {
         description: "問題の詳細ページに移動します",
+        id: toastId,
       });
 
       // 1秒後にリダイレクト
@@ -87,19 +85,25 @@ export default function ProblemCreator({ courseId }: { courseId: string }) {
       router.push(`/manage/courses/${courseId}/${data.id}/debug`);
     }
 
-    toast.toast({
-      variant: "destructive",
-      title: "問題の作成に失敗しました",
+    toast.error("問題の作成に失敗しました", {
       description: "もう一度お試しください",
+      id: toastId,
+      action: {
+        label: "リトライ",
+        onClick: () => {
+          toast.dismiss(toastId);
+          onSubmit(values);
+        },
+      },
     });
   }
 
-  const watchProblemStatement = form.watch("problemStatement");
-  const watchConstraints = form.watch("constraints");
+  const problemStatementValue = form.getValues("problemStatement");
+  const constraintsValue = form.getValues("constraints");
 
   return (
-    <div className="container py-10">
-      <h1 className="text-3xl font-bold mb-6">プログラミング問題作成</h1>
+    <div className="container py-10 relative">
+      <h1 className="text-3xl font-bold mb-6">問題作成</h1>
 
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
@@ -124,7 +128,7 @@ export default function ProblemCreator({ courseId }: { courseId: string }) {
                 render={({ field }) => (
                   <FormItem className="w-2/12">
                     <FormLabel>難易度</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={String(field.value)}>
+                    <Select onValueChange={(value) => field.onChange(Number(value))} defaultValue={String(field.value)}>
                       <FormControl>
                         <SelectTrigger>
                           <SelectValue placeholder="Select a verified email to display" />
@@ -163,7 +167,7 @@ export default function ProblemCreator({ courseId }: { courseId: string }) {
                             {...field}
                           />
                         </FormControl>
-                        <FormDescription>Markdownを使用して問題文を記述できます</FormDescription>
+                        <FormDescription>Markdown + KaTeX を使用できます</FormDescription>
                         <FormMessage />
                       </FormItem>
                     )}
@@ -185,7 +189,7 @@ $$"
                             {...field}
                           />
                         </FormControl>
-                        <FormDescription>問題の制約条件を記述してください</FormDescription>
+                        <FormDescription>Markdown + KaTeX を使用できます</FormDescription>
                         <FormMessage />
                       </FormItem>
                     )}
@@ -199,12 +203,12 @@ $$"
                     <CardContent className="pt-6">
                       <div className="prose max-w-none dark:prose-invert">
                         <h2 className="text-2xl">問題文</h2>
-                        <MarkdownViewer content={watchProblemStatement} className="p-4" />
+                        <MarkdownViewer content={problemStatementValue} className="p-4" />
 
-                        {watchConstraints && (
+                        {constraintsValue && (
                           <>
                             <h2 className="text-2xl">制約</h2>
-                            <MarkdownViewer content={watchConstraints} className="p-4" />
+                            <MarkdownViewer content={constraintsValue} className="p-4" />
                           </>
                         )}
                       </div>
@@ -212,6 +216,24 @@ $$"
                   </Card>
                 </div>
               </div>
+            </div>
+
+            <div className="space-y-4">
+              <h2 className="text-xl font-semibold">デフォルトコード</h2>
+              <FormField
+                control={form.control}
+                name="defaultCode"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>デフォルトコード</FormLabel>
+                    <FormControl>
+                      <ThemeEditor value={field.value} onChange={field.onChange} height="300px" language="python" />
+                    </FormControl>
+                    <FormDescription>この入力が解答欄に最初から表示された状態で始まります。</FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
             </div>
 
             <div className="space-y-4">
@@ -275,7 +297,7 @@ $$"
                                 </FormControl>
                                 <div className="space-y-1 leading-none">
                                   <FormLabel>サンプルケース</FormLabel>
-                                  <FormDescription>評価前の挑戦中で表示されます．最低1つ必要です</FormDescription>
+                                  <FormDescription>評価前の挑戦中で表示されます。1つ以上必要</FormDescription>
                                 </div>
                               </FormItem>
                             )}
@@ -314,11 +336,7 @@ $$"
               </div>
             </div>
 
-            <Separator />
-
-            {/* TODO: defaultCode Editor */}
-
-            <div className="flex justify-end">
+            <div className="bottom-0 left-0 right-0 flex justify-end p-4 bg-white dark:bg-neutral-950">
               <Button type="submit" size="lg">
                 問題を作成
               </Button>
