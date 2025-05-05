@@ -1,5 +1,4 @@
 "use client";
-
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -9,8 +8,9 @@ import { Input } from "@/components/ui/input";
 import { MarkdownViewer } from "@/components/ui/markdown";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { client } from "@/lib/hono";
+import type { client } from "@/lib/hono";
 import { zodResolver } from "@hookform/resolvers/zod";
+import type { InferRequestType } from "hono/client";
 import { Plus, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useFieldArray, useForm } from "react-hook-form";
@@ -24,7 +24,15 @@ const difficultyLevels = [
   { value: 3, label: "難しい" },
 ];
 
-export default function ProblemCreator({ courseId }: { courseId: string }) {
+type PostCourseProblemRequest = InferRequestType<typeof client.api.courses.problems.$post>["json"];
+type ProblemCreatorResponse = Awaited<ReturnType<typeof client.api.courses.problems.$post>>;
+
+type ProblemCreatorProps = {
+  courseId: string;
+  createProblem: (value: PostCourseProblemRequest) => Promise<ProblemCreatorResponse>;
+};
+
+export default function ProblemCreator({ courseId, createProblem }: ProblemCreatorProps) {
   const router = useRouter();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -51,26 +59,24 @@ export default function ProblemCreator({ courseId }: { courseId: string }) {
       description: "しばらくお待ちください",
     });
 
-    const res = await client.api.courses.problems.$post({
-      json: {
-        title: values.title,
-        description: values.problemStatement,
-        constraints: values.constraints || "",
-        slug: "", // TODO:
-        defaultCode: values.defaultCode,
-        difficultyLevel: Number(values.difficultyLevel),
-        timeLimit: 3,
-        memoryLimit: 1024,
-        isPublic: false, // この時点では公開しない
-        isArchived: false,
-        courseId: courseId,
-        testCases: values.testCases.map((testCase) => ({
-          input: testCase.input || "",
-          output: testCase.expectedOutput || "",
-          isSample: testCase.isSample,
-          isHidden: testCase.isHidden,
-        })),
-      },
+    const res = await createProblem({
+      title: values.title,
+      description: values.problemStatement,
+      constraints: values.constraints || "",
+      slug: "", // TODO:
+      defaultCode: values.defaultCode,
+      difficultyLevel: Number(values.difficultyLevel),
+      timeLimit: 3,
+      memoryLimit: 1024,
+      isPublic: false, // この時点では公開しない
+      isArchived: false,
+      courseId: courseId,
+      testCases: values.testCases.map((testCase) => ({
+        input: testCase.input || "",
+        output: testCase.expectedOutput || "",
+        isSample: testCase.isSample,
+        isHidden: testCase.isHidden,
+      })),
     });
 
     if (res.ok) {

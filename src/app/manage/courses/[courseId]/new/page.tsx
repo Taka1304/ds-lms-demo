@@ -1,7 +1,10 @@
 import ProblemCreator from "@/features/manage/problem/components";
 import { client } from "@/lib/hono";
+import type { InferRequestType } from "hono/client";
 import { cookies } from "next/headers";
 import { notFound } from "next/navigation";
+
+type PostCourseProblemRequest = InferRequestType<typeof client.api.courses.problems.$post>["json"];
 
 export default async function NewProblemPage({ params }: { params: Promise<{ courseId: string }> }) {
   const cookieStore = await cookies();
@@ -28,9 +31,23 @@ export default async function NewProblemPage({ params }: { params: Promise<{ cou
     notFound();
   }
 
+  const createProblem = async (value: PostCourseProblemRequest) => {
+    "use server";
+    return await client.api.courses.problems.$post(
+      {
+        json: value,
+      },
+      {
+        headers: {
+          Cookie: `next-auth.session-token=${sessionToken}`,
+        },
+      },
+    );
+  };
+
   return (
     <div className="p-4 flex justify-center">
-      <ProblemCreator courseId={courseId} />
+      <ProblemCreator courseId={courseId} createProblem={createProblem} />
     </div>
   );
 }
