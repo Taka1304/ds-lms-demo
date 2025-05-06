@@ -19,18 +19,19 @@ import { toast } from "sonner";
 import type { z } from "zod";
 import { formSchema } from "../types/schema";
 
-const sampleProblemStatement = `長さ $N$ の正整数列 $A = (A_1, A_2, \ldots, A_N)$ が与えられます。
+const sampleProblemStatement = `入力例: 
+長さ $N$ の正整数列 $A = (A_1, A_2, \ldots, A_N)$ が与えられます。
 $A$ の奇数番目の要素の総和を求めてください。すなわち、$N$ 以下の最大の奇数を $m$ としたとき、
 $A_1 + A_3 + A_5 + \ldots + A_m$ を求めてください。`;
 
-const sampleConstraints = `
+const sampleConstraints = `入力例: 
 - $1 \leq N \leq 10^5$
 - $1 \leq A_i \leq 10^9$`;
 
 const sampleInput = `5
 1 2 3 4 5`;
 
-const sampleDefaultCode = `
+const sampleDefaultCode = `入力例: 
 # 問題文を参考にして、以下のコードを完成させてください。
 A = list(map(int, input().split(",")))
 `;
@@ -89,8 +90,6 @@ export default function ProblemCreator({ courseId, problem }: ProblemCreatorProp
     control: form.control,
     name: "testCases",
   });
-
-  console.log(form.formState.errors);
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     const toastId = toast.loading("問題を作成中...", {
