@@ -3,7 +3,7 @@ import { z } from "zod";
 export const testCaseSchema = z.object({
   input: z.string().optional(),
   expectedOutput: z.string().optional(),
-  isSample: z.boolean(),
+  isExample: z.boolean(),
   isHidden: z.boolean(),
 });
 
@@ -22,7 +22,7 @@ export const formSchema = z.object({
     .min(2, {
       message: "テストケースは最低2つ必要です",
     })
-    .refine((testCases) => testCases.some((testCase) => testCase.isSample), {
+    .refine((testCases) => testCases.some((testCase) => testCase.isExample), {
       message: "テストケースの中に少なくとも1つはisSampleがtrueである必要があります",
     }),
 });

@@ -33,7 +33,7 @@ export const createProblem = factory.createHandlers(
           z.object({
             input: z.string(),
             output: z.string(),
-            isSample: z.boolean(),
+            isExample: z.boolean(),
             isHidden: z.boolean(),
           }),
         )
@@ -56,13 +56,14 @@ export const createProblem = factory.createHandlers(
           updatedById: session.user.id,
           testCases: {
             createMany: {
-              data: testCases
-            }
-          }
+              data: testCases,
+            },
+          },
         },
       });
       return c.json(data);
     } catch (error) {
+      console.error("Error creating problem:", error);
       return c.json(
         {
           error: "問題の作成中にエラーが発生しました",

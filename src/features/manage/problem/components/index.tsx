@@ -8,9 +8,8 @@ import { Input } from "@/components/ui/input";
 import { MarkdownViewer } from "@/components/ui/markdown";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import type { client } from "@/lib/hono";
+import { client } from "@/lib/hono";
 import { zodResolver } from "@hookform/resolvers/zod";
-import type { InferRequestType } from "hono/client";
 import { Plus, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useFieldArray, useForm } from "react-hook-form";
@@ -18,21 +17,33 @@ import { toast } from "sonner";
 import type { z } from "zod";
 import { formSchema } from "../types/schema";
 
+const sampleProblemStatement = `長さ $N$ の正整数列 $A = (A_1, A_2, \ldots, A_N)$ が与えられます。
+$A$ の奇数番目の要素の総和を求めてください。すなわち、$N$ 以下の最大の奇数を $m$ としたとき、
+$A_1 + A_3 + A_5 + \ldots + A_m$ を求めてください。`;
+
+const sampleConstraints = `
+- $1 \leq N \leq 10^5$
+- $1 \leq A_i \leq 10^9$`;
+
+const sampleInput = `5
+1 2 3 4 5`;
+
+const sampleDefaultCode = `
+# 問題文を参考にして、以下のコードを完成させてください。
+A = list(map(int, input().split(",")))
+`;
+
 const difficultyLevels = [
   { value: 1, label: "簡単" },
   { value: 2, label: "普通" },
   { value: 3, label: "難しい" },
 ];
 
-type PostCourseProblemRequest = InferRequestType<typeof client.api.courses.problems.$post>["json"];
-type ProblemCreatorResponse = Awaited<ReturnType<typeof client.api.courses.problems.$post>>;
-
 type ProblemCreatorProps = {
   courseId: string;
-  createProblem: (value: PostCourseProblemRequest) => Promise<ProblemCreatorResponse>;
 };
 
-export default function ProblemCreator({ courseId, createProblem }: ProblemCreatorProps) {
+export default function ProblemCreator({ courseId }: ProblemCreatorProps) {
   const router = useRouter();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -43,8 +54,8 @@ export default function ProblemCreator({ courseId, createProblem }: ProblemCreat
       difficultyLevel: 1,
       constraints: "",
       testCases: [
-        { input: "", expectedOutput: "", isSample: true, isHidden: false },
-        { input: "", expectedOutput: "", isSample: false, isHidden: true },
+        { input: "", expectedOutput: "", isExample: true, isHidden: false },
+        { input: "", expectedOutput: "", isExample: false, isHidden: false },
       ],
     },
   });
@@ -59,24 +70,26 @@ export default function ProblemCreator({ courseId, createProblem }: ProblemCreat
       description: "しばらくお待ちください",
     });
 
-    const res = await createProblem({
-      title: values.title,
-      description: values.problemStatement,
-      constraints: values.constraints || "",
-      slug: "", // TODO:
-      defaultCode: values.defaultCode,
-      difficultyLevel: Number(values.difficultyLevel),
-      timeLimit: 3,
-      memoryLimit: 1024,
-      isPublic: false, // この時点では公開しない
-      isArchived: false,
-      courseId: courseId,
-      testCases: values.testCases.map((testCase) => ({
-        input: testCase.input || "",
-        output: testCase.expectedOutput || "",
-        isSample: testCase.isSample,
-        isHidden: testCase.isHidden,
-      })),
+    const res = await client.api.courses.problems.$post({
+      json: {
+        title: values.title,
+        description: values.problemStatement,
+        constraints: values.constraints || "",
+        slug: "", // TODO:
+        defaultCode: values.defaultCode,
+        difficultyLevel: Number(values.difficultyLevel),
+        timeLimit: 3,
+        memoryLimit: 1024,
+        isPublic: false, // この時点では公開しない
+        isArchived: false,
+        courseId: courseId,
+        testCases: values.testCases.map((testCase) => ({
+          input: testCase.input || "",
+          output: testCase.expectedOutput || "",
+          isExample: testCase.isExample,
+          isHidden: testCase.isHidden,
+        })),
+      },
     });
 
     if (res.ok) {
@@ -168,7 +181,7 @@ export default function ProblemCreator({ courseId, createProblem }: ProblemCreat
                         <FormLabel>問題文</FormLabel>
                         <FormControl>
                           <Textarea
-                            placeholder="# 問題文をMarkdownで記述してください"
+                            placeholder={sampleProblemStatement}
                             className="min-h-[200px] font-mono"
                             {...field}
                           />
@@ -186,14 +199,7 @@ export default function ProblemCreator({ courseId, createProblem }: ProblemCreat
                       <FormItem>
                         <FormLabel>制約</FormLabel>
                         <FormControl>
-                          <Textarea
-                            placeholder="$$
-- 1 ≤ N ≤ 10^5
-- 1 ≤ A_i ≤ 10^9
-$$"
-                            className="min-h-[150px] font-mono"
-                            {...field}
-                          />
+                          <Textarea placeholder={sampleConstraints} className="min-h-[150px] font-mono" {...field} />
                         </FormControl>
                         <FormDescription>Markdown + KaTeX を使用できます</FormDescription>
                         <FormMessage />
@@ -231,11 +237,16 @@ $$"
                 name="defaultCode"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>デフォルトコード</FormLabel>
+                    <FormLabel>この入力が解答欄に最初から表示された状態で始まります。</FormLabel>
                     <FormControl>
-                      <ThemeEditor value={field.value} onChange={field.onChange} height="300px" language="python" />
+                      <ThemeEditor
+                        value={field.value}
+                        onChange={field.onChange}
+                        height="300px"
+                        language="python"
+                        defaultValue={sampleDefaultCode}
+                      />
                     </FormControl>
-                    <FormDescription>この入力が解答欄に最初から表示された状態で始まります。</FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -266,12 +277,7 @@ $$"
                             <FormItem>
                               <FormLabel>入力</FormLabel>
                               <FormControl>
-                                <Textarea
-                                  placeholder="5
-1 2 3 4 5"
-                                  className="font-mono"
-                                  {...field}
-                                />
+                                <Textarea placeholder={sampleInput} className="font-mono" {...field} />
                               </FormControl>
                               <FormMessage />
                             </FormItem>
@@ -295,7 +301,7 @@ $$"
                         <div className="flex space-x-6">
                           <FormField
                             control={form.control}
-                            name={`testCases.${index}.isSample`}
+                            name={`testCases.${index}.isExample`}
                             render={({ field }) => (
                               <FormItem className="flex flex-row items-start space-x-3 space-y-0">
                                 <FormControl>
@@ -334,7 +340,7 @@ $$"
                   type="button"
                   variant="outline"
                   className="w-full"
-                  onClick={() => append({ input: "", expectedOutput: "", isSample: false, isHidden: true })}
+                  onClick={() => append({ input: "", expectedOutput: "", isExample: false, isHidden: true })}
                 >
                   <Plus className="mr-2 h-4 w-4" />
                   テストケースを追加
