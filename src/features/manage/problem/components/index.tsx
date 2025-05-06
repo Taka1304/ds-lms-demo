@@ -60,6 +60,7 @@ export default function ProblemCreator({ courseId, problem }: ProblemCreatorProp
           defaultCode: problem.defaultCode || "",
           difficultyLevel: problem.difficultyLevel,
           isPublic: problem.isPublic,
+          isArchived: false,
           constraints: problem.constraints,
           testCases: problem.testCases.map((testCase) => ({
             id: testCase.id,
@@ -74,6 +75,7 @@ export default function ProblemCreator({ courseId, problem }: ProblemCreatorProp
           description: "",
           defaultCode: "",
           isPublic: false,
+          isArchived: false,
           difficultyLevel: 1,
           constraints: "",
           testCases: [
@@ -87,6 +89,8 @@ export default function ProblemCreator({ courseId, problem }: ProblemCreatorProp
     control: form.control,
     name: "testCases",
   });
+
+  console.log(form.formState.errors);
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     const toastId = toast.loading("問題を作成中...", {
@@ -103,7 +107,6 @@ export default function ProblemCreator({ courseId, problem }: ProblemCreatorProp
           title: values.title,
           description: values.description,
           constraints: values.constraints || "",
-          slug: problem.slug,
           defaultCode: values.defaultCode,
           difficultyLevel: Number(values.difficultyLevel),
           timeLimit: problem.timeLimit,
@@ -122,44 +125,51 @@ export default function ProblemCreator({ courseId, problem }: ProblemCreatorProp
 
       if (res.ok) {
         toast.success("問題情報を更新しました", {
+          description: "デバッグページに移動しますか？",
           id: toastId,
+          action: {
+            label: "移動する",
+            onClick: () => {
+              router.push(`/manage/courses/${courseId}/${problem.id}/debug`);
+            },
+          },
         });
       }
-    } else {
-      // 新規作成時
+      return;
+    }
+    // 新規作成時
 
-      const res = await client.api.courses.problems.$post({
-        json: {
-          title: values.title,
-          description: values.description,
-          constraints: values.constraints || "",
-          slug: "", // TODO:
-          defaultCode: values.defaultCode,
-          difficultyLevel: Number(values.difficultyLevel),
-          timeLimit: 3,
-          memoryLimit: 1024,
-          isPublic: values.isPublic,
-          isArchived: false,
-          courseId: courseId,
-          testCases: values.testCases.map((testCase) => ({
-            input: testCase.input || "",
-            output: testCase.output || "",
-            isExample: testCase.isExample,
-            isHidden: testCase.isHidden,
-          })),
-        },
+    const res = await client.api.courses.problems.$post({
+      json: {
+        title: values.title,
+        description: values.description,
+        constraints: values.constraints || "",
+        defaultCode: values.defaultCode,
+        difficultyLevel: Number(values.difficultyLevel),
+        timeLimit: 3,
+        memoryLimit: 1024,
+        isPublic: values.isPublic,
+        isArchived: false,
+        courseId: courseId,
+        testCases: values.testCases.map((testCase) => ({
+          input: testCase.input || "",
+          output: testCase.output || "",
+          isExample: testCase.isExample,
+          isHidden: testCase.isHidden,
+        })),
+      },
+    });
+    if (res.ok) {
+      toast.success("問題を作成しました", {
+        description: "問題の詳細ページに移動します",
+        id: toastId,
       });
-      if (res.ok) {
-        toast.success("問題を作成しました", {
-          description: "問題の詳細ページに移動します",
-          id: toastId,
-        });
 
-        // 1秒後にリダイレクト
-        await new Promise((resolve) => setTimeout(resolve, 1000));
-        const data = await res.json();
-        router.push(`/manage/courses/${courseId}/${data.id}/debug`);
-      }
+      // 1秒後にリダイレクト
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+      const data = await res.json();
+      router.push(`/manage/courses/${courseId}/${data.id}/debug`);
+      return;
     }
 
     toast.error("問題の作成に失敗しました", {

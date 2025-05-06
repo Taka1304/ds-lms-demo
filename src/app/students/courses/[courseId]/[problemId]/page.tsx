@@ -14,7 +14,6 @@ const problem: Problem = {
   id: "1",
   courseId: "1",
   title: "Two Sum",
-  slug: "two-sum",
   timeLimit: 3,
   memoryLimit: 1024,
   isPublic: true,

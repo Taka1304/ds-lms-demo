@@ -18,7 +18,6 @@ export const createProblem = factory.createHandlers(
     z.object({
       title: z.string(),
       description: z.string(),
-      slug: z.string(),
       difficultyLevel: z.number(),
       constraints: z.string(),
       timeLimit: z.number().optional(),

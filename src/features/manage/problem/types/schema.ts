@@ -12,14 +12,13 @@ export const formSchema = z.object({
   title: z.string().min(1, {
     message: "タイトルは必須です",
   }),
-  slug: z.string(),
   description: z.string().min(1, {
     message: "問題文は必須です",
   }),
   isPublic: z.boolean(),
   isArchived: z.boolean(),
-  memoryLimit: z.number(),
-  timeLimit: z.number(),
+  memoryLimit: z.number().optional(),
+  timeLimit: z.number().optional(),
   constraints: z.string().optional(),
   defaultCode: z.string().optional(),
   difficultyLevel: z.number().min(1).max(3),
