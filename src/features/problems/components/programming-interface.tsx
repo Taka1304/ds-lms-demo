@@ -24,9 +24,10 @@ const req = client.api.courses.problems[":problem_id"].$get;
 
 type Props = {
   problem: InferResponseType<typeof req, 200>;
+  mode?: "debug" | "challenge";
 };
 
-export default function ProgrammingInterface({ problem }: Props) {
+export default function ProgrammingInterface({ problem, mode = "challenge" }: Props) {
   const [consoleExpanded, setConsoleExpanded] = useState(true);
   const [activeTab, setActiveTab] = useState("split");
   const codeRef = useRef<string | null>(problem.defaultCode || null);
@@ -87,6 +88,7 @@ export default function ProgrammingInterface({ problem }: Props) {
                     </TabsList>
                   </span>
                   <ActionBar
+                    mode={mode}
                     isRunning={isRunning}
                     isReady={isReady}
                     onRunCode={() => runCode(codeRef.current || "")}
@@ -98,10 +100,10 @@ export default function ProgrammingInterface({ problem }: Props) {
                   <TabsContent value="problem" className="flex-1 overflow-auto px-4">
                     {/* TODO: 内容 */}
                     <h2 className="text-2xl font-bold mt-2">問題</h2>
-                    <MarkdownViewer content={problem.description} />
+                    <MarkdownViewer content={problem.description} className="p-4" />
 
                     <h2 className="text-2xl font-bold mt-2">制約</h2>
-                    <MarkdownViewer content={problem.constraints} />
+                    <MarkdownViewer content={problem.constraints} className="p-4" />
                   </TabsContent>
                   <TabsContent value="editor" className="flex-1 overflow-hidden">
                     {/* TODO: themeのカスタマイズ */}
@@ -117,10 +119,10 @@ export default function ProgrammingInterface({ problem }: Props) {
                       <ResizablePanel defaultSize={50} minSize={30}>
                         <div className="overflow-auto h-full px-4">
                           <h2 className="text-2xl font-bold mt-2">問題</h2>
-                          <MarkdownViewer content={problem.description} />
+                          <MarkdownViewer content={problem.description} className="p-4" />
 
                           <h2 className="text-2xl font-bold mt-2">制約</h2>
-                          <MarkdownViewer content={problem.constraints} />
+                          <MarkdownViewer content={problem.constraints} className="p-4" />
                         </div>
                       </ResizablePanel>
                       <ResizableHandle withHandle />
