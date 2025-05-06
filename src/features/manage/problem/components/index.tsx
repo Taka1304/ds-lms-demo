@@ -7,9 +7,11 @@ import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, For
 import { Input } from "@/components/ui/input";
 import { MarkdownViewer } from "@/components/ui/markdown";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { client } from "@/lib/hono";
 import { zodResolver } from "@hookform/resolvers/zod";
+import type { InferResponseType } from "hono/client";
 import { Plus, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useFieldArray, useForm } from "react-hook-form";
@@ -39,25 +41,46 @@ const difficultyLevels = [
   { value: 3, label: "難しい" },
 ];
 
+const req = client.api.courses.problems[":problem_id"].$get;
+
 type ProblemCreatorProps = {
   courseId: string;
+  // 編集時のみ問題のデータを受け取る
+  problem?: InferResponseType<typeof req, 200>;
 };
 
-export default function ProblemCreator({ courseId }: ProblemCreatorProps) {
+export default function ProblemCreator({ courseId, problem }: ProblemCreatorProps) {
   const router = useRouter();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    defaultValues: {
-      title: "",
-      problemStatement: "",
-      defaultCode: "",
-      difficultyLevel: 1,
-      constraints: "",
-      testCases: [
-        { input: "", expectedOutput: "", isExample: true, isHidden: false },
-        { input: "", expectedOutput: "", isExample: false, isHidden: false },
-      ],
-    },
+    defaultValues: problem
+      ? {
+          title: problem.title,
+          description: problem.description,
+          defaultCode: problem.defaultCode || "",
+          difficultyLevel: problem.difficultyLevel,
+          isPublic: problem.isPublic,
+          constraints: problem.constraints,
+          testCases: problem.testCases.map((testCase) => ({
+            id: testCase.id,
+            input: testCase.input,
+            output: testCase.output,
+            isExample: testCase.isExample,
+            isHidden: testCase.isHidden,
+          })),
+        }
+      : {
+          title: "",
+          description: "",
+          defaultCode: "",
+          isPublic: false,
+          difficultyLevel: 1,
+          constraints: "",
+          testCases: [
+            { input: "", output: "", isExample: true, isHidden: false },
+            { input: "", output: "", isExample: false, isHidden: false },
+          ],
+        },
   });
 
   const { fields, append, remove } = useFieldArray({
@@ -70,38 +93,73 @@ export default function ProblemCreator({ courseId }: ProblemCreatorProps) {
       description: "しばらくお待ちください",
     });
 
-    const res = await client.api.courses.problems.$post({
-      json: {
-        title: values.title,
-        description: values.problemStatement,
-        constraints: values.constraints || "",
-        slug: "", // TODO:
-        defaultCode: values.defaultCode,
-        difficultyLevel: Number(values.difficultyLevel),
-        timeLimit: 3,
-        memoryLimit: 1024,
-        isPublic: false, // この時点では公開しない
-        isArchived: false,
-        courseId: courseId,
-        testCases: values.testCases.map((testCase) => ({
-          input: testCase.input || "",
-          output: testCase.expectedOutput || "",
-          isExample: testCase.isExample,
-          isHidden: testCase.isHidden,
-        })),
-      },
-    });
-
-    if (res.ok) {
-      toast.success("問題を作成しました", {
-        description: "問題の詳細ページに移動します",
-        id: toastId,
+    if (problem) {
+      // 編集時
+      const res = await client.api.courses.problems[":problem_id"].$patch({
+        param: {
+          problem_id: problem.id,
+        },
+        json: {
+          title: values.title,
+          description: values.description,
+          constraints: values.constraints || "",
+          slug: problem.slug,
+          defaultCode: values.defaultCode,
+          difficultyLevel: Number(values.difficultyLevel),
+          timeLimit: problem.timeLimit,
+          memoryLimit: problem.memoryLimit,
+          isPublic: values.isPublic,
+          isArchived: false,
+          testCases: values.testCases.map((testCase) => ({
+            id: testCase.id || "",
+            input: testCase.input || "",
+            output: testCase.output || "",
+            isExample: testCase.isExample,
+            isHidden: testCase.isHidden,
+          })),
+        },
       });
 
-      // 1秒後にリダイレクト
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      const data = await res.json();
-      router.push(`/manage/courses/${courseId}/${data.id}/debug`);
+      if (res.ok) {
+        toast.success("問題情報を更新しました", {
+          id: toastId,
+        });
+      }
+    } else {
+      // 新規作成時
+
+      const res = await client.api.courses.problems.$post({
+        json: {
+          title: values.title,
+          description: values.description,
+          constraints: values.constraints || "",
+          slug: "", // TODO:
+          defaultCode: values.defaultCode,
+          difficultyLevel: Number(values.difficultyLevel),
+          timeLimit: 3,
+          memoryLimit: 1024,
+          isPublic: values.isPublic,
+          isArchived: false,
+          courseId: courseId,
+          testCases: values.testCases.map((testCase) => ({
+            input: testCase.input || "",
+            output: testCase.output || "",
+            isExample: testCase.isExample,
+            isHidden: testCase.isHidden,
+          })),
+        },
+      });
+      if (res.ok) {
+        toast.success("問題を作成しました", {
+          description: "問題の詳細ページに移動します",
+          id: toastId,
+        });
+
+        // 1秒後にリダイレクト
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+        const data = await res.json();
+        router.push(`/manage/courses/${courseId}/${data.id}/debug`);
+      }
     }
 
     toast.error("問題の作成に失敗しました", {
@@ -117,15 +175,32 @@ export default function ProblemCreator({ courseId }: ProblemCreatorProps) {
     });
   }
 
-  const problemStatementValue = form.getValues("problemStatement");
+  const problemStatementValue = form.getValues("description");
   const constraintsValue = form.getValues("constraints");
 
   return (
     <div className="container py-10 relative">
-      <h1 className="text-3xl font-bold mb-6">問題作成</h1>
-
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+          <div className="flex items-start justify-between gap-2">
+            <h1 className="text-3xl font-bold mb-6">問題作成</h1>
+
+            <FormField
+              control={form.control}
+              name="isPublic"
+              render={({ field }) => (
+                <FormItem className="flex flex-row items-end justify-between rounded-lg border p-3 gap-3 shadow-sm">
+                  <div className="space-y-0.5">
+                    <FormLabel>公開する</FormLabel>
+                  </div>
+                  <FormControl>
+                    <Switch checked={field.value} onCheckedChange={field.onChange} className="mt-0" />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+          </div>
+
           <div className="space-y-8">
             <div className="flex items-start justify-between gap-2">
               <FormField
@@ -175,7 +250,7 @@ export default function ProblemCreator({ courseId }: ProblemCreatorProps) {
                 <div className="space-y-4">
                   <FormField
                     control={form.control}
-                    name="problemStatement"
+                    name="description"
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>問題文</FormLabel>
@@ -286,7 +361,7 @@ export default function ProblemCreator({ courseId }: ProblemCreatorProps) {
 
                         <FormField
                           control={form.control}
-                          name={`testCases.${index}.expectedOutput`}
+                          name={`testCases.${index}.output`}
                           render={({ field }) => (
                             <FormItem>
                               <FormLabel>期待する出力</FormLabel>
@@ -340,7 +415,7 @@ export default function ProblemCreator({ courseId }: ProblemCreatorProps) {
                   type="button"
                   variant="outline"
                   className="w-full"
-                  onClick={() => append({ input: "", expectedOutput: "", isExample: false, isHidden: true })}
+                  onClick={() => append({ input: "", output: "", isExample: false, isHidden: true })}
                 >
                   <Plus className="mr-2 h-4 w-4" />
                   テストケースを追加

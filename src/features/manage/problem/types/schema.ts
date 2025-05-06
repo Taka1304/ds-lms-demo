@@ -1,8 +1,9 @@
 import { z } from "zod";
 
 export const testCaseSchema = z.object({
+  id: z.string().cuid().optional(),
   input: z.string().optional(),
-  expectedOutput: z.string().optional(),
+  output: z.string().optional(),
   isExample: z.boolean(),
   isHidden: z.boolean(),
 });
@@ -11,9 +12,14 @@ export const formSchema = z.object({
   title: z.string().min(1, {
     message: "タイトルは必須です",
   }),
-  problemStatement: z.string().min(1, {
+  slug: z.string(),
+  description: z.string().min(1, {
     message: "問題文は必須です",
   }),
+  isPublic: z.boolean(),
+  isArchived: z.boolean(),
+  memoryLimit: z.number(),
+  timeLimit: z.number(),
   constraints: z.string().optional(),
   defaultCode: z.string().optional(),
   difficultyLevel: z.number().min(1).max(3),
