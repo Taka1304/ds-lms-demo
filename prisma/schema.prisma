@@ -162,7 +162,6 @@ model UserProgress {
 model Problem {
   id              String  @id @default(cuid())
   title           String
-  slug            String  @unique // URL用のスラッグ
   description     String // 問題の説明（Markdown）
   difficultyLevel Int // 難易度（1-5等）
   constraints     String // 制約条件（時間、メモリ、入力値の範囲など）

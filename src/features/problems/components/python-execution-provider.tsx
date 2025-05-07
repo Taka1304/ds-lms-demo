@@ -75,7 +75,7 @@ export function PythonExecutionProvider({ testCases, timeLimit, children }: Pyth
 
     for (const [index, testCase] of testCases.entries()) {
       // 入力を設定
-      nextInputRef.current = testCase.input.split("\r\n");
+      nextInputRef.current = testCase.input.split(/\r\n|\n/);
       nextInputIndexRef.current = 0;
 
       // コードを実行

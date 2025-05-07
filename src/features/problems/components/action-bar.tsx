@@ -13,9 +13,12 @@ import {
 } from "@/components/ui/dialog";
 import type { ExecutionHistory } from "@/features/problems/types";
 
-import { AlertCircle, CheckCircle2, Loader2, Play, Send } from "lucide-react";
+import { AlertCircle, CheckCircle2, Loader2, PenBox, Play, Send } from "lucide-react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 interface ActionBarProps {
+  mode?: "debug" | "challenge";
   isRunning: boolean;
   isReady: boolean;
   onRunCode: () => void;
@@ -23,9 +26,19 @@ interface ActionBarProps {
   onSubmitCode?: () => Promise<void>;
 }
 
-export function ActionBar({ isRunning, isReady, onRunCode, recentHistory, onSubmitCode }: ActionBarProps) {
+export function ActionBar({ mode, isRunning, isReady, onRunCode, recentHistory, onSubmitCode }: ActionBarProps) {
+  const pathname = usePathname();
+
   return (
     <div className="flex items-center gap-2">
+      {mode === "debug" && (
+        <Link href={pathname.replace("debug", "edit")} className="flex items-center">
+          <Button variant="outline" size="sm">
+            <PenBox className="h-4 w-4 mr-2" />
+            内容を修正する
+          </Button>
+        </Link>
+      )}
       <Button variant="default" size="sm" onClick={onRunCode} disabled={isRunning || !isReady}>
         {isRunning || !isReady ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Play className="h-4 w-4 mr-2" />}
         <span>{isRunning ? "実行中..." : !isReady ? "Loading..." : "実行する"}</span>
