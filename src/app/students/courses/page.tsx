@@ -19,7 +19,7 @@ export default async function CoursesPage() {
   );
   if (!res.ok) {
     if (res.status < 500) return notFound();
-    return new Error("Failed to fetch courses");
+    throw new Error("Failed to fetch courses");
   }
 
   const courses = await res.json();
