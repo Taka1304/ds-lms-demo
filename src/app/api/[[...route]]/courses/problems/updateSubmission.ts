@@ -43,7 +43,7 @@ export const updateSubmission = factory.createHandlers(
   ),
   async (c) => {
     const { submission_id } = c.req.valid("param");
-    const { TestResult, ...json }= c.req.valid("json");
+    const { TestResult, ...json } = c.req.valid("json");
     const session = c.get("session");
 
     try {
@@ -77,7 +77,59 @@ export const updateSubmission = factory.createHandlers(
           userId: session.user.role === "ADMIN" ? undefined : session.user.id,
         },
         data: json,
+        include: {
+          problem: true,
+        },
       });
+
+      // 初挑戦かどうか
+      const isFirstSubmission =
+        (await prisma.submission.count({
+          where: {
+            userId: session.user.id,
+            problemId: data.problemId,
+          },
+        })) === 1;
+
+      // course内の全ての問題が提出されたかどうか
+      const isCompleted =
+        (await prisma.problem.count({
+          where: {
+            courseId: data.problem.courseId,
+            submissions: {
+              some: {
+                userId: session.user.id,
+                status: "EVALUATED",
+              },
+            },
+          },
+        })) ===
+        (await prisma.problem.count({
+          where: {
+            courseId: data.problem.courseId,
+          },
+        }));
+
+      // ユーザープログレスの更新
+      if (isFirstSubmission) {
+        await prisma.userProgress.upsert({
+          where: {
+            userId_courseId: {
+              userId: session.user.id,
+              courseId: data.problem.courseId,
+            },
+          },
+          create: {
+            userId: session.user.id,
+            courseId: data.problem.courseId,
+            progress: 1,
+          },
+          update: {
+            progress: { increment: 1 },
+            isCompleted,
+          },
+        });
+      }
       return c.json(data);
     } catch (error) {
       return c.json(

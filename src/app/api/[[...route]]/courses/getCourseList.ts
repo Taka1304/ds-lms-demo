@@ -1,25 +1,40 @@
 import { prisma } from "@/lib/prisma";
 import { zValidator } from "@hono/zod-validator";
 import { createFactory } from "hono/factory";
+import type { Session } from "next-auth";
 import { z } from "zod";
+import { getSession } from "~/middleware/auth";
 
-const factory = createFactory();
+type Variables = {
+  session: Session;
+};
+
+const factory = createFactory<{ Variables: Variables }>();
 
 export const getCourseList = factory.createHandlers(
+  getSession,
   zValidator(
     "query",
-    z.object({
-      search: z.string().optional(),
-    }),
+    z
+      .object({
+        search: z.string().optional(),
+      })
+      .optional(), // query全体をオプショナルにする
   ),
   async (c) => {
-    const { search } = c.req.valid("query");
+    const query = c.req.valid("query");
+    const search = query?.search;
+    const session = c.get("session");
+
     try {
       const data = await prisma.course.findMany({
         where: {
-          title: {
-            contains: search, // 部分一致で検索
-          },
+          ...(search && { title: { contains: search } }),
+          ...(session?.user.role !== "ADMIN" && { isPublic: true }),
+        },
+        include: {
+          UserProgress: session?.user.id ? { where: { userId: session.user.id } } : false,
+          _count: { select: { problems: true } },
         },
       });
       return c.json(data);
