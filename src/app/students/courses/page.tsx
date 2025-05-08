@@ -1,53 +1,34 @@
-"use client";
-import { Separator } from "@/components/ui/separator";
-import { SidebarTrigger } from "@/components/ui/sidebar";
+import { Header } from "@/components/layout/header";
 import CardCarousel from "@/features/courses/components/CoursesCarousel";
-import type { CoursesCard } from "@/features/courses/types/Courses";
+import { client } from "@/lib/hono";
+import { cookies } from "next/headers";
+import { notFound } from "next/navigation";
 
-// ダミーデータ
-// ダミーデータのallCoursesとrelatedCoursesはidが重複してはいけません。
-// ここでは、allCoursesのidは1から10、relatedCoursesのidは11から20としています。
-// START:dummy
-const allCourses: CoursesCard[] = [];
-for (let i = 0; i < 10; i++) {
-  allCourses.push({
-    id: i,
-    title: "Data Analysis",
-    description: "Learn how to analyze data",
-    achievementLevel: 10,
-    maxAchievementLevel: 23,
-  });
-}
+export default async function CoursesPage() {
+  const cookieStore = await cookies();
+  const sessionToken = cookieStore.get("next-auth.session-token")?.value || "";
+  const res = await client.api.courses.$get(
+    {
+      query: {},
+    },
+    {
+      headers: {
+        Cookie: `next-auth.session-token=${sessionToken}`,
+      },
+    },
+  );
+  if (!res.ok) {
+    if (res.status < 500) return notFound();
+    return new Error("Failed to fetch courses");
+  }
 
-const relatedCourses: CoursesCard[] = [];
-for (let i = 10; i < 20; i++) {
-  relatedCourses.push({
-    id: i,
-    title: "Data Analysis",
-    description: "Learn how to analyze data",
-    achievementLevel: 10,
-    maxAchievementLevel: 23,
-  });
-}
-// END:dummy
-
-// コースページ
-export default function CoursesPage() {
+  const courses = await res.json();
   return (
     <>
-      <header className="flex h-16 items-center gap-2 ease-linear bg-primary/20 dark:bg-primary/40">
-        <div className="flex items-center gap-2 px-4">
-          <SidebarTrigger className="-ml-1" />
-          <Separator orientation="vertical" className="mr-2 h-4" />
-          {/* TODO:日本語化 */}
-          <h2 className="text-3xl font-bold">COURSES</h2>
-        </div>
-      </header>
-      <div className="space-y-6 container mx-auto px-4 py-8 min-h-[calc(100vh-60px)]">
-        <h1 className="text-xl font-bold pl-6">Most Popular</h1>
-        <CardCarousel courses={allCourses} />
+      <Header title="コース一覧" />
+      <div className="space-y-6 container mx-auto px-4 py-8">
         <h1 className="text-xl font-bold pl-6">Related Courses</h1>
-        <CardCarousel courses={relatedCourses} />
+        <CardCarousel courses={courses} />
       </div>
     </>
   );
