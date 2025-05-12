@@ -98,7 +98,6 @@ export default function ProgrammingInterface({ problem, mode = "challenge" }: Pr
                 </div>
                 <div className="flex-1 flex flex-col">
                   <TabsContent value="problem" className="flex-1 overflow-auto px-4">
-                    {/* TODO: 内容 */}
                     <h2 className="text-2xl font-bold mt-2">問題</h2>
                     <MarkdownViewer content={problem.description} className="p-4" />
 
@@ -106,7 +105,6 @@ export default function ProgrammingInterface({ problem, mode = "challenge" }: Pr
                     <MarkdownViewer content={problem.constraints} className="p-4" />
                   </TabsContent>
                   <TabsContent value="editor" className="flex-1 overflow-hidden">
-                    {/* TODO: themeのカスタマイズ */}
                     <ThemeEditor
                       value={codeRef.current || problem.defaultCode || ""}
                       language="python"
@@ -127,7 +125,6 @@ export default function ProgrammingInterface({ problem, mode = "challenge" }: Pr
                       </ResizablePanel>
                       <ResizableHandle withHandle />
                       <ResizablePanel defaultSize={50} minSize={30}>
-                        {/* TODO: themeのカスタマイズ */}
                         <ThemeEditor
                           value={codeRef.current || problem.defaultCode || ""}
                           language="python"
