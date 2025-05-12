@@ -26,12 +26,12 @@ jobs:
       - name: Dump Supabase database (prod)
         if: env.ENV == 'prod'
         run: |
-          supabase db dump --db-url "${{ secrets.SUPABASE_DB_URL_PROD }}" --file backup.sql
+          supabase db dump --db-url "${{ secrets.SUPABASE_DB_URL_PROD }}" --file backup.sql --data-only --use-copy
 
       - name: Dump Supabase database (dev)
         if: env.ENV == 'dev'
         run: |
-          supabase db dump --db-url "${{ secrets.SUPABASE_DB_URL_DEV }}" --file backup.sql
+          supabase db dump --db-url "${{ secrets.SUPABASE_DB_URL_DEV }}" --file backup.sql --data-only --use-copy
 
       - name: Rename with date
         id: date
