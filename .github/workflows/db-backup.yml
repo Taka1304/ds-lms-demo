@@ -1,0 +1,62 @@
+name: Supabase Backup to Google Drive
+
+on:
+  schedule:
+    - cron: '0 15 * * *' # JST 0時
+  workflow_dispatch:
+    inputs:
+      env:
+        description: 'Environment (prod or dev)'
+        required: true
+        default: 'prod'
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    env:
+      ENV: ${{ github.event_name == 'workflow_dispatch' && inputs.env || 'prod' }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set supabase CLI
+        uses: supabase/setup-cli@v1
+
+      - name: Dump Supabase database (prod)
+        if: env.ENV == 'prod'
+        run: |
+          supabase db dump --db-url "${{ secrets.SUPABASE_DB_URL_PROD }}" --file backup.sql
+
+      - name: Dump Supabase database (dev)
+        if: env.ENV == 'dev'
+        run: |
+          supabase db dump --db-url "${{ secrets.SUPABASE_DB_URL_DEV }}" --file backup.sql
+
+      - name: Rename with date
+        id: date
+        run: |
+          DATE=$(date '+%Y-%m-%d')
+          mv backup.sql "backup-${DATE}.sql"
+          echo "DATE=$DATE" >> $GITHUB_OUTPUT
+
+      - name: Upload to Google Drive (prod)
+        if: env.ENV == 'prod'
+        uses: adityak74/google-drive-upload-git-action@main
+        with:
+          credentials: ${{ secrets.GDRIVE_CREDENTIALS }}
+          filename: "backup-${{ steps.date.outputs.DATE }}.sql"
+          folderId: ${{ secrets.GDRIVE_FOLDER_ID_PROD }}
+          name: "backup-${{ steps.date.outputs.DATE }}.sql"
+          overwrite: "true"
+
+      - name: Upload to Google Drive (dev)
+        if: env.ENV == 'dev'
+        uses: adityak74/google-drive-upload-git-action@main
+        with:
+          credentials: ${{ secrets.GDRIVE_CREDENTIALS }}
+          filename: "backup-${{ steps.date.outputs.DATE }}.sql"
+          folderId: ${{ secrets.GDRIVE_FOLDER_ID_DEV }}
+          name: "backup-${{ steps.date.outputs.DATE }}.sql"
+          overwrite: "true"
+
