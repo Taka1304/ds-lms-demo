@@ -1,4 +1,5 @@
 import SigninButton from "@/app/auth/signin/signinButton";
+import { authOptions } from "@/lib/auth";
 import { getServerSession } from "next-auth";
 import Image from "next/image";
 import Link from "next/link";
@@ -10,7 +11,7 @@ export default async function SignInPage({
 }: {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
-  const session = await getServerSession();
+  const session = await getServerSession(authOptions);
   const params = await searchParams;
   // ログイン済みの場合はリダイレクト
   if (session?.user) {
