@@ -25,7 +25,7 @@ interface PythonExecutionProviderProps {
 }
 
 export function PythonExecutionProvider({ testCases, timeLimit, children }: PythonExecutionProviderProps) {
-  const { runPython, sendInput, isRunning, isReady, isAwaitingInput, stderr, stdout } = usePython();
+  const { runPython, sendInput, isRunning, isReady, isAwaitingInput, stderr, stdout, interruptExecution } = usePython();
   const [executionHistories, setExecutionHistories] = useState<ExecutionHistory[]>([]);
   const [activeHistoryIndex, setActiveHistoryIndex] = useState(0);
   const nextInputRef = useRef<string[]>([]);
@@ -118,7 +118,10 @@ export function PythonExecutionProvider({ testCases, timeLimit, children }: Pyth
       await Promise.race([
         runPython(code),
         new Promise((_, reject) =>
-          setTimeout(() => reject(new Error("Execution timed out", { cause: "TLE" })), timeLimit),
+          setTimeout(() => {
+            interruptExecution(); // 実行を中断
+            reject(new Error("Execution timed out", { cause: "TLE" }));
+          }, timeLimit),
         ),
       ]);
 
