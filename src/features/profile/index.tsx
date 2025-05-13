@@ -199,11 +199,11 @@ function InputField({
 }) {
   return (
     <div className="mt-5">
-      <label htmlFor="input-id" className="block font-semibold">
+      <label htmlFor="id" className="block font-semibold">
         {label}
       </label>
       <input
-        id="input-id"
+        id="id"
         type="text"
         value={value}
         onChange={(e) => onChange(e.target.value)}
