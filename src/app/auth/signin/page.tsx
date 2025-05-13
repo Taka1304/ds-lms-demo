@@ -1,4 +1,5 @@
 import SigninButton from "@/app/auth/signin/signinButton";
+import { authOptions } from "@/lib/auth";
 import { getServerSession } from "next-auth";
 import Image from "next/image";
 import Link from "next/link";
@@ -10,7 +11,7 @@ export default async function SignInPage({
 }: {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
-  const session = await getServerSession();
+  const session = await getServerSession(authOptions);
   const params = await searchParams;
   // ログイン済みの場合はリダイレクト
   if (session?.user) {
@@ -53,8 +54,8 @@ export default async function SignInPage({
             {/* <SigninButton provider="github">Sign in with GitHub</SigninButton> */}
           </div>
           <div className="text-balance text-center text-xs text-muted-foreground [&_a]:underline [&_a]:underline-offset-4 [&_a]:hover:text-primary">
-            By clicking continue, you agree to our <Link href="/terms-of-service">Terms of Service</Link> and{" "}
-            <Link href="/privacy-policy">Privacy Policy</Link>.
+            By clicking continue, you agree to our <Link href="/terms">Terms of Service</Link> and{" "}
+            <Link href="/privacy">Privacy Policy</Link>.
           </div>
         </div>
       </div>
