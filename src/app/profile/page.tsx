@@ -34,16 +34,5 @@ export default async function ProfilePageWrapper() {
 
   const data: InferResponseType<typeof req, 200> = await res.json();
 
-  return (
-    <ProfilePage
-      userId={userId}
-      data={{
-        name: data.name,
-        displayname: data.displayName,
-        grade: data.grade ?? "",
-        group: data.group ?? "",
-        imageUrl: data.image ?? "/logo.png",
-      }}
-    />
-  );
+  return <ProfilePage userId={userId} data={data} />;
 }

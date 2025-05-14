@@ -22,17 +22,18 @@ export const updateUser = factory.createHandlers(
   zValidator(
     "json",
     z.object({
-      name: z.string().optional(),
       displayName: z.string().optional(),
       grade: z.enum(["B1", "B2", "B3", "B4", "M1", "M2", "D1", "D2", "D3"]).optional(),
-      group: z.enum(["行政", "金融", "LLM", "スポーツ", "マルチモーダル", "アプリ開発", "その他"]).optional(),
+      group: z
+        .enum(["行政", "金融", "LLM", "スポーツ", "マルチモーダル", "アプリ開発", "コンペ参加", "その他"])
+        .optional(),
       image: z.string().optional(),
       role: z.enum(["USER", "ADMIN"]).optional(),
     }),
   ),
   async (c) => {
     const { user_id } = c.req.valid("param");
-    const { image, name, displayName, grade, group, role } = c.req.valid("json");
+    const { image, displayName, grade, group, role } = c.req.valid("json");
 
     const session = c.get("session");
     const isAdmin = session?.user.role === "ADMIN";
@@ -53,7 +54,6 @@ export const updateUser = factory.createHandlers(
           grade,
           image,
           group,
-          name,
         },
       });
 

@@ -2,8 +2,13 @@
 
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { client } from "@/lib/hono";
+import type { InferResponseType } from "hono";
 import { useRef, useState } from "react";
+import { toast } from "sonner";
 
 const gradeOptions = ["B1", "B2", "B3", "B4", "M1", "M2", "D1", "D2", "D3"] as const;
 
@@ -13,27 +18,23 @@ const groupOptions = ["行政", "金融", "LLM", "スポーツ", "マルチモ�
 
 type Group = (typeof groupOptions)[number];
 
+const req = client.api.users[":user_id"].$get;
+
 type Props = {
   userId: string;
-  data: {
-    name: string | null;
-    displayname: string | null;
-    grade: string | null;
-    group: string | null;
-    imageUrl: string;
-  };
+  data: InferResponseType<typeof req, 200>;
 };
 
 export default function ProfilePage({ userId, data }: Props) {
   const [name, setName] = useState(data.name ?? "");
-  const [displayname, setDisplayName] = useState(data.displayname ?? "");
+  const [displayname, setDisplayName] = useState(data.displayName ?? "");
   const [grade, setGrade] = useState<Grade | "">(
     gradeOptions.includes(data.grade as Grade) ? (data.grade as Grade) : "",
   );
   const [group, setGroup] = useState<Group | "">(
     groupOptions.includes(data.group as Group) ? (data.group as Group) : "",
   );
-  const [imageUrl, setImageUrl] = useState(data.imageUrl ?? "/logo.png");
+  const [imageUrl, setImageUrl] = useState(data.image ?? "/logo.png");
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const savedValues = useRef({
@@ -49,6 +50,7 @@ export default function ProfilePage({ userId, data }: Props) {
   };
 
   const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const toastId = toast.loading("アップロード中...");
     const file = event.target.files?.[0];
     if (!file) return;
 
@@ -67,40 +69,45 @@ export default function ProfilePage({ userId, data }: Props) {
       const result = await res.json();
 
       if (!res.ok) {
-        alert(`アップロードに失敗しました: ${result.error}`);
+        toast.error("アップロードに失敗しました", {
+          id: toastId,
+        });
         return;
       }
 
       setImageUrl(result.url);
+      toast.success("アップロードが完了しました！", { id: toastId });
     } catch (error) {
       console.error(error);
-      alert("アップロード中にエラーが発生しました");
+      toast.error("アップロード中にエラーが発生しました", {
+        id: toastId,
+      });
     }
   };
 
   const handleSave = async () => {
-    try {
-      const res = await client.api.users[":user_id"].$patch({
-        param: { user_id: userId },
-        json: {
-          name: name,
-          displayName: displayname,
-          grade: grade === "" ? undefined : grade,
-          group: group === "" ? undefined : group,
-          image: imageUrl,
-        },
+    const toastId = toast.loading("保存中...");
+    const res = await client.api.users[":user_id"].$patch({
+      param: { user_id: userId },
+      json: {
+        displayName: displayname,
+        grade: grade === "" ? undefined : grade,
+        group: group === "" ? undefined : group,
+        image: imageUrl,
+      },
+    });
+
+    if (!res.ok) {
+      toast.error("保存に失敗しました", {
+        id: toastId,
       });
-
-      if (!res.ok) {
-        alert("保存に失敗しました");
-        return;
-      }
-
-      savedValues.current = { name, displayname, grade, group, imageUrl };
-      alert("プロフィールを保存しました！");
-    } catch (_error) {
-      alert("エラーが発生しました");
+      return;
     }
+
+    savedValues.current = { name, displayname, grade, group, imageUrl };
+    toast.success("プロフィールを保存しました！", {
+      id: toastId,
+    });
   };
 
   const handleReset = () => {
@@ -121,59 +128,61 @@ export default function ProfilePage({ userId, data }: Props) {
         <AvatarImage src={imageUrl} alt={name} className="cursor-pointer" onClick={handleAvatarClick} />
       </Avatar>
 
-      <input type="file" accept="image/*" ref={fileInputRef} onChange={handleFileChange} hidden />
+      <Input type="file" accept="image/*" ref={fileInputRef} onChange={handleFileChange} hidden />
 
       <InputField label="表示名" value={displayname} onChange={setDisplayName} />
       <InputField label="名前" value={name} onChange={setName} />
 
       {/* 学年（Grade） */}
       <div className="mt-5">
-        <label htmlFor="grade" className="block font-semibold">
+        <Label htmlFor="grade" className="block font-semibold">
           学年
-        </label>
-        <select
-          id="grade"
+        </Label>
+        <Select
           value={grade}
-          onChange={(e) => {
-            const value = e.target.value;
+          onValueChange={(value) => {
             if (gradeOptions.includes(value as Grade)) {
               setGrade(value as Grade);
             }
           }}
-          className="border border-gray-300 p-2 rounded-md w-full"
         >
-          <option value="">選択してください</option>
-          {gradeOptions.map((g) => (
-            <option key={g} value={g}>
-              {g}
-            </option>
-          ))}
-        </select>
+          <SelectTrigger className="border border-gray-300 p-2 rounded-md w-full">
+            <SelectValue placeholder="選択してください" />
+          </SelectTrigger>
+          <SelectContent>
+            {gradeOptions.map((g) => (
+              <SelectItem key={g} value={g}>
+                {g}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
       </div>
 
       {/* 所属班 */}
       <div className="mt-5">
-        <label htmlFor="group" className="block font-semibold">
+        <Label htmlFor="group" className="block font-semibold">
           所属班
-        </label>
-        <select
-          id="group"
+        </Label>
+        <Select
           value={group}
-          onChange={(e) => {
-            const value = e.target.value;
+          onValueChange={(value) => {
             if (groupOptions.includes(value as Group)) {
               setGroup(value as Group);
             }
           }}
-          className="border border-gray-300 p-2 rounded-md w-full"
         >
-          <option value="">選択してください</option>
-          {groupOptions.map((g) => (
-            <option key={g} value={g}>
-              {g}
-            </option>
-          ))}
-        </select>
+          <SelectTrigger className="border border-gray-300 p-2 rounded-md w-full">
+            <SelectValue placeholder="選択してください" />
+          </SelectTrigger>
+          <SelectContent>
+            {groupOptions.map((g) => (
+              <SelectItem key={g} value={g}>
+                {g}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
       </div>
 
       <div className="border border-gray-700 border-2 w-full p-2 rounded-md flex justify-end mt-10 gap-1">
@@ -199,10 +208,10 @@ function InputField({
 }) {
   return (
     <div className="mt-5">
-      <label htmlFor="id" className="block font-semibold">
+      <Label htmlFor="id" className="block font-semibold">
         {label}
-      </label>
-      <input
+      </Label>
+      <Input
         id="id"
         type="text"
         value={value}
