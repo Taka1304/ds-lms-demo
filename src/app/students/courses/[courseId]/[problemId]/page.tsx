@@ -51,7 +51,9 @@ export default async function ProblemDetail({ params }: { params: Promise<{ cour
                       <Badge variant="default">{submission.status}</Badge>
                       <p className="text-sm text-gray-500">{dayjs(submission.createdAt).format("YYYY/MM/DD HH:mm")}</p>
                     </div>
-                    <p>Score: {submission.score}点</p>
+                    <p>
+                      Score: {submission.status === "EVALUATED" ? `${submission.score}点` : "まだ評価されていません"}
+                    </p>
 
                     <Link href={`/students/courses/${courseId}/${problemId}/${submission.id}`}>
                       <Button variant="outline" className="mt-2 w-full">
