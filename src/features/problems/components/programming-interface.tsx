@@ -1,14 +1,15 @@
 "use client";
 
+import ThemeEditor from "@/components/ui/editor";
 import { MarkdownViewer } from "@/components/ui/markdown";
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/components/ui/resizable";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ActionBar } from "@/features/problems/components/action-bar";
 import { client } from "@/lib/hono";
-import { Editor } from "@monaco-editor/react";
 import type { InferResponseType } from "hono";
 import { Code, FileText, SquareSplitHorizontal } from "lucide-react";
-import { useState } from "react";
+import router from "next/router";
+import { useRef, useState } from "react";
 import { PythonProvider } from "react-py";
 import type { Packages } from "react-py/dist/types/Packages";
 import { ConsoleView } from "../components/console-view";
@@ -23,13 +24,14 @@ const req = client.api.courses.problems[":problem_id"].$get;
 
 type Props = {
   problem: InferResponseType<typeof req, 200>;
-  mode?: "debug" | "solve"; // <- ここを追加
+  mode?: "debug" | "challenge";
 };
 
-export default function ProgrammingInterface({ problem, mode = "solve" }: Props) {
+export default function ProgrammingInterface({ problem, mode = "challenge" }: Props) {
   const [consoleExpanded, setConsoleExpanded] = useState(true);
   const [activeTab, setActiveTab] = useState("split");
   const [code, setCode] = useState(problem.defaultCode || "");
+  const codeRef = useRef<string | null>(problem.defaultCode || null);
 
   const handleEditorChange = (value: string | undefined) => {
     setCode(value ?? "");
@@ -37,7 +39,21 @@ export default function ProgrammingInterface({ problem, mode = "solve" }: Props)
 
   const onSubmitCode = async () => {
     // TODO: 提出処理
-    // await client.api.courses.problems[":problem_id"].submit.post({
+    const res = await client.api.courses.problems[":problem_id"].submit.$post({
+      param: {
+        problem_id: problem.id,
+      },
+      json: {
+        code: codeRef.current || "",
+      },
+    });
+
+    if (res.status !== 200) {
+      console.error("Error submitting code:", res.statusText);
+      return;
+    }
+    const submissionId = (await res.json()).id;
+    router.push(`/students/courses/${problem.courseId}/${problem.id}/${submissionId}`);
   };
 
   return (
@@ -79,16 +95,17 @@ export default function ProgrammingInterface({ problem, mode = "solve" }: Props)
                 </div>
 
                 <div className="flex-1 flex flex-col">
+                  {/* 問題タブ */}
                   <TabsContent value="problem" className="flex-1 overflow-auto px-4">
                     <h2 className="text-2xl font-bold mt-2">問題</h2>
                     <MarkdownViewer content={problem.description} />
-
                     <h2 className="text-2xl font-bold mt-2">制約</h2>
                     <MarkdownViewer content={problem.constraints} />
                   </TabsContent>
 
+                  {/* エディタタブ */}
                   <TabsContent value="editor" className="flex-1 overflow-hidden">
-                    <Editor
+                    <ThemeEditor
                       value={code}
                       language="python"
                       theme="vs-dark"
@@ -102,20 +119,20 @@ export default function ProgrammingInterface({ problem, mode = "solve" }: Props)
                     />
                   </TabsContent>
 
+                  {/* 分割ビュー */}
                   <TabsContent value="split" className="flex-1">
                     <ResizablePanelGroup direction="horizontal" className="flex-1">
                       <ResizablePanel defaultSize={50} minSize={30}>
                         <div className="overflow-auto h-full px-4">
                           <h2 className="text-2xl font-bold mt-2">問題</h2>
-                          <MarkdownViewer content={problem.description} />
-
+                          <MarkdownViewer content={problem.description} className="p-4" />
                           <h2 className="text-2xl font-bold mt-2">制約</h2>
-                          <MarkdownViewer content={problem.constraints} />
+                          <MarkdownViewer content={problem.constraints} className="p-4" />
                         </div>
                       </ResizablePanel>
                       <ResizableHandle withHandle />
                       <ResizablePanel defaultSize={50} minSize={30}>
-                        <Editor
+                        <ThemeEditor
                           value={code}
                           language="python"
                           theme="vs-dark"
