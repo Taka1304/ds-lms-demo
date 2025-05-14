@@ -38,7 +38,6 @@ export default function ProgrammingInterface({ problem, mode = "challenge" }: Pr
   };
 
   const onSubmitCode = async () => {
-    // TODO: 提出処理
     const res = await client.api.courses.problems[":problem_id"].submit.$post({
       param: {
         problem_id: problem.id,
