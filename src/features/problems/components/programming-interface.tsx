@@ -1,60 +1,43 @@
 "use client";
 
-import ThemeEditor from "@/components/ui/editor";
 import { MarkdownViewer } from "@/components/ui/markdown";
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/components/ui/resizable";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ActionBar } from "@/features/problems/components/action-bar";
 import { client } from "@/lib/hono";
+import { Editor } from "@monaco-editor/react";
 import type { InferResponseType } from "hono";
 import { Code, FileText, SquareSplitHorizontal } from "lucide-react";
-import { useRouter } from "next/navigation";
-import { useRef, useState } from "react";
+import { useState } from "react";
 import { PythonProvider } from "react-py";
 import type { Packages } from "react-py/dist/types/Packages";
 import { ConsoleView } from "../components/console-view";
 import { PythonExecutionProvider } from "../components/python-execution-provider";
 
 const packages: Packages = {
-  official: ["numpy", "pandas"],
+  official: ["numpy"],
   micropip: [],
 };
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const req = client.api.courses.problems[":problem_id"].$get;
 
 type Props = {
   problem: InferResponseType<typeof req, 200>;
-  mode?: "debug" | "challenge";
 };
 
-export default function ProgrammingInterface({ problem, mode = "challenge" }: Props) {
+export default function ProgrammingInterface({ problem }: Props) {
   const [consoleExpanded, setConsoleExpanded] = useState(true);
   const [activeTab, setActiveTab] = useState("split");
-  const codeRef = useRef<string | null>(problem.defaultCode || null);
-  const router = useRouter();
+  const [code, setCode] = useState(problem.defaultCode || "");
 
   const handleEditorChange = (value: string | undefined) => {
-    codeRef.current = value || "";
+    setCode(value || "");
   };
 
   const onSubmitCode = async () => {
-    // TODO: トースト表示
-
-    const res = await client.api.courses.problems[":problem_id"].submit.$post({
-      param: {
-        problem_id: problem.id,
-      },
-      json: {
-        code: codeRef.current || "",
-      },
-    });
-
-    if (res.status !== 200) {
-      console.error("Error submitting code:", res.statusText);
-      return;
-    }
-    const submissionId = (await res.json()).id;
-    router.push(`/students/courses/${problem.courseId}/${problem.id}/${submissionId}`);
+    // TODO: 提出処理
+    // await client.api.courses.problems[":problem_id"].submit.post({
   };
 
   return (
@@ -62,7 +45,6 @@ export default function ProgrammingInterface({ problem, mode = "challenge" }: Pr
       <PythonExecutionProvider testCases={problem.testCases} timeLimit={problem.timeLimit * 1000}>
         {({ isRunning, isReady, executionHistories, activeHistoryIndex, runCode, setActiveHistoryIndex }) => (
           <div className="flex h-screen flex-col overflow-hidden py-2">
-            {/* Main Content Area */}
             <main className="flex flex-1 flex-col overflow-hidden">
               <Tabs
                 defaultValue="problem"
@@ -88,46 +70,50 @@ export default function ProgrammingInterface({ problem, mode = "challenge" }: Pr
                     </TabsList>
                   </span>
                   <ActionBar
-                    mode={mode}
                     isRunning={isRunning}
                     isReady={isReady}
-                    onRunCode={() => runCode(codeRef.current || "")}
+                    onRunCode={() => runCode(code)}
                     recentHistory={executionHistories[0]}
                     onSubmitCode={onSubmitCode}
                   />
                 </div>
+
                 <div className="flex-1 flex flex-col">
                   <TabsContent value="problem" className="flex-1 overflow-auto px-4">
                     <h2 className="text-2xl font-bold mt-2">問題</h2>
-                    <MarkdownViewer content={problem.description} className="p-4" />
+                    <MarkdownViewer content={problem.description} />
 
                     <h2 className="text-2xl font-bold mt-2">制約</h2>
-                    <MarkdownViewer content={problem.constraints} className="p-4" />
+                    <MarkdownViewer content={problem.constraints} />
                   </TabsContent>
+
                   <TabsContent value="editor" className="flex-1 overflow-hidden">
-                    <ThemeEditor
-                      value={codeRef.current || problem.defaultCode || ""}
+                    <Editor
+                      value={code}
                       language="python"
+                      theme="vs-dark"
                       onChange={handleEditorChange}
                       className="h-full"
                     />
                   </TabsContent>
+
                   <TabsContent value="split" className="flex-1">
                     <ResizablePanelGroup direction="horizontal" className="flex-1">
                       <ResizablePanel defaultSize={50} minSize={30}>
                         <div className="overflow-auto h-full px-4">
                           <h2 className="text-2xl font-bold mt-2">問題</h2>
-                          <MarkdownViewer content={problem.description} className="p-4" />
+                          <MarkdownViewer content={problem.description} />
 
                           <h2 className="text-2xl font-bold mt-2">制約</h2>
-                          <MarkdownViewer content={problem.constraints} className="p-4" />
+                          <MarkdownViewer content={problem.constraints} />
                         </div>
                       </ResizablePanel>
                       <ResizableHandle withHandle />
                       <ResizablePanel defaultSize={50} minSize={30}>
-                        <ThemeEditor
-                          value={codeRef.current || problem.defaultCode || ""}
+                        <Editor
+                          value={code}
                           language="python"
+                          theme="vs-dark"
                           onChange={handleEditorChange}
                           className="h-full"
                         />
@@ -138,7 +124,6 @@ export default function ProgrammingInterface({ problem, mode = "challenge" }: Pr
               </Tabs>
             </main>
 
-            {/* Console Section */}
             <ConsoleView
               histories={executionHistories}
               activeHistoryIndex={activeHistoryIndex}
