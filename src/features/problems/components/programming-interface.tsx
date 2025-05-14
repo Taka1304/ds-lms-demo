@@ -32,7 +32,7 @@ export default function ProgrammingInterface({ problem }: Props) {
   const [code, setCode] = useState(problem.defaultCode || "");
 
   const handleEditorChange = (value: string | undefined) => {
-    setCode(value ?? "");
+    setCode(value || "");
   };
 
   const onSubmitCode = async () => {
@@ -45,7 +45,6 @@ export default function ProgrammingInterface({ problem }: Props) {
       <PythonExecutionProvider testCases={problem.testCases} timeLimit={problem.timeLimit * 1000}>
         {({ isRunning, isReady, executionHistories, activeHistoryIndex, runCode, setActiveHistoryIndex }) => (
           <div className="flex h-screen flex-col overflow-hidden py-2">
-            {/* Main Content Area */}
             <main className="flex flex-1 flex-col overflow-hidden">
               <Tabs
                 defaultValue="problem"
@@ -134,7 +133,6 @@ export default function ProgrammingInterface({ problem }: Props) {
               </Tabs>
             </main>
 
-            {/* Console Section */}
             <ConsoleView
               histories={executionHistories}
               activeHistoryIndex={activeHistoryIndex}
