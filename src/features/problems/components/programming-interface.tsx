@@ -23,9 +23,10 @@ const req = client.api.courses.problems[":problem_id"].$get;
 
 type Props = {
   problem: InferResponseType<typeof req, 200>;
+  mode?: "debug" | "solve"; // <- ここを追加
 };
 
-export default function ProgrammingInterface({ problem }: Props) {
+export default function ProgrammingInterface({ problem, mode = "solve" }: Props) {
   const [consoleExpanded, setConsoleExpanded] = useState(true);
   const [activeTab, setActiveTab] = useState("split");
   const [code, setCode] = useState(problem.defaultCode || "");
@@ -44,7 +45,6 @@ export default function ProgrammingInterface({ problem }: Props) {
       <PythonExecutionProvider testCases={problem.testCases} timeLimit={problem.timeLimit * 1000}>
         {({ isRunning, isReady, executionHistories, activeHistoryIndex, runCode, setActiveHistoryIndex }) => (
           <div className="flex h-screen flex-col overflow-hidden py-2">
-            {/* Main Content Area */}
             <main className="flex flex-1 flex-col overflow-hidden">
               <Tabs
                 defaultValue="problem"
@@ -77,6 +77,7 @@ export default function ProgrammingInterface({ problem }: Props) {
                     onSubmitCode={onSubmitCode}
                   />
                 </div>
+
                 <div className="flex-1 flex flex-col">
                   <TabsContent value="problem" className="flex-1 overflow-auto px-4">
                     <h2 className="text-2xl font-bold mt-2">問題</h2>
@@ -133,7 +134,6 @@ export default function ProgrammingInterface({ problem }: Props) {
               </Tabs>
             </main>
 
-            {/* Console Section */}
             <ConsoleView
               histories={executionHistories}
               activeHistoryIndex={activeHistoryIndex}
