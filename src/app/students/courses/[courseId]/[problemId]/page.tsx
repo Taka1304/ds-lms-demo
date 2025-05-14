@@ -1,8 +1,10 @@
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 import { MarkdownViewer } from "@/components/ui/markdown";
 import { Separator } from "@/components/ui/separator";
 import { client } from "@/lib/hono";
+import dayjs from "dayjs";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
@@ -31,6 +33,11 @@ export default async function ProblemDetail({ params }: { params: Promise<{ cour
 
           <h2 className="text-2xl font-bold mb-6">制約</h2>
           <MarkdownViewer content={problem.constraints} />
+          <div className="w-72 py-4">
+            <Link href={`/students/courses/${courseId}/${problemId}/challenge`}>
+              <Button className="w-full">挑戦する</Button>
+            </Link>
+          </div>
         </div>
         <div className="space-y-6">
           <Card>
@@ -39,21 +46,15 @@ export default async function ProblemDetail({ params }: { params: Promise<{ cour
               <Separator className="my-2" />
               {problem.submissions.length > 0 ? (
                 problem.submissions.map((submission) => (
-                  <div key={submission.id} className="p-4 border-b last:border-b-0">
-                    <p className="text-sm text-gray-500">
-                      {new Date(submission.createdAt).toLocaleString("ja-JP", {
-                        year: "numeric",
-                        month: "2-digit",
-                        day: "2-digit",
-                        hour: "2-digit",
-                        minute: "2-digit",
-                      })}
-                    </p>
-                    <p className="text-lg font-bold">{submission.status}</p>
-                    <p className="text-sm text-gray-500">提出コードの長さ: {submission.code.length} bytes</p>
+                  <div key={submission.id} className="p-4 flex flex-col gap-2">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <Badge variant="default">{submission.status}</Badge>
+                      <p className="text-sm text-gray-500">{dayjs(submission.createdAt).format("YYYY/MM/DD HH:mm")}</p>
+                    </div>
+                    <p>Score: {submission.score}点</p>
 
                     <Link href={`/students/courses/${courseId}/${problemId}/${submission.id}`}>
-                      <Button variant="outline" className="mt-2">
+                      <Button variant="outline" className="mt-2 w-full">
                         詳細を見る
                       </Button>
                     </Link>
@@ -77,9 +78,6 @@ export default async function ProblemDetail({ params }: { params: Promise<{ cour
             </CardHeader>
           </Card>
         </div>
-        <Link href={`/students/courses/${courseId}/${problemId}/challenge`}>
-          <Button className="w-full">挑戦する</Button>
-        </Link>
       </div>
     </div>
   );
