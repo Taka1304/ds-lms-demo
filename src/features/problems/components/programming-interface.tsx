@@ -97,9 +97,9 @@ export default function ProgrammingInterface({ problem, mode = "challenge" }: Pr
                   {/* 問題タブ */}
                   <TabsContent value="problem" className="flex-1 overflow-auto px-4">
                     <h2 className="text-2xl font-bold mt-2">問題</h2>
-                    <MarkdownViewer content={problem.description} />
+                    <MarkdownViewer content={problem.description} className="p-4" />
                     <h2 className="text-2xl font-bold mt-2">制約</h2>
-                    <MarkdownViewer content={problem.constraints} />
+                    <MarkdownViewer content={problem.constraints} className="p-4" />
                   </TabsContent>
 
                   {/* エディタタブ */}
@@ -107,7 +107,6 @@ export default function ProgrammingInterface({ problem, mode = "challenge" }: Pr
                     <ThemeEditor
                       value={code}
                       language="python"
-                      theme="vs-dark"
                       onChange={handleEditorChange}
                       className="h-full"
                       onMount={(editor, monaco) => {
@@ -134,7 +133,6 @@ export default function ProgrammingInterface({ problem, mode = "challenge" }: Pr
                         <ThemeEditor
                           value={code}
                           language="python"
-                          theme="vs-dark"
                           onChange={handleEditorChange}
                           className="h-full"
                           onMount={(editor, monaco) => {
