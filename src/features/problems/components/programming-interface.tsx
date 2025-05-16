@@ -32,7 +32,7 @@ export default function ProgrammingInterface({ problem, mode = "challenge" }: Pr
   const [consoleExpanded, setConsoleExpanded] = useState(true);
   const [activeTab, setActiveTab] = useState("split");
   const codeRef = useRef<string | null>(problem.defaultCode || null);
-  const runCodeRef = useRef<() => void>(null);
+  const runCodeRef = useRef<(() => void) | null>(null);
   const router = useRouter();
 
   const handleEditorChange = (value: string | undefined) => {
