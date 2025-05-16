@@ -12,6 +12,7 @@ import { useRouter } from "next/navigation";
 import { useRef, useState } from "react";
 import { PythonProvider } from "react-py";
 import type { Packages } from "react-py/dist/types/Packages";
+import { toast } from "sonner";
 import { ConsoleView } from "../components/console-view";
 import { PythonExecutionProvider } from "../components/python-execution-provider";
 
@@ -39,6 +40,7 @@ export default function ProgrammingInterface({ problem, mode = "challenge" }: Pr
   };
 
   const onSubmitCode = async () => {
+    const toastId = toast.loading("提出しています...");
     const res = await client.api.courses.problems[":problem_id"].submit.$post({
       param: {
         problem_id: problem.id,
@@ -49,10 +51,12 @@ export default function ProgrammingInterface({ problem, mode = "challenge" }: Pr
     });
 
     if (res.status !== 200) {
+      toast.error("提出に失敗しました", { id: toastId });
       console.error("Error submitting code:", res.statusText);
       return;
     }
     const submissionId = (await res.json()).id;
+    toast.success("提出しました", { id: toastId });
     router.push(`/students/courses/${problem.courseId}/${problem.id}/${submissionId}`);
   };
 
