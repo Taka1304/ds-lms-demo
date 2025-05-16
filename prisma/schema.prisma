@@ -50,6 +50,7 @@ model User {
   grade         Grade?
   image         String?
   role          SystemRole? @default(USER)
+  group         String?
   createdAt     DateTime    @default(now())
   updatedAt     DateTime    @updatedAt
 
