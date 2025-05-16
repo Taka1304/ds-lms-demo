@@ -12,11 +12,12 @@ import { useRouter } from "next/navigation";
 import { useRef, useState } from "react";
 import { PythonProvider } from "react-py";
 import type { Packages } from "react-py/dist/types/Packages";
+import { toast } from "sonner";
 import { ConsoleView } from "../components/console-view";
 import { PythonExecutionProvider } from "../components/python-execution-provider";
 
 const packages: Packages = {
-  official: ["numpy"],
+  official: ["numpy", "pandas"],
   micropip: [],
 };
 
@@ -30,15 +31,16 @@ type Props = {
 export default function ProgrammingInterface({ problem, mode = "challenge" }: Props) {
   const [consoleExpanded, setConsoleExpanded] = useState(true);
   const [activeTab, setActiveTab] = useState("split");
-  const [code, setCode] = useState(problem.defaultCode || "");
   const codeRef = useRef<string | null>(problem.defaultCode || null);
+  const runCodeRef = useRef<(() => void) | null>(null);
   const router = useRouter();
 
   const handleEditorChange = (value: string | undefined) => {
-    setCode(value ?? "");
+    codeRef.current = value || "";
   };
 
   const onSubmitCode = async () => {
+    const toastId = toast.loading("提出しています...");
     const res = await client.api.courses.problems[":problem_id"].submit.$post({
       param: {
         problem_id: problem.id,
@@ -49,115 +51,123 @@ export default function ProgrammingInterface({ problem, mode = "challenge" }: Pr
     });
 
     if (res.status !== 200) {
+      toast.error("提出に失敗しました", { id: toastId });
       console.error("Error submitting code:", res.statusText);
       return;
     }
     const submissionId = (await res.json()).id;
+    toast.success("提出しました", { id: toastId });
     router.push(`/students/courses/${problem.courseId}/${problem.id}/${submissionId}`);
   };
 
   return (
     <PythonProvider packages={packages}>
       <PythonExecutionProvider testCases={problem.testCases} timeLimit={problem.timeLimit * 1000}>
-        {({ isRunning, isReady, executionHistories, activeHistoryIndex, runCode, setActiveHistoryIndex }) => (
-          <div className="flex h-screen flex-col overflow-hidden py-2">
-            <main className="flex flex-1 flex-col overflow-hidden">
-              <Tabs
-                defaultValue="problem"
-                className="flex h-full flex-col"
-                value={activeTab}
-                onValueChange={setActiveTab}
-              >
-                <div className="flex items-center justify-between border-b bg-muted/40 px-4">
-                  <span>
-                    <TabsList className="h-10">
-                      <TabsTrigger value="problem" className="flex items-center gap-2">
-                        <FileText className="h-4 w-4" />
-                        問題
-                      </TabsTrigger>
-                      <TabsTrigger value="editor" className="flex items-center gap-2">
-                        <Code className="h-4 w-4" />
-                        コード
-                      </TabsTrigger>
-                      <TabsTrigger value="split" className="flex items-center gap-2">
-                        <SquareSplitHorizontal className="h-4 w-4" />
-                        分割
-                      </TabsTrigger>
-                    </TabsList>
-                  </span>
-                  <ActionBar
-                    isRunning={isRunning}
-                    isReady={isReady}
-                    onRunCode={() => runCode(code)}
-                    recentHistory={executionHistories[0]}
-                    onSubmitCode={onSubmitCode}
-                  />
-                </div>
-
-                <div className="flex-1 flex flex-col">
-                  {/* 問題タブ */}
-                  <TabsContent value="problem" className="flex-1 overflow-auto px-4">
-                    <h2 className="text-2xl font-bold mt-2">問題</h2>
-                    <MarkdownViewer content={problem.description} className="p-4" />
-                    <h2 className="text-2xl font-bold mt-2">制約</h2>
-                    <MarkdownViewer content={problem.constraints} className="p-4" />
-                  </TabsContent>
-
-                  {/* エディタタブ */}
-                  <TabsContent value="editor" className="flex-1 overflow-hidden">
-                    <ThemeEditor
-                      value={code}
-                      language="python"
-                      onChange={handleEditorChange}
-                      className="h-full"
-                      onMount={(editor, monaco) => {
-                        editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.Enter, () => {
-                          runCode(code);
-                        });
-                      }}
+        {({ isRunning, isReady, executionHistories, activeHistoryIndex, runCode, setActiveHistoryIndex }) => {
+          runCodeRef.current = () => {
+            if (isReady && !isRunning) {
+              runCode(codeRef.current || "");
+            }
+          };
+          return (
+            <div className="flex h-screen flex-col overflow-hidden py-2">
+              <main className="flex flex-1 flex-col overflow-hidden">
+                <Tabs
+                  defaultValue="problem"
+                  className="flex h-full flex-col"
+                  value={activeTab}
+                  onValueChange={setActiveTab}
+                >
+                  <div className="flex items-center justify-between border-b bg-muted/40 px-4">
+                    <span>
+                      <TabsList className="h-10">
+                        <TabsTrigger value="problem" className="flex items-center gap-2">
+                          <FileText className="h-4 w-4" />
+                          問題
+                        </TabsTrigger>
+                        <TabsTrigger value="editor" className="flex items-center gap-2">
+                          <Code className="h-4 w-4" />
+                          コード
+                        </TabsTrigger>
+                        <TabsTrigger value="split" className="flex items-center gap-2">
+                          <SquareSplitHorizontal className="h-4 w-4" />
+                          分割
+                        </TabsTrigger>
+                      </TabsList>
+                    </span>
+                    <ActionBar
+                      mode={mode}
+                      isRunning={isRunning}
+                      isReady={isReady}
+                      onRunCode={() => runCode(codeRef.current || "")}
+                      recentHistory={executionHistories[0]}
+                      onSubmitCode={onSubmitCode}
                     />
-                  </TabsContent>
+                  </div>
 
-                  {/* 分割ビュー */}
-                  <TabsContent value="split" className="flex-1">
-                    <ResizablePanelGroup direction="horizontal" className="flex-1">
-                      <ResizablePanel defaultSize={50} minSize={30}>
-                        <div className="overflow-auto h-full px-4">
-                          <h2 className="text-2xl font-bold mt-2">問題</h2>
-                          <MarkdownViewer content={problem.description} className="p-4" />
-                          <h2 className="text-2xl font-bold mt-2">制約</h2>
-                          <MarkdownViewer content={problem.constraints} className="p-4" />
-                        </div>
-                      </ResizablePanel>
-                      <ResizableHandle withHandle />
-                      <ResizablePanel defaultSize={50} minSize={30}>
-                        <ThemeEditor
-                          value={code}
-                          language="python"
-                          onChange={handleEditorChange}
-                          className="h-full"
-                          onMount={(editor, monaco) => {
-                            editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.Enter, () => {
-                              runCode(code);
-                            });
-                          }}
-                        />
-                      </ResizablePanel>
-                    </ResizablePanelGroup>
-                  </TabsContent>
-                </div>
-              </Tabs>
-            </main>
+                  <div className="flex-1 flex flex-col">
+                    {/* 問題タブ */}
+                    <TabsContent value="problem" className="flex-1 overflow-auto px-4">
+                      <h2 className="text-2xl font-bold mt-2">問題</h2>
+                      <MarkdownViewer content={problem.description} className="p-4" />
+                      <h2 className="text-2xl font-bold mt-2">制約</h2>
+                      <MarkdownViewer content={problem.constraints} className="p-4" />
+                    </TabsContent>
 
-            <ConsoleView
-              histories={executionHistories}
-              activeHistoryIndex={activeHistoryIndex}
-              isExpanded={consoleExpanded}
-              onToggleExpand={() => setConsoleExpanded(!consoleExpanded)}
-              onSelectHistory={setActiveHistoryIndex}
-            />
-          </div>
-        )}
+                    {/* エディタタブ */}
+                    <TabsContent value="editor" className="flex-1 overflow-hidden">
+                      <ThemeEditor
+                        value={codeRef.current || ""}
+                        language="python"
+                        className="h-full"
+                        onChange={handleEditorChange}
+                        onMount={(editor, monaco) => {
+                          editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.Enter, () => runCodeRef.current?.());
+                        }}
+                      />
+                    </TabsContent>
+
+                    {/* 分割ビュー */}
+                    <TabsContent value="split" className="flex-1">
+                      <ResizablePanelGroup direction="horizontal" className="flex-1">
+                        <ResizablePanel defaultSize={50} minSize={30}>
+                          <div className="overflow-auto h-full px-4">
+                            <h2 className="text-2xl font-bold mt-2">問題</h2>
+                            <MarkdownViewer content={problem.description} className="p-4" />
+                            <h2 className="text-2xl font-bold mt-2">制約</h2>
+                            <MarkdownViewer content={problem.constraints} className="p-4" />
+                          </div>
+                        </ResizablePanel>
+                        <ResizableHandle withHandle />
+                        <ResizablePanel defaultSize={50} minSize={30}>
+                          <ThemeEditor
+                            value={codeRef.current || ""}
+                            language="python"
+                            className="h-full"
+                            onChange={handleEditorChange}
+                            onMount={(editor, monaco) => {
+                              editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.Enter, () =>
+                                runCodeRef.current?.(),
+                              );
+                            }}
+                          />
+                        </ResizablePanel>
+                      </ResizablePanelGroup>
+                    </TabsContent>
+                  </div>
+                </Tabs>
+              </main>
+
+              <ConsoleView
+                histories={executionHistories}
+                activeHistoryIndex={activeHistoryIndex}
+                isExpanded={consoleExpanded}
+                onToggleExpand={() => setConsoleExpanded(!consoleExpanded)}
+                onSelectHistory={setActiveHistoryIndex}
+              />
+            </div>
+          );
+        }}
       </PythonExecutionProvider>
     </PythonProvider>
   );
