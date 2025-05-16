@@ -2,6 +2,7 @@
 
 import ThemeEditor from "@/components/ui/editor";
 import { MarkdownViewer } from "@/components/ui/markdown";
+import NavGuardDialog from "@/components/ui/nav-guard-dialog";
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/components/ui/resizable";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ActionBar } from "@/features/problems/components/action-bar";
@@ -9,6 +10,7 @@ import { useStartTimeTracker } from "@/hooks/use-start-time-tracker";
 import { client } from "@/lib/hono";
 import type { InferResponseType } from "hono";
 import { Code, FileText, SquareSplitHorizontal } from "lucide-react";
+import { useNavigationGuard } from "next-navigation-guard";
 import { useRouter } from "next/navigation";
 import { useRef, useState } from "react";
 import { PythonProvider } from "react-py";
@@ -34,11 +36,15 @@ export default function ProgrammingInterface({ problem, mode = "challenge" }: Pr
   const [activeTab, setActiveTab] = useState("split");
   const codeRef = useRef<string | null>(problem.defaultCode || null);
   const runCodeRef = useRef<(() => void) | null>(null);
+
+  const [enabled, setEnabled] = useState(false);
+  const navGuard = useNavigationGuard({ enabled });
   const router = useRouter();
   const { getStartedAt, clearStartedAt } = useStartTimeTracker(problem.id, mode);
 
   const handleEditorChange = (value: string | undefined) => {
     codeRef.current = value || "";
+    if (!enabled) setEnabled(true);
   };
 
   const onSubmitCode = async () => {
@@ -68,6 +74,7 @@ export default function ProgrammingInterface({ problem, mode = "challenge" }: Pr
   };
 
   return (
+    <>
     <PythonProvider packages={packages}>
       <PythonExecutionProvider testCases={problem.testCases} timeLimit={problem.timeLimit * 1000}>
         {({ isRunning, isReady, executionHistories, activeHistoryIndex, runCode, setActiveHistoryIndex }) => {
@@ -173,9 +180,10 @@ export default function ProgrammingInterface({ problem, mode = "challenge" }: Pr
                 onSelectHistory={setActiveHistoryIndex}
               />
             </div>
-          );
-        }}
-      </PythonExecutionProvider>
-    </PythonProvider>
+          )}}
+        </PythonExecutionProvider>
+      </PythonProvider>
+      <NavGuardDialog open={navGuard.active} onCancel={navGuard.reject} onAccept={navGuard.accept} />
+    </>
   );
 }

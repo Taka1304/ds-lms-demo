@@ -5,6 +5,7 @@ import { Providers } from "@/app/providers";
 import { ThemeProvider } from "@/components/layout/theme-provider";
 import { Toaster } from "@/components/ui/sonner";
 import { env } from "@/lib/env";
+import { NavigationGuardProvider } from "next-navigation-guard";
 import Script from "next/script";
 
 const notoSans = localFont({
@@ -26,14 +27,16 @@ export default function RootLayout({
   return (
     <html lang="ja" suppressHydrationWarning>
       <body className={`${notoSans.variable} antialiased`}>
-        <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
-          <Providers>
-            <main>
-              {children}
-              <Toaster richColors />
-            </main>
-          </Providers>
-        </ThemeProvider>
+        <NavigationGuardProvider>
+          <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
+            <Providers>
+              <main>
+                {children}
+                <Toaster richColors />
+              </main>
+            </Providers>
+          </ThemeProvider>
+        </NavigationGuardProvider>
         <Script async src="https://cloud.umami.is/script.js" data-website-id={env.NEXT_PUBLIC_UMAMI_WEBSITE_ID} />
       </body>
     </html>
