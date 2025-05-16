@@ -8,7 +8,7 @@ import { ActionBar } from "@/features/problems/components/action-bar";
 import { client } from "@/lib/hono";
 import type { InferResponseType } from "hono";
 import { Code, FileText, SquareSplitHorizontal } from "lucide-react";
-import router from "next/router";
+import { useRouter } from "next/navigation";
 import { useRef, useState } from "react";
 import { PythonProvider } from "react-py";
 import type { Packages } from "react-py/dist/types/Packages";
@@ -32,6 +32,7 @@ export default function ProgrammingInterface({ problem, mode = "challenge" }: Pr
   const [activeTab, setActiveTab] = useState("split");
   const [code, setCode] = useState(problem.defaultCode || "");
   const codeRef = useRef<string | null>(problem.defaultCode || null);
+  const router = useRouter();
 
   const handleEditorChange = (value: string | undefined) => {
     setCode(value ?? "");
