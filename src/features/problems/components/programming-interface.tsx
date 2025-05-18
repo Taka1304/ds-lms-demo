@@ -5,6 +5,7 @@ import { MarkdownViewer } from "@/components/ui/markdown";
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/components/ui/resizable";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ActionBar } from "@/features/problems/components/action-bar";
+import { useStartTimeTracker } from "@/hooks/use-start-time-tracker";
 import { client } from "@/lib/hono";
 import type { InferResponseType } from "hono";
 import { Code, FileText, SquareSplitHorizontal } from "lucide-react";
@@ -34,6 +35,7 @@ export default function ProgrammingInterface({ problem, mode = "challenge" }: Pr
   const codeRef = useRef<string | null>(problem.defaultCode || null);
   const runCodeRef = useRef<(() => void) | null>(null);
   const router = useRouter();
+  const { getStartedAt, clearStartedAt } = useStartTimeTracker(problem.id, mode);
 
   const handleEditorChange = (value: string | undefined) => {
     codeRef.current = value || "";
@@ -41,12 +43,15 @@ export default function ProgrammingInterface({ problem, mode = "challenge" }: Pr
 
   const onSubmitCode = async () => {
     const toastId = toast.loading("提出しています...");
+    const startedAt = getStartedAt();
+
     const res = await client.api.courses.problems[":problem_id"].submit.$post({
       param: {
         problem_id: problem.id,
       },
       json: {
         code: codeRef.current || "",
+        startedAt: startedAt,
       },
     });
 
@@ -55,7 +60,9 @@ export default function ProgrammingInterface({ problem, mode = "challenge" }: Pr
       console.error("Error submitting code:", res.statusText);
       return;
     }
+
     const submissionId = (await res.json()).id;
+    clearStartedAt();
     toast.success("提出しました", { id: toastId });
     router.push(`/students/courses/${problem.courseId}/${problem.id}/${submissionId}`);
   };
