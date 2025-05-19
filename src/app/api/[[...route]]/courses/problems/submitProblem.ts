@@ -23,6 +23,7 @@ export const submitProblem = factory.createHandlers(
     "json",
     z.object({
       code: z.string(),
+      startedAt: z.string().nullable(),
     }),
   ),
   async (c) => {

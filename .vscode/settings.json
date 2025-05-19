@@ -1,4 +1,6 @@
 {
+	"biome.enabled": true,
+	"eslint.enable": false,
 	"editor.formatOnSave": true,
 	"[javascript]": {
 		"editor.defaultFormatter": "biomejs.biome"
