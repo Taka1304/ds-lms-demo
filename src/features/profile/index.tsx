@@ -12,6 +12,18 @@ import { toast } from "sonner";
 
 const gradeOptions = ["B1", "B2", "B3", "B4", "M1", "M2", "D1", "D2", "D3"] as const;
 
+const GRADE_LABELS = [
+  "学部1年",
+  "学部2年",
+  "学部3年",
+  "学部4年",
+  "修士1年",
+  "修士2年",
+  "博士1年",
+  "博士2年",
+  "博士3年",
+] as const;
+
 type Grade = (typeof gradeOptions)[number];
 
 const groupOptions = ["行政", "金融", "LLM", "スポーツ", "マルチモーダル", "アプリ開発", "その他"] as const;
@@ -52,18 +64,24 @@ export default function ProfilePage({ userId, data }: Props) {
   const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const toastId = toast.loading("アップロード中...");
     const file = event.target.files?.[0];
-    if (!file) return;
+    if (!file) {
+      toast.dismiss(toastId);
+      return;
+    }
 
-    const filename = `${userId}_${Date.now()}`;
+    const filename = `${userId}/${Date.now()}`;
     const formData = new FormData();
     formData.append("file", file);
     formData.append("fileName", filename);
     formData.append("bucket", "image");
 
     try {
-      const res = await fetch("/api/assets", {
-        method: "POST",
-        body: formData,
+      const res = await client.api.assets.$post({
+        form: {
+          file: file,
+          fileName: filename,
+          bucket: "image",
+        },
       });
 
       const result = await res.json();
@@ -75,8 +93,13 @@ export default function ProfilePage({ userId, data }: Props) {
         return;
       }
 
-      setImageUrl(result.url);
-      toast.success("アップロードが完了しました！", { id: toastId });
+      if ("url" in result) {
+        // URLが含まれている場合
+        setImageUrl(result.url);
+        toast.success("アップロードが完了しました！", { id: toastId });
+      } else {
+        toast.error(`アップロードに失敗しました: + ${result.error}`, { id: toastId });
+      }
     } catch (error) {
       console.error(error);
       toast.error("アップロード中にエラーが発生しました", {
@@ -130,8 +153,8 @@ export default function ProfilePage({ userId, data }: Props) {
 
       <Input type="file" accept="image/*" ref={fileInputRef} onChange={handleFileChange} hidden />
 
-      <InputField label="表示名" value={displayname} onChange={setDisplayName} />
-      <InputField label="名前" value={name} onChange={setName} />
+      <InputField id="displayname" label="表示名" value={displayname} onChange={setDisplayName} />
+      <InputField id="name" label="名前" value={name} onChange={setName} />
 
       {/* 学年（Grade） */}
       <div className="mt-5">
@@ -150,9 +173,9 @@ export default function ProfilePage({ userId, data }: Props) {
             <SelectValue placeholder="選択してください" />
           </SelectTrigger>
           <SelectContent>
-            {gradeOptions.map((g) => (
+            {gradeOptions.map((g, index) => (
               <SelectItem key={g} value={g}>
-                {g}
+                {GRADE_LABELS[index]}
               </SelectItem>
             ))}
           </SelectContent>
@@ -198,21 +221,23 @@ export default function ProfilePage({ userId, data }: Props) {
 }
 
 function InputField({
+  id,
   label,
   value,
   onChange,
 }: {
+  id: string;
   label: string;
   value: string;
   onChange: (val: string) => void;
 }) {
   return (
     <div className="mt-5">
-      <Label htmlFor="id" className="block font-semibold">
+      <Label htmlFor={id} className="block font-semibold">
         {label}
       </Label>
       <Input
-        id="id"
+        id={id}
         type="text"
         value={value}
         onChange={(e) => onChange(e.target.value)}
