@@ -24,18 +24,22 @@ export const updateUser = factory.createHandlers(
     z.object({
       displayName: z.string().optional(),
       grade: z.enum(["B1", "B2", "B3", "B4", "M1", "M2", "D1", "D2", "D3"]).optional(),
+      group: z
+        .enum(["行政", "金融", "LLM", "スポーツ", "マルチモーダル", "アプリ開発", "コンペ参加", "その他"])
+        .optional(),
+      image: z.string().optional(),
       role: z.enum(["USER", "ADMIN"]).optional(),
     }),
   ),
   async (c) => {
     const { user_id } = c.req.valid("param");
-    const { displayName, grade, role } = c.req.valid("json");
+    const { image, displayName, grade, group, role } = c.req.valid("json");
 
     const session = c.get("session");
     const isAdmin = session?.user.role === "ADMIN";
 
     // ADMINでない場合、ユーザー自身の情報のみ更新可能
-    if (!isAdmin || session?.user.id !== user_id) {
+    if (!isAdmin && session?.user.id !== user_id) {
       return c.json({ error: "権限がありません" }, 403);
     }
     try {
@@ -47,8 +51,10 @@ export const updateUser = factory.createHandlers(
           // roleを変更できるのはADMINのみ
           role: isAdmin ? role : undefined,
           displayName,
-          grade
-        }
+          grade,
+          image,
+          group,
+        },
       });
 
       if (!data) {
