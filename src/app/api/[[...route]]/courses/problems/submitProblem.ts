@@ -42,6 +42,7 @@ export const submitProblem = factory.createHandlers(
       });
       return c.json(data);
     } catch (error) {
+      console.error("解答提出中にエラーが発生しました:", error);
       return c.json(
         {
           error: "解答提出中にエラーが発生しました",
