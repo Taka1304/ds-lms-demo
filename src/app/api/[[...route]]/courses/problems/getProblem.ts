@@ -41,7 +41,7 @@ export const getProblem = factory.createHandlers(
           updatedBy: isAdmin,
           tags: true,
           testCases: {
-            where: query?.includeExamplesOnly ? { isExample: true } : undefined,
+            where: query?.includeExamplesOnly === "true" ? { isExample: true } : undefined,
           },
           submissions: isAdmin
             ? true
