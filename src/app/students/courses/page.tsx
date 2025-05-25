@@ -8,9 +8,7 @@ export default async function CoursesPage() {
   const cookieStore = await cookies();
   const sessionToken = cookieStore.get("next-auth.session-token")?.value || "";
   const res = await client.api.courses.$get(
-    {
-      query: {},
-    },
+    {},
     {
       headers: {
         Cookie: `next-auth.session-token=${sessionToken}`,

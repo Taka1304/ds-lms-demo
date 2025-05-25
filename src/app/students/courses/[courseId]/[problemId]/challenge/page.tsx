@@ -4,7 +4,10 @@ import { notFound } from "next/navigation";
 
 export default async function ({ params }: { params: Promise<{ problemId: string }> }) {
   const { problemId } = await params;
-  const res = await client.api.courses.problems[":problem_id"].$get({ param: { problem_id: problemId } });
+  const res = await client.api.courses.problems[":problem_id"].$get({
+    param: { problem_id: problemId },
+    query: { includeExamplesOnly: "true" },
+  });
 
   if (res.status === 404) return notFound();
   if (!res.ok) return new Error("Failed to fetch problem");
