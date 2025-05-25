@@ -113,7 +113,7 @@ export default function ProblemCreator({ courseId, problem }: ProblemCreatorProp
           isPublic: values.isPublic,
           isArchived: false,
           testCases: values.testCases.map((testCase) => ({
-            id: testCase.id || "",
+            id: testCase.id,
             input: testCase.input || "",
             output: testCase.output || "",
             isExample: testCase.isExample,
@@ -133,7 +133,21 @@ export default function ProblemCreator({ courseId, problem }: ProblemCreatorProp
             },
           },
         });
+      } else {
+        console.error("問題の更新に失敗しました", res.status, await res.json());
+        toast.error("問題の更新に失敗しました", {
+          description: "もう一度お試しください",
+          id: toastId,
+          action: {
+            label: "リトライ",
+            onClick: () => {
+              toast.dismiss(toastId);
+              onSubmit(values);
+            },
+          },
+        });
       }
+
       return;
     }
     // 新規作成時

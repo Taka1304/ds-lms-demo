@@ -14,12 +14,21 @@ const factory = createFactory<{ Variables: Variables }>();
 export const getProblem = factory.createHandlers(
   getSession,
   zValidator(
+    "query",
+    z
+      .object({
+        includeExamplesOnly: z.string().optional(),
+      })
+      .optional(),
+  ),
+  zValidator(
     "param",
     z.object({
       problem_id: z.string().cuid(),
     }),
   ),
   async (c) => {
+    const query = c.req.valid("query");
     const { problem_id } = c.req.valid("param");
 
     const session = c.get("session");
@@ -31,7 +40,9 @@ export const getProblem = factory.createHandlers(
           createdBy: isAdmin,
           updatedBy: isAdmin,
           tags: true,
-          testCases: true,
+          testCases: {
+            where: query?.includeExamplesOnly === "true" ? { isExample: true } : undefined,
+          },
           submissions: isAdmin
             ? true
             : {
