@@ -39,6 +39,7 @@ export const authOptions: NextAuthOptions = {
         token.id = user.id;
         token.role = user.role;
         token.picture = user.image;
+        token.displayName = user.displayName || "";
       }
       return token;
     },
