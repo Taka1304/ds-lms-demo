@@ -140,7 +140,7 @@ export function PythonExecutionProvider({ testCases, timeLimit, children }: Pyth
       // 出力を評価
       let status: "AC" | "WA" | "CE" | "RE" | "TLE" = "RE";
 
-      if (stdoutRef.current.trim() === "" && stderrRef.current.trim() === "") {
+      if (stderrRef.current.trim() !== "") {
         status = "RE"; // 実行エラー
       } else if (
         testCase.output.length > 0 &&
