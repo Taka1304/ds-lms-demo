@@ -78,6 +78,11 @@ export function PythonExecutionProvider({ testCases, timeLimit, children }: Pyth
       nextInputRef.current = testCase.input.split(/\r\n|\n/);
       nextInputIndexRef.current = 0;
 
+      // Loading状態のとき，3秒だけ待機
+      if (executionHistories.length === 0) {
+        await new Promise((resolve) => setTimeout(resolve, 3000));
+      }
+
       // コードを実行
       const result = await executeTestCase(code, testCase, index);
 
@@ -115,15 +120,19 @@ export function PythonExecutionProvider({ testCases, timeLimit, children }: Pyth
       stdoutRef.current = "";
       stderrRef.current = "";
 
+      let timeoutId: NodeJS.Timeout | null = null;
+
       await Promise.race([
         runPython(code),
-        new Promise((_, reject) =>
-          setTimeout(() => {
-            interruptExecution(); // 実行を中断
+        new Promise((_, reject) => {
+          timeoutId = setTimeout(() => {
+            interruptExecution();
             reject(new Error("Execution timed out", { cause: "TLE" }));
-          }, timeLimit),
-        ),
+          }, timeLimit);
+        }),
       ]);
+
+      timeoutId && clearTimeout(timeoutId); // タイマーをキャンセル
 
       // 出力が終わるまで待機
       await waitForOutput();
@@ -131,7 +140,7 @@ export function PythonExecutionProvider({ testCases, timeLimit, children }: Pyth
       // 出力を評価
       let status: "AC" | "WA" | "CE" | "RE" | "TLE" = "RE";
 
-      if (stdoutRef.current.trim() === "" && stderrRef.current.trim() === "") {
+      if (stderrRef.current.trim() !== "") {
         status = "RE"; // 実行エラー
       } else if (
         testCase.output.length > 0 &&
