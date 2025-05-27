@@ -164,6 +164,7 @@ export function PythonExecutionProvider({ testCases, timeLimit, children }: Pyth
         expectedOutput: testCase.output,
         actualOutput: stdoutRef.current.trim(),
         errorLog: stderrRef.current.trim(),
+        isHidden: testCase.isHidden,
       };
     } catch (error) {
       if (error instanceof Error && error.message === "Execution timed out") {
@@ -175,6 +176,7 @@ export function PythonExecutionProvider({ testCases, timeLimit, children }: Pyth
           expectedOutput: testCase.output,
           actualOutput: stdoutRef.current.trim(),
           errorLog: error.message,
+          isHidden: testCase.isHidden,
         };
       }
       return {
@@ -185,6 +187,7 @@ export function PythonExecutionProvider({ testCases, timeLimit, children }: Pyth
         expectedOutput: testCase.output,
         actualOutput: stdoutRef.current.trim(),
         errorLog: error instanceof Error ? error.message : "Unknown error",
+        isHidden: testCase.isHidden,
       };
     }
   };
