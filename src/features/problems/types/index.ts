@@ -4,7 +4,7 @@ export type TestResult = {
   index: number;
   status: "AC" | "WA" | "CE" | "RE" | "TLE";
   input: string;
-  isHidden: boolean;
+  isHidden?: boolean;
   expectedOutput: string;
   actualOutput: string;
   errorLog: string | null;
