@@ -26,7 +26,7 @@ export default async function ProblemList({ params }: { params: Promise<{ course
 
   const course = await res.json();
   const allProblems = course.problems;
-  const progress = course.UserProgress[0].progress;
+  const progress = course.UserProgress[0]?.progress ?? 0;
   const totalProblems = allProblems.length;
 
   return (
