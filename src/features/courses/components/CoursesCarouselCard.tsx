@@ -36,7 +36,7 @@ export default function CoursesCarouselCard({
         {/* コース開始ボタン */}
         <div className="w-full flex justify-center mt-2">
           <Link href={`/students/courses/${id}`} className="rounded-md shadow-md">
-            <Button className="w-[93px] h-[40px] bg-[#327fd6]">はじめる</Button>
+            <Button>はじめる</Button>
           </Link>
         </div>
       </CardContent>
