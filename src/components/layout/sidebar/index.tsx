@@ -1,5 +1,6 @@
 "use client";
 
+import { adminNavItems, userNavItems } from "@/components/layout/sidebar/const";
 import { ThemeSelector } from "@/components/layout/sidebar/theme-selector";
 import { ThemeSwitcher } from "@/components/layout/sidebar/theme-switcher";
 import {
@@ -10,7 +11,6 @@ import {
   SidebarRail,
   SidebarSeparator,
 } from "@/components/ui/sidebar";
-import { adminNavItems, userNavItems } from "@/components/layout/sidebar/const";
 import { $Enums } from "@prisma/client";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
@@ -25,7 +25,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
     <Sidebar collapsible="icon" className="bg-primary/20 dark:bg-primary/40" {...props}>
       <SidebarHeader>
-        <Link href={isAdmin ? "/manage" : "/students/home"} className={"p-1"}>
+        <Link href={isAdmin ? "/manage" : "/students"} className={"p-1"}>
           <Image src="/logo.png" alt="Logo" width={24} height={24} />
         </Link>
       </SidebarHeader>
