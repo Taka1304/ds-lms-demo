@@ -76,17 +76,22 @@ const EvaluationResultContainer = ({ submission }: ContainerProps) => {
 
           return (
             <>
-              {executionHistories.length > 0 &&
+              {executionHistories.length > 0 && executionHistories[0].results[0]?.expectedOutput ? (
                 executionHistories[0].results.map((result) => {
                   return (
                     <TestResultItem
                       key={result.id}
                       index={result.index}
                       result={result}
-                      testCase={{ input: result.input, output: result.expectedOutput }}
+                      testCase={{ input: result.input, output: result.expectedOutput, isHidden: result.isHidden }}
                     />
                   );
-                })}
+                })
+              ) : (
+                <div className="flex h-full items-center justify-center">
+                  <p className="text-lg text-muted-foreground">実行中...</p>
+                </div>
+              )}
             </>
           );
         }}

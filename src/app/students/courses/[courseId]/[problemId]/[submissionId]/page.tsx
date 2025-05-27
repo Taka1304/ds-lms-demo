@@ -31,18 +31,15 @@ export default async function ({ params }: { params: Promise<{ submissionId: str
           />
         </CardContent>
       </Card>
-      {
-        submission.status === "PENDING" ? (
-          <EvaluationResultContainer submission={submission} />
-        ): (
-          // TODO: 採点済みの場合の結果を表示
-          <>
-            {submission.TestResult.map((result, index) => (
-              <TestResultItem key={result.id} index={index + 1} result={result} testCase={result.testCase} />
-            ))}
-          </>
-        )
-      }
+      {submission.status === "PENDING" ? (
+        <EvaluationResultContainer submission={submission} />
+      ) : (
+        <>
+          {submission.TestResult.map((result, index) => (
+            <TestResultItem key={result.id} index={index + 1} result={result} testCase={result.testCase} />
+          ))}
+        </>
+      )}
     </div>
   );
 }

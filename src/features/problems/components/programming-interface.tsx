@@ -70,7 +70,6 @@ export default function ProgrammingInterface({ problem, mode = "challenge" }: Pr
     const submissionId = (await res.json()).id;
     clearStartedAt();
     setEnabled(false);
-    navGuard.active = false; // Reset nav guard
     toast.success("提出しました! 評価ページに遷移します", { id: toastId });
     router.push(`/students/courses/${problem.courseId}/${problem.id}/${submissionId}`);
   };
@@ -188,7 +187,7 @@ export default function ProgrammingInterface({ problem, mode = "challenge" }: Pr
           }}
         </PythonExecutionProvider>
       </PythonProvider>
-      <NavGuardDialog open={navGuard.active} onCancel={navGuard.reject} onAccept={navGuard.accept} />
+      <NavGuardDialog open={enabled && navGuard.active} onCancel={navGuard.reject} onAccept={navGuard.accept} />
     </>
   );
 }
