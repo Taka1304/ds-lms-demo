@@ -1,5 +1,6 @@
 import { RecentSubmissions } from "@/features/dashboard/recent-submissions";
 import { client } from "@/lib/hono";
+import { AlertCircle } from "lucide-react";
 import { cookies } from "next/headers";
 import { Suspense } from "react";
 
@@ -23,7 +24,12 @@ export async function RecentSubmissionsContainer() {
 
   if (!res.ok) {
     console.error(res.status, await res.json());
-    throw new Error("Failed to fetch recent submissions");
+    return (
+      <div>
+        <AlertCircle />
+        エラーが発生しました
+      </div>
+    );
   }
 
   const data = await res.json();
