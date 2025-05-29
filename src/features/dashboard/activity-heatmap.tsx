@@ -10,11 +10,12 @@ type ActivityHeatmapProps = {
 };
 
 const COLORS = ["bg-gray-500/10", "bg-primary/40", "bg-primary/60", "bg-primary/80", "bg-primary"];
+const PAST_DAYS_COUNT = 200;
 
 // 過去200日分の日付を生成し、アクティビティデータとマッチング
 const generateActivityData = (activityData: Record<string, number> = {}) => {
   const days = [];
-  for (let i = 199; i >= 0; i--) {
+  for (let i = PAST_DAYS_COUNT - 1; i >= 0; i--) {
     const date = dayjs().subtract(i, "day");
     const dateString = date.format("YYYY-MM-DD");
 
