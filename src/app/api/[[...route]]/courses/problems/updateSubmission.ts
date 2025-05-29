@@ -76,7 +76,10 @@ export const updateSubmission = factory.createHandlers(
           id: submission_id,
           userId: session.user.role === "ADMIN" ? undefined : session.user.id,
         },
-        data: json,
+        data: {
+          ...json,
+          evaluatedAt: json.status === "EVALUATED" ? new Date().toISOString() : null,
+        },
         include: {
           problem: true,
         },
@@ -88,6 +91,7 @@ export const updateSubmission = factory.createHandlers(
           where: {
             userId: session.user.id,
             problemId: data.problemId,
+            status: "EVALUATED",
           },
         })) === 1;
 
