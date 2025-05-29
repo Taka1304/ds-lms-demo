@@ -91,7 +91,6 @@ export const updateSubmission = factory.createHandlers(
           where: {
             userId: session.user.id,
             problemId: data.problemId,
-            status: "EVALUATED",
           },
         })) === 1;
 
@@ -136,6 +135,7 @@ export const updateSubmission = factory.createHandlers(
       }
       return c.json(data);
     } catch (error) {
+      console.error("提出内容の更新中にエラーが発生しました:", error);
       return c.json(
         {
           error: "提出内容の更新中にエラーが発生しました",
