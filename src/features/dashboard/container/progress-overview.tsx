@@ -18,7 +18,7 @@ const ProgressOverviewContainer = async () => {
   );
 
   if (!res.ok) {
-    console.error("Failed to fetch activity heatmap res:", res.statusText);
+    console.error("Failed to fetch course progress res:", res.statusText);
     return (
       <div>
         <AlertCircle />
