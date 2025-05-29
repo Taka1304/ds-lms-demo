@@ -31,15 +31,15 @@ export const getCourse = factory.createHandlers(
           problems: {
             include: {
               tags: true,
+              submissions: isAdmin
+                ? true
+                : {
+                    where: {
+                      userId: session?.user.id,
+                    },
+                  },
             },
           },
-          UserProgress: isAdmin
-            ? true
-            : {
-                where: {
-                  userId: session?.user.id,
-                },
-              },
         },
         where: {
           id: course_id,

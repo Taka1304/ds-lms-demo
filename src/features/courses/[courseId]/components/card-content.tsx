@@ -1,3 +1,4 @@
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { client } from "@/lib/hono";
@@ -23,7 +24,12 @@ export default function ProblemCard({ courseId, problem }: Props) {
         alt="sample"
       />
       <CardHeader className="w-full justify-around">
-        <CardTitle>{problem.title}</CardTitle>
+        <CardTitle>
+          <div className="flex flex-row items-center justify-between">
+            {problem.title}
+            {problem.submissions.length > 0 && <Badge variant={"default"}>提出済み</Badge>}
+          </div>
+        </CardTitle>
         <CardDescription className="flex flex-row items-center space-x-10">
           <span>{problem.description}</span>
         </CardDescription>
