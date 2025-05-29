@@ -20,7 +20,7 @@ export default async function ({ params }: { params: Promise<{ submissionId: str
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold">{submission.problem.title}</h1>
         <span className="text-xl font-semibold">
-          {submission.status === "PENDING" ? "" : submission.score && `${submission.score} 点`}
+          {submission.status === "PENDING" ? "" : submission.score != null ? `${submission.score} 点` : ""}
         </span>
       </div>
       <Card className="p-4 h-[300px] flex flex-col">
