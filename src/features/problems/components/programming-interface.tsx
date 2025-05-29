@@ -71,7 +71,10 @@ export default function ProgrammingInterface({ problem, mode = "challenge" }: Pr
     clearStartedAt();
     setEnabled(false);
     toast.success("提出しました! 評価ページに遷移します", { id: toastId });
-    router.push(`/students/courses/${problem.courseId}/${problem.id}/${submissionId}`);
+    // 1秒後に評価ページへ遷移
+    setTimeout(() => {
+      router.push(`/students/courses/${problem.courseId}/${problem.id}/${submissionId}`);
+    }, 1000);
   };
 
   return (
