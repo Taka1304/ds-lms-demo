@@ -1,10 +1,10 @@
 "use client";
 
-import { format } from "date-fns";
-import { ja } from "date-fns/locale";
+import dayjs from "dayjs";
 import { CalendarIcon } from "lucide-react";
 import * as React from "react";
 import type { DateRange } from "react-day-picker";
+import { ja } from "react-day-picker/locale";
 
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
@@ -13,8 +13,8 @@ import { cn } from "@/lib/utils";
 
 export function CalendarDateRangePicker({ className }: React.HTMLAttributes<HTMLDivElement>) {
   const [date, setDate] = React.useState<DateRange | undefined>({
-    from: new Date(2025, 0, 1),
-    to: new Date(),
+    from: dayjs().startOf("year").toDate(),
+    to: dayjs().toDate(),
   });
 
   return (
@@ -30,10 +30,10 @@ export function CalendarDateRangePicker({ className }: React.HTMLAttributes<HTML
             {date?.from ? (
               date.to ? (
                 <>
-                  {format(date.from, "yyyy/MM/dd", { locale: ja })} - {format(date.to, "yyyy/MM/dd", { locale: ja })}
+                  {dayjs(date.from).format("YYYY/MM/DD")} - {dayjs(date.to).format("YYYY/MM/DD")}
                 </>
               ) : (
-                format(date.from, "yyyy年MM月dd日", { locale: ja })
+                dayjs(date.from).format("YYYY/MM/DD")
               )
             ) : (
               <span>日付を選択</span>
@@ -42,7 +42,6 @@ export function CalendarDateRangePicker({ className }: React.HTMLAttributes<HTML
         </PopoverTrigger>
         <PopoverContent className="w-auto p-0" align="end">
           <Calendar
-            initialFocus
             mode="range"
             defaultMonth={date?.from}
             selected={date}
