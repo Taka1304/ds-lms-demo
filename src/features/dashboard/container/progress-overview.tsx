@@ -27,7 +27,7 @@ const ProgressOverviewContainer = async () => {
     );
   }
   const data = await res.json();
-  const courseProgress = data.filter((course) => course.UserProgress.length);
+  const courseProgress = data.filter((course) => course.UserProgress?.length);
   if (courseProgress.length === 0) {
     return <div className="text-center text-muted-foreground">現在、進捗状況はありません。</div>;
   }
