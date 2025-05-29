@@ -17,7 +17,12 @@ export default async function ({ params }: { params: Promise<{ submissionId: str
 
   return (
     <div className="flex flex-col gap-4 p-4">
-      <h1 className="text-2xl font-bold">{submission.problem.title}</h1>
+      <div className="flex items-center justify-between">
+        <h1 className="text-2xl font-bold">{submission.problem.title}</h1>
+        <span className="text-xl font-semibold">
+          {submission.status === "PENDING" ? "" : submission.score != null ? `${submission.score} 点` : ""}
+        </span>
+      </div>
       <Card className="p-4 h-[300px] flex flex-col">
         <CardTitle className="text-lg font-bold">提出されたコード</CardTitle>
         <CardContent className="flex-1 overflow-hidden p-4">

@@ -23,7 +23,7 @@ export default function ProblemCard({ courseId, problem }: Props) {
         alt="sample"
       />
       <CardHeader className="w-full justify-around">
-        <CardTitle>問題: {problem.title}</CardTitle>
+        <CardTitle>{problem.title}</CardTitle>
         <CardDescription className="flex flex-row items-center space-x-10">
           <span>{problem.description}</span>
         </CardDescription>
@@ -31,7 +31,7 @@ export default function ProblemCard({ courseId, problem }: Props) {
       <CardContent className="p-6 w-1/3 flex flex-col justify-center">
         <div className="relative">
           <Button asChild size="sm" className="w-full rounded-sm h-14 font-bold text-lg drop-shadow">
-            <Link href={`/students/courses/${courseId}/${problem.id}`}>挑戦する</Link>
+            <Link href={`/students/courses/${courseId}/${problem.id}`}>詳細を見る</Link>
           </Button>
         </div>
       </CardContent>

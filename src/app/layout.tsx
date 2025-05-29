@@ -15,7 +15,7 @@ const notoSans = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "Sigza",
+  title: "ds-lms-demo",
   description: "プログラミング学習を支援するアプリケーション",
 };
 
