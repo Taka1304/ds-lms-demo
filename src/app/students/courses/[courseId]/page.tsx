@@ -25,9 +25,8 @@ export default async function ProblemList({ params }: { params: Promise<{ course
   }
 
   const course = await res.json();
-  const allProblems = course.problems;
-  const progress = course.UserProgress[0]?.progress ?? 0;
-  const totalProblems = allProblems.length;
+  const progress = course.problems.filter((problem) => problem.submissions && problem.submissions.length > 0).length;
+  const totalProblems = course.problems.length;
 
   return (
     <>
@@ -49,7 +48,7 @@ export default async function ProblemList({ params }: { params: Promise<{ course
           <Progress value={totalProblems === 0 ? 0 : (progress / totalProblems) * 100} />
           <Image src={"/students/courses/BeingVip.svg"} alt="BeingVip" width={105} height={102} />
         </div>
-        {allProblems.map((problem) => (
+        {course.problems.map((problem) => (
           <ProblemCard key={problem.id} courseId={courseId} problem={problem} />
         ))}
       </div>
