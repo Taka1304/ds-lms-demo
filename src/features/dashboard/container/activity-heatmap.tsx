@@ -1,9 +1,11 @@
 "use server";
 
 import { ActivityHeatmap } from "@/features/dashboard/activity-heatmap";
+import { authOptions } from "@/lib/auth";
 import { client } from "@/lib/hono";
 import dayjs from "dayjs";
 import { AlertCircle } from "lucide-react";
+import { getServerSession } from "next-auth";
 import { cookies } from "next/headers";
 
 type Props = {
@@ -16,9 +18,11 @@ type Props = {
 const ActivityHeatmapContainer = async ({ dateRange }: Props) => {
   const cookieStore = await cookies();
   const sessionToken = cookieStore.get("next-auth.session-token")?.value || "";
+  const session = await getServerSession(authOptions);
   const data = await client.api.dashboard["activity-heatmap"].$get(
     {
       query: {
+        user_id: session?.user.id || undefined,
         from: dateRange?.from ?? dayjs().startOf("year").toISOString(),
         to: dateRange?.to ?? dayjs().toISOString(),
       },

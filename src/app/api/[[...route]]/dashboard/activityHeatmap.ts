@@ -16,20 +16,22 @@ export const activityHeatmap = factory.createHandlers(
   zValidator(
     "query",
     z.object({
+      user_id: z.string().cuid().optional(),
       from: z.string(),
       to: z.string(),
     }),
   ),
   async (c) => {
-    const { from, to } = c.req.valid("query");
+    const { user_id, from, to } = c.req.valid("query");
     const session = c.get("session");
+    const userId = user_id || session?.user.id;
 
     try {
       // PrismaのgroupByを使って日付ごとに集計
       const groupedData = await prisma.submission.groupBy({
         by: ["createdAt"],
         where: {
-          userId: session?.user.id,
+          userId: userId,
           createdAt: {
             gte: from,
             lte: to,
