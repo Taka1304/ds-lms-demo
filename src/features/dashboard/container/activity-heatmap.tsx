@@ -17,7 +17,11 @@ type Props = {
 
 const ActivityHeatmapContainer = async ({ dateRange }: Props) => {
   const cookieStore = await cookies();
-  const sessionToken = cookieStore.get("next-auth.session-token")?.value || "";
+  const allCookies = cookieStore.getAll();
+  const headers: Record<string, string> = {};
+  if (allCookies.length > 0) {
+    headers.Cookie = allCookies.map((c) => `${c.name}=${c.value}`).join("; ");
+  }
   const session = await getServerSession(authOptions);
   const data = await client.api.dashboard["activity-heatmap"].$get(
     {
@@ -28,9 +32,7 @@ const ActivityHeatmapContainer = async ({ dateRange }: Props) => {
       },
     },
     {
-      headers: {
-        Cookie: `next-auth.session-token=${sessionToken}`,
-      },
+      headers,
     },
   );
 

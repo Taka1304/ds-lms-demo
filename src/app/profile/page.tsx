@@ -13,7 +13,11 @@ export default async function ProfilePageWrapper() {
   if (!userId) return notFound();
 
   const cookieStore = await cookies();
-  const sessionToken = cookieStore.get("next-auth.session-token")?.value || "";
+  const allCookies = cookieStore.getAll();
+  const headers: Record<string, string> = {};
+  if (allCookies.length > 0) {
+    headers.Cookie = allCookies.map((c) => `${c.name}=${c.value}`).join("; ");
+  }
 
   const req = client.api.users[":user_id"].$get;
   const res = await req(
@@ -21,9 +25,7 @@ export default async function ProfilePageWrapper() {
       param: { user_id: userId },
     },
     {
-      headers: {
-        Cookie: `next-auth.session-token=${sessionToken}`,
-      },
+      headers,
     },
   );
 

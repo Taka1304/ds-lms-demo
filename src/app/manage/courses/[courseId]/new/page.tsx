@@ -5,7 +5,11 @@ import { notFound } from "next/navigation";
 
 export default async function NewProblemPage({ params }: { params: Promise<{ courseId: string }> }) {
   const cookieStore = await cookies();
-  const sessionToken = cookieStore.get("next-auth.session-token")?.value || "";
+  const allCookies = cookieStore.getAll();
+  const headers: Record<string, string> = {};
+  if (allCookies.length > 0) {
+    headers.Cookie = allCookies.map((c) => `${c.name}=${c.value}`).join("; ");
+  }
   const { courseId } = await params;
 
   // problemsで /api/courses/problems にリクエストを送ってしまうため、ここで除外する
@@ -18,9 +22,7 @@ export default async function NewProblemPage({ params }: { params: Promise<{ cou
       param: { course_id: courseId },
     },
     {
-      headers: {
-        Cookie: `next-auth.session-token=${sessionToken}`,
-      },
+      headers,
     },
   );
 
