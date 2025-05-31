@@ -81,5 +81,14 @@ export const authOptions: NextAuthOptions = {
         secure: process.env.NODE_ENV === "production",
       },
     },
+    state: {
+      name: "next-auth.state",
+      options: {
+        httpOnly: true,
+        sameSite: "lax",
+        path: "/",
+        secure: process.env.NODE_ENV === "production",
+      },
+    },
   },
 };
