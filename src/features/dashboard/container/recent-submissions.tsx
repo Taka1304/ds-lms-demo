@@ -24,8 +24,11 @@ export async function RecentSubmissionsContainer() {
 
   if (!res.ok) {
     console.error(res.status, await res.json());
+    if (res.status === 401) {
+      console.error(`Unauthorized: ${sessionToken}`);
+    }
     return (
-      <div>
+      <div className="flex items-center justify-center">
         <AlertCircle />
         エラーが発生しました
       </div>
