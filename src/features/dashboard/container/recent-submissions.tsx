@@ -6,7 +6,11 @@ import { Suspense } from "react";
 
 export async function RecentSubmissionsContainer() {
   const cookieStore = await cookies();
-  const sessionToken = cookieStore.get("next-auth.session-token")?.value || "";
+  const allCookies = cookieStore.getAll();
+  const headers: Record<string, string> = {};
+  if (allCookies.length > 0) {
+    headers.Cookie = allCookies.map((c) => `${c.name}=${c.value}`).join("; ");
+  }
   const res = await client.api.submissions.$get(
     {
       query: {
@@ -16,16 +20,14 @@ export async function RecentSubmissionsContainer() {
       },
     },
     {
-      headers: {
-        Cookie: `next-auth.session-token=${sessionToken}`,
-      },
+      headers,
     },
   );
 
   if (!res.ok) {
     console.error(res.status, await res.json());
     if (res.status === 401) {
-      console.error(`Unauthorized: ${sessionToken}`);
+      console.error(`Unauthorized: ${headers.Cookie}`);
     }
     return (
       <div className="flex items-center justify-center">

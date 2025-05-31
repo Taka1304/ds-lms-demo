@@ -9,7 +9,11 @@ import { cookies } from "next/headers";
 
 const ProgressOverviewContainer = async () => {
   const cookieStore = await cookies();
-  const sessionToken = cookieStore.get("next-auth.session-token")?.value || "";
+  const allCookies = cookieStore.getAll();
+  const headers: Record<string, string> = {};
+  if (allCookies.length > 0) {
+    headers.Cookie = allCookies.map((c) => `${c.name}=${c.value}`).join("; ");
+  }
   const session = await getServerSession(authOptions);
   const res = await client.api.courses.$get(
     {
@@ -18,16 +22,14 @@ const ProgressOverviewContainer = async () => {
       },
     },
     {
-      headers: {
-        Cookie: `next-auth.session-token=${sessionToken}`,
-      },
+      headers,
     },
   );
 
   if (!res.ok) {
     console.error("Failed to fetch course progress res:", res.statusText);
     if (res.status === 401) {
-      console.error(`Unauthorized: ${sessionToken}`);
+      console.error(`Unauthorized: ${headers.Cookie}`);
     }
     return (
       <div className="flex items-center justify-center">

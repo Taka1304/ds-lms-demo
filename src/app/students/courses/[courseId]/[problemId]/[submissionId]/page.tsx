@@ -3,13 +3,23 @@ import ThemeEditor from "@/components/ui/editor";
 import EvaluationResultContainer from "@/features/problems/components/evaluation-result";
 import { TestResultItem } from "@/features/problems/components/test-result-item";
 import { client } from "@/lib/hono";
+import { cookies } from "next/headers";
 import { notFound } from "next/navigation";
 
 export default async function ({ params }: { params: Promise<{ submissionId: string }> }) {
   const { submissionId } = await params;
-  const res = await client.api.courses.problems.submission[":submission_id"].$get({
-    param: { submission_id: submissionId },
-  });
+  const cookieStore = await cookies();
+  const allCookies = cookieStore.getAll();
+  const headers: Record<string, string> = {};
+  if (allCookies.length > 0) {
+    headers.Cookie = allCookies.map((c) => `${c.name}=${c.value}`).join("; ");
+  }
+  const res = await client.api.courses.problems.submission[":submission_id"].$get(
+    {
+      param: { submission_id: submissionId },
+    },
+    { headers },
+  );
 
   if (400 <= res.status && res.status < 500) return notFound();
   if (!res.ok) return console.error(res.status, await res.json());

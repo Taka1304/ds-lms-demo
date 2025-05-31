@@ -6,13 +6,15 @@ import { notFound } from "next/navigation";
 
 export default async function CoursesPage() {
   const cookieStore = await cookies();
-  const sessionToken = cookieStore.get("next-auth.session-token")?.value || "";
+  const allCookies = cookieStore.getAll();
+  const headers: Record<string, string> = {};
+  if (allCookies.length > 0) {
+    headers.Cookie = allCookies.map((c) => `${c.name}=${c.value}`).join("; ");
+  }
   const res = await client.api.courses.$get(
     {},
     {
-      headers: {
-        Cookie: `next-auth.session-token=${sessionToken}`,
-      },
+      headers,
     },
   );
   if (!res.ok) {

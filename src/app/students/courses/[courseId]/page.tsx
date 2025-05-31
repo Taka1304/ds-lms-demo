@@ -11,14 +11,16 @@ import { notFound } from "next/navigation";
 
 export default async function ProblemList({ params }: { params: Promise<{ courseId: string }> }) {
   const cookieStore = await cookies();
-  const sessionToken = cookieStore.get("next-auth.session-token")?.value || "";
+  const allCookies = cookieStore.getAll();
+  const headers: Record<string, string> = {};
+  if (allCookies.length > 0) {
+    headers.Cookie = allCookies.map((c) => `${c.name}=${c.value}`).join("; ");
+  }
   const { courseId } = await params;
   const res = await client.api.courses[":course_id"].$get(
     { param: { course_id: courseId } },
     {
-      headers: {
-        Cookie: `next-auth.session-token=${sessionToken}`,
-      },
+      headers,
     },
   );
 
@@ -30,7 +32,7 @@ export default async function ProblemList({ params }: { params: Promise<{ course
   const session = await getServerSession(authOptions);
   const userProblems = course.problems.map((problem) => ({
     ...problem,
-    submissions: (problem.submissions || []).filter((s) => s.userId === session?.user.id),
+    submissions: problem.submissions.filter((s) => s.userId === session?.user.id),
   }));
   const progress = userProblems.filter((problem) => problem.submissions.length > 0).length;
   const totalProblems = userProblems.length;
