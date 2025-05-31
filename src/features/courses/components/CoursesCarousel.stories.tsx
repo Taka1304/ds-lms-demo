@@ -26,17 +26,9 @@ const sampleCourses: Course = [
     isPublic: true,
     createdAt: "2023-01-01T00:00:00Z",
     updatedAt: "2023-01-02T00:00:00Z",
-    UserProgress: [
-      {
-        id: "progress1",
-        courseId: "1",
-        createdAt: "2023-01-01T00:00:00Z",
-        updatedAt: "2023-01-02T00:00:00Z",
-        userId: "user1",
-        progress: 50,
-        isCompleted: false,
-      },
-    ],
+    UserProgress: {
+      progress: 5,
+    },
     _count: { problems: 10 },
   },
   {
@@ -47,17 +39,9 @@ const sampleCourses: Course = [
     isPublic: false,
     createdAt: "2023-02-01T00:00:00Z",
     updatedAt: "2023-02-02T00:00:00Z",
-    UserProgress: [
-      {
-        id: "progress2",
-        courseId: "2",
-        createdAt: "2023-02-01T00:00:00Z",
-        updatedAt: "2023-02-02T00:00:00Z",
-        userId: "user2",
-        progress: 75,
-        isCompleted: false,
-      },
-    ],
+    UserProgress: {
+      progress: 15,
+    },
     _count: { problems: 15 },
   },
   {
@@ -68,18 +52,10 @@ const sampleCourses: Course = [
     isPublic: true,
     createdAt: "2023-03-01T00:00:00Z",
     updatedAt: "2023-03-02T00:00:00Z",
-    UserProgress: [
-      {
-        id: "progress3",
-        courseId: "3",
-        createdAt: "2023-03-01T00:00:00Z",
-        updatedAt: "2023-03-02T00:00:00Z",
-        userId: "user3",
-        progress: 100,
-        isCompleted: true,
-      },
-    ],
-    _count: { problems: 20 },
+    UserProgress: {
+      progress: 15,
+    },
+    _count: { problems: 15 },
   },
   {
     id: "4",
@@ -89,17 +65,9 @@ const sampleCourses: Course = [
     isPublic: true,
     createdAt: "2023-04-01T00:00:00Z",
     updatedAt: "2023-04-02T00:00:00Z",
-    UserProgress: [
-      {
-        id: "progress4",
-        courseId: "4",
-        createdAt: "2023-04-01T00:00:00Z",
-        updatedAt: "2023-04-02T00:00:00Z",
-        userId: "user4",
-        progress: 25,
-        isCompleted: false,
-      },
-    ],
+    UserProgress: {
+      progress: 25,
+    },
     _count: { problems: 5 },
   },
   {
@@ -110,17 +78,9 @@ const sampleCourses: Course = [
     isPublic: false,
     createdAt: "2023-05-01T00:00:00Z",
     updatedAt: "2023-05-02T00:00:00Z",
-    UserProgress: [
-      {
-        id: "progress5",
-        courseId: "5",
-        createdAt: "2023-05-01T00:00:00Z",
-        updatedAt: "2023-05-02T00:00:00Z",
-        userId: "user5",
-        progress: 0,
-        isCompleted: false,
-      },
-    ],
+    UserProgress: {
+      progress: 0,
+    },
     _count: { problems: 8 },
   },
 ];

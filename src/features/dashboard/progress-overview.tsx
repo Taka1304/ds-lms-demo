@@ -17,11 +17,11 @@ export function ProgressOverview({ courseProgress }: CourseProgressOverviewProps
           <div className="flex justify-between">
             <span className="text-sm font-medium">{course.title}</span>
             <span className="text-sm text-muted-foreground">
-              {`${course.UserProgress[0].progress} / ${course._count.problems} 問`}
+              {`${course.UserProgress.progress} / ${course._count.problems} 問`}
             </span>
           </div>
           <Progress
-            value={course._count.problems === 0 ? 0 : (course.UserProgress[0].progress / course._count.problems) * 100}
+            value={course._count.problems === 0 ? 0 : (course.UserProgress.progress / course._count.problems) * 100}
             className="h-2"
           />
         </div>

@@ -3,7 +3,7 @@ import { zValidator } from "@hono/zod-validator";
 import { createFactory } from "hono/factory";
 import type { Session } from "next-auth";
 import { z } from "zod";
-import { withSession } from "~/middleware/auth";
+import { getSession } from "~/middleware/auth";
 
 type Variables = {
   session: Session;
@@ -12,7 +12,7 @@ type Variables = {
 const factory = createFactory<{ Variables: Variables }>();
 
 export const getSubmissionList = factory.createHandlers(
-  withSession,
+  getSession,
   zValidator(
     "query",
     z.object({
@@ -26,13 +26,12 @@ export const getSubmissionList = factory.createHandlers(
   ),
   async (c) => {
     const session = c.get("session");
-    const isAdmin = session?.user.role === "ADMIN";
     const { user_id, status, problem_id, languages, limit, offset } = c.req.valid("query");
 
     try {
       const data = await prisma.submission.findMany({
         where: {
-          userId: isAdmin ? user_id : session?.user.id,
+          userId: user_id || session?.user.id,
           status,
           problemId: problem_id,
           language: {
