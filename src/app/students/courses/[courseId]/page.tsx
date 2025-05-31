@@ -2,7 +2,9 @@ import { Progress } from "@/components/ui/progress";
 import { Separator } from "@/components/ui/separator";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import ProblemCard from "@/features/courses/[courseId]/components/card-content";
+import { authOptions } from "@/lib/auth";
 import { client } from "@/lib/hono";
+import { getServerSession } from "next-auth";
 import { cookies } from "next/headers";
 import Image from "next/image";
 import { notFound } from "next/navigation";
@@ -25,8 +27,13 @@ export default async function ProblemList({ params }: { params: Promise<{ course
   }
 
   const course = await res.json();
-  const progress = course.problems.filter((problem) => problem.submissions && problem.submissions.length > 0).length;
-  const totalProblems = course.problems.length;
+  const session = await getServerSession(authOptions);
+  const userProblems = course.problems.map((problem) => ({
+    ...problem,
+    submissions: (problem.submissions || []).filter((s) => s.userId === session?.user.id),
+  }));
+  const progress = userProblems.filter((problem) => problem.submissions.length > 0).length;
+  const totalProblems = userProblems.length;
 
   return (
     <>
@@ -48,7 +55,7 @@ export default async function ProblemList({ params }: { params: Promise<{ course
           <Progress value={totalProblems === 0 ? 0 : (progress / totalProblems) * 100} />
           <Image src={"/students/courses/BeingVip.svg"} alt="BeingVip" width={105} height={102} />
         </div>
-        {course.problems.map((problem) => (
+        {userProblems.map((problem) => (
           <ProblemCard key={problem.id} courseId={courseId} problem={problem} />
         ))}
       </div>
