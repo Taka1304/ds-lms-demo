@@ -18,7 +18,7 @@ export default function CoursesCarousel({ courses }: Props) {
               id={course.id}
               title={course.title}
               description={course.description || ""}
-              achievementLevel={course.UserProgress?.[0]?.progress || 0}
+              achievementLevel={course.UserProgress.progress || 0}
               maxAchievementLevel={course._count.problems}
             />
           </CarouselItem>
