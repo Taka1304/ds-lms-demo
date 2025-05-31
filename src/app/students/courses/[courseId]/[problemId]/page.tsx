@@ -5,12 +5,19 @@ import { MarkdownViewer } from "@/components/ui/markdown";
 import { Separator } from "@/components/ui/separator";
 import { client } from "@/lib/hono";
 import dayjs from "dayjs";
+import { cookies } from "next/headers";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
 export default async function ProblemDetail({ params }: { params: Promise<{ courseId: string; problemId: string }> }) {
   const { courseId, problemId } = await params;
-  const res = await client.api.courses.problems[":problem_id"].$get({ param: { problem_id: problemId } });
+  const cookieStore = await cookies();
+  const allCookies = cookieStore.getAll();
+  const headers: Record<string, string> = {};
+  if (allCookies.length > 0) {
+    headers.Cookie = allCookies.map((c) => `${c.name}=${c.value}`).join("; ");
+  }
+  const res = await client.api.courses.problems[":problem_id"].$get({ param: { problem_id: problemId } }, { headers });
 
   if (res.status === 404) return notFound();
   if (!res.ok) throw new Error("Failed to fetch problem");
