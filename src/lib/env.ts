@@ -14,6 +14,7 @@ export const env = createEnv({
     SUPABASE_URL: z.string().url(),
     SUPABASE_KEY: z.string(),
     ARROW_EMAILS: z.string(),
+    EDGE_CONFIG: z.string().optional(),
   },
   client: {
     NEXT_PUBLIC_APP_URL: z.string().url(),
@@ -33,5 +34,6 @@ export const env = createEnv({
     SUPABASE_KEY: process.env.SUPABASE_KEY,
     NEXT_PUBLIC_UMAMI_WEBSITE_ID: process.env.NEXT_PUBLIC_UMAMI_WEBSITE_ID,
     ARROW_EMAILS: process.env.ARROW_EMAILS,
+    EDGE_CONFIG: process.env.EDGE_CONFIG,
   },
 });

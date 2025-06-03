@@ -39,7 +39,7 @@ const ActivityHeatmapContainer = async ({ dateRange }: Props) => {
   if (!data.ok) {
     console.error("Failed to fetch activity heatmap data:", data.statusText);
     return (
-      <div>
+      <div className="flex items-center justify-center" role="alert">
         <AlertCircle />
         エラーが発生しました
       </div>
