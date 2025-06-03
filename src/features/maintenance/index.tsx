@@ -49,7 +49,7 @@ export default function Maintenance({ startedTime, estimatedEndTime }: Maintenan
                 }}
                 className="relative"
               >
-                <Settings className="h-16 w-16 text-primary" />
+                <Settings className="h-16 w-16 text-primary" aria-hidden="true" />
                 <motion.div
                   className="absolute -top-1 -right-1"
                   animate={{
