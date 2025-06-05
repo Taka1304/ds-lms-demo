@@ -36,6 +36,10 @@ const resolveStatus = (testResults: ConvertDateToString<TestResult>[]) => {
 };
 
 export function RecentSubmissions({ recentSubmissions }: Props) {
+  if (recentSubmissions.length === 0) {
+    return <div className="text-center text-muted-foreground">最近の提出はありません</div>;
+  }
+
   return (
     <div className="space-y-4">
       {recentSubmissions.map((submission) => {
@@ -62,12 +66,6 @@ export function RecentSubmissions({ recentSubmissions }: Props) {
           </div>
         );
       })}
-      {/* <Button variant="outline" className="w-full" asChild>
-        <Link href="/submissions">
-          すべての提出を見る
-          <ArrowRight className="ml-2 h-4 w-4" />
-        </Link>
-      </Button> */}
     </div>
   );
 }
