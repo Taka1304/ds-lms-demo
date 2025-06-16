@@ -4,6 +4,7 @@ import { createFactory } from "hono/factory";
 import type { Session } from "next-auth";
 import { z } from "zod";
 import { withSession } from "~/middleware/auth";
+import { recoverFromNotFound } from "~/utils";
 
 type Variables = {
   session: Session;
@@ -38,19 +39,21 @@ export const updateCourse = factory.createHandlers(
     }
 
     try {
-      const updated = await prisma.course.update({
-        where: {
-          id: course_id,
-        },
-        data: {
-          title,
-          description,
-          isPublic,
-        },
-      });
+      const updated = await recoverFromNotFound(
+        prisma.course.update({
+          where: {
+            id: course_id,
+          },
+          data: {
+            title,
+            description,
+            isPublic,
+          },
+        }),
+      );
 
       if (!updated) {
-        return c.json({ error: "指定されたコースが見つかりませんでした" }, 404);
+        return c.notFound();
       }
 
       return c.json(updated);
