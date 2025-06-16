@@ -1,11 +1,16 @@
 import { prisma } from "@/lib/prisma";
 import { zValidator } from "@hono/zod-validator";
 import { createFactory } from "hono/factory";
+import type { Session } from "next-auth";
 import { z } from "zod";
 import { withAdmin } from "~/middleware/auth";
 import { recoverFromNotFound } from "~/utils";
 
-const factory = createFactory();
+type Variables = {
+  session: Session;
+};
+
+const factory = createFactory<{ Variables: Variables }>();
 
 export const deleteProblem = factory.createHandlers(
   withAdmin,
