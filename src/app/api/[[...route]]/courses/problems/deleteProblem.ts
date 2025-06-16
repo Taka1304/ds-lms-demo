@@ -1,16 +1,11 @@
 import { prisma } from "@/lib/prisma";
 import { zValidator } from "@hono/zod-validator";
 import { createFactory } from "hono/factory";
-import type { Session } from "next-auth";
 import { z } from "zod";
 import { withAdmin } from "~/middleware/auth";
 import { recoverFromNotFound } from "~/utils";
 
-type Variables = {
-  session: Session;
-};
-
-const factory = createFactory<{ Variables: Variables }>();
+const factory = createFactory();
 
 export const deleteProblem = factory.createHandlers(
   withAdmin,
@@ -38,8 +33,8 @@ export const deleteProblem = factory.createHandlers(
 
       return c.body(null, 204);
     } catch (error) {
-      console.error(error);
-      return c.json({ error: "問題の削除中にエラーが発生しました", details: error as string }, 500);
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      return c.json({ error: "問題の削除中にエラーが発生しました", details: errorMessage }, 500);
     }
   },
 );
