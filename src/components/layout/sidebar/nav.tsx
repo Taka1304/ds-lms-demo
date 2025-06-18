@@ -32,7 +32,7 @@ export function NavMain({ items, label }: { items: NavItem[]; label: string }) {
                     </Link>
                   )}
                   <div className="relative overflow-hidden flex-1">
-                    <div className="flex flex-row transition-transform duration-300 ease-in-out hover:translate-x-[-100%]">
+                    <div className="flex flex-row transition-transform duration-300 ease-in-out hover:-translate-x-full">
                       <span className="truncate min-w-full">{item.title}</span>
                       <span className="truncate min-w-full text-primary">{item.ja || item.title}</span>
                     </div>
@@ -48,7 +48,7 @@ export function NavMain({ items, label }: { items: NavItem[]; label: string }) {
                       <SidebarMenuSubButton asChild>
                         <Link href={subItem.url}>
                           <div className="relative overflow-hidden flex-1">
-                            <div className="flex flex-row transition-transform duration-300 ease-in-out hover:translate-x-[-100%]">
+                            <div className="flex flex-row transition-transform duration-300 ease-in-out hover:-translate-x-full">
                               <span className="truncate min-w-full">{subItem.title}</span>
                               <span className="truncate min-w-full text-primary">{subItem.ja || subItem.title}</span>
                             </div>

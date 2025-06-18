@@ -8,7 +8,7 @@ const words = ["In somnis esne?", "Somnia tua germinantne?", "Somnia tua perfici
 
 export default function Hero() {
   return (
-    <section className="min-h-[calc(100vh-250px)] w-full flex flex-col justify-center items-center py-12 md:py-24 lg:py-32 xl:py-48 bg-gradient-to-r from-purple-600 to-blue-600">
+    <section className="min-h-[calc(100vh-250px)] w-full flex flex-col justify-center items-center py-12 md:py-24 lg:py-32 xl:py-48 bg-linear-to-r from-purple-600 to-blue-600">
       <div className="w-full container px-4 md:px-6">
         <div className="flex flex-col items-center space-y-4 text-center">
           <div className="space-y-8">

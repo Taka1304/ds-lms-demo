@@ -28,7 +28,7 @@ export default async function ProblemDetail({ params }: { params: Promise<{ cour
       <div className="flex justify-between items-center">
         <h1 className="text-3xl font-bold">{problem.title}</h1>
         {/* TODO: 解説ページは未実装 */}
-        {/* <Button variant={"outline"}>解説を見る</Button> */}
+        {/* <Button variant={"outline-solid"}>解説を見る</Button> */}
       </div>
       <Separator className="my-6" />
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
