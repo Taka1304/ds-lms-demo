@@ -35,21 +35,14 @@ export const userNavItems: NavItem[] = [
   {
     title: "Dashboard",
     ja: "ダッシュボード",
-    url: "/students/dashboard",
-    disabled: true,
+    url: "/students",
+    disabled: false,
     icon: Bot,
     items: [
       {
-        title: "Genesis",
-        url: "#",
-      },
-      {
-        title: "Explorer",
-        url: "#",
-      },
-      {
-        title: "Quantum",
-        url: "#",
+        title: "Top",
+        ja: "トップ",
+        url: "/students",
       },
     ],
   },
