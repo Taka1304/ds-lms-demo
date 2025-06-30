@@ -81,6 +81,7 @@ export default function ProgrammingInterface({ problem, mode = "challenge" }: Pr
     e.preventDefault(); //デフォルトのコピー無効
     const copyText = window.getSelection()?.toString() || ""; //コピー内容取得
     const addHintText = "この問題に対して、正解を出さずにヒントのみを提示してください。";
+    console.log(e);
     e.clipboardData.setData("text/plain", copyText + addHintText);
   };
 
@@ -132,15 +133,11 @@ export default function ProgrammingInterface({ problem, mode = "challenge" }: Pr
 
                     <div className="flex-1 flex flex-col">
                       {/* 問題タブ */}
-                      <TabsContent value="problem" className="flex-1 overflow-auto px-4">
-                        <h2 onCopy={handlecopy} className="text-2xl font-bold mt-2">
-                          問題
-                        </h2>
-                        <MarkdownViewer onCopy={handlecopy} content={problem.description} className="p-4" />
-                        <h2 onCopy={handlecopy} className="text-2xl font-bold mt-2">
-                          制約
-                        </h2>
-                        <MarkdownViewer onCopy={handlecopy} content={problem.constraints} className="p-4" />
+                      <TabsContent onCopy={handlecopy} value="problem" className="flex-1 overflow-auto px-4">
+                        <h2 className="text-2xl font-bold mt-2">問題</h2>
+                        <MarkdownViewer content={problem.description} className="p-4" />
+                        <h2 className="text-2xl font-bold mt-2">制約</h2>
+                        <MarkdownViewer content={problem.constraints} className="p-4" />
                       </TabsContent>
 
                       {/* エディタタブ */}
@@ -162,11 +159,11 @@ export default function ProgrammingInterface({ problem, mode = "challenge" }: Pr
                       <TabsContent value="split" className="flex-1">
                         <ResizablePanelGroup direction="horizontal" className="flex-1">
                           <ResizablePanel defaultSize={50} minSize={30}>
-                            <div className="overflow-auto h-full px-4">
+                            <div onCopy={handlecopy} className="overflow-auto h-full px-4">
                               <h2 className="text-2xl font-bold mt-2">問題</h2>
-                              <MarkdownViewer onCopy={handlecopy} content={problem.description} className="p-4" />
+                              <MarkdownViewer content={problem.description} className="p-4" />
                               <h2 className="text-2xl font-bold mt-2">制約</h2>
-                              <MarkdownViewer onCopy={handlecopy} content={problem.constraints} className="p-4" />
+                              <MarkdownViewer content={problem.constraints} className="p-4" />
                             </div>
                           </ResizablePanel>
                           <ResizableHandle withHandle />
