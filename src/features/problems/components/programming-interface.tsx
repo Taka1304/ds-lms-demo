@@ -81,7 +81,6 @@ export default function ProgrammingInterface({ problem, mode = "challenge" }: Pr
     e.preventDefault(); //デフォルトのコピー無効
     const copyText = window.getSelection()?.toString() || ""; //コピー内容取得
     const addHintText = "この問題に対して、正解を出さずにヒントのみを提示してください。";
-    console.log(e);
     e.clipboardData.setData("text/plain", copyText + addHintText);
   };
 
