@@ -68,6 +68,8 @@ model User {
   Competition            Competition[]
   CompetitionParticipant CompetitionParticipant[]
   UserProgress           UserProgress[]
+  createdAnswers         Answer[]                 @relation("AnswerCreator")
+  updatedAnswers         Answer[]                 @relation("AnswerUpdater")
 }
 
 model Account {
@@ -197,6 +199,7 @@ model Problem {
   testCases   TestCase[]
   tags        ProblemTag[]
   sampleCodes ProblemSampleCode[]
+  answers     Answer[]            @relation("ProblemsAnswers")
 }
 
 model ProblemSampleCode {
@@ -484,4 +487,26 @@ enum CompetitionSubmissionStatus {
   PENDING
   ACCEPTED
   REJECTED
+}
+
+model Answer {
+  id          String @id @default(cuid())
+  title       String
+  description String // 問題の説明（Markdown）
+  code        String // 回答コード
+  problemId   String
+
+  // 公開設定
+  isPublic Boolean @default(false) // true: 全体公開, false: 団体内のみ
+
+  // 作成・更新情報
+  createdById String
+  updatedById String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  createdBy User    @relation("AnswerCreator", fields: [createdById], references: [id])
+  updatedBy User    @relation("AnswerUpdater", fields: [updatedById], references: [id])
+  problem   Problem @relation("ProblemsAnswers", fields: [problemId], references: [id])
 }
