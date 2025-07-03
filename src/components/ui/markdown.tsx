@@ -4,13 +4,9 @@ import remarkMath from "remark-math";
 import "katex/dist/katex.min.css";
 import { cn } from "@/lib/utils";
 
-export function MarkdownViewer({
-  content,
-  className,
-  onCopy,
-}: { content: string; className?: string; onCopy?: (e: React.ClipboardEvent<HTMLDivElement>) => void }) {
+export function MarkdownViewer({ content, className }: { content: string; className?: string }) {
   return (
-    <div onCopy={onCopy} className={cn(className)}>
+    <div className={cn(className)}>
       <Markdown remarkPlugins={[remarkMath]} rehypePlugins={[rehypeKatex]} className={cn(className)}>
         {content}
       </Markdown>
