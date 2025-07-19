@@ -96,7 +96,7 @@ export default function ProgrammingInterface({ problem, mode = "challenge" }: Pr
               }
             };
             return (
-              <div className="flex h-screen h-max-screen flex-col overflow-hidden py-2">
+              <div className="flex h-screen max-h-screen flex-col overflow-hidden py-2">
                 <ResizablePanelGroup direction="vertical" className="flex-1 h-full" ref={panelGroupRef}>
                   {/* 上部: 問題・エディタ領域 */}
                   <ResizablePanel defaultSize={70} minSize={30}>
