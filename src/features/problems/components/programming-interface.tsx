@@ -161,7 +161,7 @@ export default function ProgrammingInterface({ problem, mode = "challenge" }: Pr
                           {/* 分割ビュー */}
                           <TabsContent value="split" className="flex flex-col h-full">
                             <ResizablePanelGroup direction="horizontal" className="h-full">
-                              <ResizablePanel defaultSize={50} minSize={30} className="h-full  pb-12">
+                              <ResizablePanel defaultSize={50} minSize={30} className="h-full pb-12">
                                 <div className="overflow-auto h-full px-4">
                                   <h2 className="text-2xl font-bold mt-2">問題</h2>
                                   <MarkdownViewer content={problem.description} className="p-4" />
