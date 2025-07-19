@@ -27,14 +27,14 @@ export default function Maintenance({ startedTime, estimatedEndTime }: Maintenan
   const progressPercent = calculateProgress(startedTime, estimatedEndTime);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-secondary/20 to-primary/10 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-linear-to-br from-background via-secondary/20 to-primary/10 flex items-center justify-center p-4">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, ease: "easeOut" }}
         className="w-full max-w-md mx-auto"
       >
-        <Card className="border-2 border-primary/20 shadow-lg bg-card/80 backdrop-blur-sm">
+        <Card className="border-2 border-primary/20 shadow-lg bg-card/80 backdrop-blur-xs">
           <CardContent className="p-6 space-y-4">
             {/* Icon Animation */}
             <div className="flex justify-center">
@@ -119,7 +119,7 @@ export default function Maintenance({ startedTime, estimatedEndTime }: Maintenan
               </div>
               <div className="w-full bg-secondary rounded-full h-3 overflow-hidden">
                 <motion.div
-                  className="h-full bg-gradient-to-r from-primary to-primary/80 rounded-full"
+                  className="h-full bg-linear-to-r from-primary to-primary/80 rounded-full"
                   initial={{ width: 0 }}
                   animate={{ width: `${progressPercent.toFixed(0)}%` }}
                   transition={{

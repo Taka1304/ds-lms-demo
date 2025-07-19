@@ -212,7 +212,7 @@ export default function ProblemCreator({ courseId, problem }: ProblemCreatorProp
               control={form.control}
               name="isPublic"
               render={({ field }) => (
-                <FormItem className="flex flex-row items-end justify-between rounded-lg border p-3 gap-3 shadow-sm">
+                <FormItem className="flex flex-row items-end justify-between rounded-lg border p-3 gap-3 shadow-xs">
                   <div className="space-y-0.5">
                     <FormLabel>公開する</FormLabel>
                   </div>
