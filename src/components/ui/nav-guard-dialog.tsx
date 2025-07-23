@@ -12,7 +12,7 @@ type NavGuardProps = {
 const NavGuardDialog = ({ open, onCancel, onAccept }: NavGuardProps) => {
   return (
     <Dialog open={open}>
-      <DialogContent showClose={false}>
+      <DialogContent showCloseButton={false}>
         <DialogTitle>このページを離れますか？</DialogTitle>
         <DialogDescription>行った変更が保存されない可能性があります。</DialogDescription>
         <DialogFooter>

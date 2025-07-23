@@ -53,7 +53,7 @@ export default async function SignInPage({
             {/* TODO: Add Other Provider */}
             {/* <SigninButton provider="github">Sign in with GitHub</SigninButton> */}
           </div>
-          <div className="text-balance text-center text-xs text-muted-foreground [&_a]:underline [&_a]:underline-offset-4 [&_a]:hover:text-primary">
+          <div className="text-balance text-center text-xs text-muted-foreground [&_a]:underline [&_a]:underline-offset-4 hover:[&_a]:text-primary">
             By clicking continue, you agree to our <Link href="/terms">Terms of Service</Link> and{" "}
             <Link href="/privacy">Privacy Policy</Link>.
           </div>
