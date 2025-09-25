@@ -58,7 +58,7 @@ export function RecentSubmissions({ recentSubmissions }: Props) {
                 </p>
               </div>
             </div>
-            <Link href={`/students/courses/${submission.problem.courseId}/${submission.problem.id}/${submission.id}`}>
+            <Link href={`/students/submissions/${submission.id}`}>
               <Button variant="ghost" size="icon">
                 <ArrowRight className="h-4 w-4" />
               </Button>

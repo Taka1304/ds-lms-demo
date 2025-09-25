@@ -9,7 +9,7 @@ import { PythonProvider } from "react-py";
 import type { Packages } from "react-py/dist/types/Packages";
 import { toast } from "sonner";
 
-const req = client.api.courses.problems.submission[":submission_id"].$get;
+const req = client.api.submissions[":submission_id"].$get;
 
 const packages: Packages = {
   official: ["numpy", "pandas"],
@@ -32,7 +32,7 @@ const EvaluationResultContainer = ({ submission }: ContainerProps) => {
 
   const updateSubmission = async (testResults: TestResult[], score: number) => {
     const toastId = toast.loading("採点結果を更新しています...");
-    const res = await client.api.courses.problems.submission[":submission_id"].$patch({
+    const res = await client.api.submissions[":submission_id"].$patch({
       param: { submission_id: submission.id },
       json: {
         status: "EVALUATED",
