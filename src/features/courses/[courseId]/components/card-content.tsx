@@ -9,11 +9,10 @@ import Link from "next/link";
 const req = client.api.courses[":course_id"].$get;
 
 export type Props = {
-  courseId: string;
   problem: InferResponseType<typeof req, 200>["problems"][number];
 };
 
-export default function ProblemCard({ courseId, problem }: Props) {
+export default function ProblemCard({ problem }: Props) {
   return (
     <Card className="flex flex-row justify-around space-x-5">
       <Image
@@ -37,7 +36,7 @@ export default function ProblemCard({ courseId, problem }: Props) {
       <CardContent className="p-6 w-1/3 flex flex-col justify-center">
         <div className="relative">
           <Button asChild size="sm" className="w-full rounded-sm h-14 font-bold text-lg drop-shadow-sm">
-            <Link href={`/students/courses/${courseId}/${problem.id}`}>詳細を見る</Link>
+            <Link href={`/students/problems/${problem.id}`}>詳細を見る</Link>
           </Button>
         </div>
       </CardContent>

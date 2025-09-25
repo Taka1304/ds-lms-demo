@@ -42,7 +42,7 @@ const difficultyLevels = [
   { value: 3, label: "難しい" },
 ];
 
-const req = client.api.courses.problems[":problem_id"].$get;
+const req = client.api.problems[":problem_id"].$get;
 
 type ProblemCreatorProps = {
   courseId: string;
@@ -98,7 +98,7 @@ export default function ProblemCreator({ courseId, problem }: ProblemCreatorProp
 
     if (problem) {
       // 編集時
-      const res = await client.api.courses.problems[":problem_id"].$patch({
+      const res = await client.api.problems[":problem_id"].$patch({
         param: {
           problem_id: problem.id,
         },
@@ -129,7 +129,7 @@ export default function ProblemCreator({ courseId, problem }: ProblemCreatorProp
           action: {
             label: "移動する",
             onClick: () => {
-              router.push(`/manage/courses/${courseId}/${problem.id}/debug`);
+              router.push(`/manage/problems/${problem.id}/debug`);
             },
           },
         });
@@ -152,7 +152,7 @@ export default function ProblemCreator({ courseId, problem }: ProblemCreatorProp
     }
     // 新規作成時
 
-    const res = await client.api.courses.problems.$post({
+    const res = await client.api.problems.$post({
       json: {
         title: values.title,
         description: values.description,

@@ -25,7 +25,7 @@ const packages: Packages = {
   micropip: [],
 };
 
-const req = client.api.courses.problems[":problem_id"].$get;
+const req = client.api.problems[":problem_id"].$get;
 
 type Props = {
   problem: InferResponseType<typeof req, 200>;
@@ -54,7 +54,7 @@ export default function ProgrammingInterface({ problem, mode = "challenge" }: Pr
     const toastId = toast.loading("提出しています...");
     const startedAt = getStartedAt();
 
-    const res = await client.api.courses.problems[":problem_id"].submit.$post({
+    const res = await client.api.problems[":problem_id"].submit.$post({
       param: {
         problem_id: problem.id,
       },
@@ -76,7 +76,7 @@ export default function ProgrammingInterface({ problem, mode = "challenge" }: Pr
     toast.success("提出しました! 評価ページに遷移します", { id: toastId });
     // 1秒後に評価ページへ遷移
     setTimeout(() => {
-      router.push(`/students/courses/${problem.courseId}/${problem.id}/${submissionId}`);
+      router.push(`/students/submissions/${submissionId}`);
     }, 1000);
   };
 
