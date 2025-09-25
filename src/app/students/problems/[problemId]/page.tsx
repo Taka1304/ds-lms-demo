@@ -9,8 +9,8 @@ import { cookies } from "next/headers";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
-export default async function ProblemDetail({ params }: { params: Promise<{ courseId: string; problemId: string }> }) {
-  const { courseId, problemId } = await params;
+export default async function ProblemDetail({ params }: { params: Promise<{ problemId: string }> }) {
+  const { problemId } = await params;
   const cookieStore = await cookies();
   const allCookies = cookieStore.getAll();
   const headers: Record<string, string> = {};
