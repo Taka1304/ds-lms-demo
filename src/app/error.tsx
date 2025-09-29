@@ -2,8 +2,19 @@
 
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import { useEffect } from "react";
 
-export default function ErrorPage() {
+export default function ErrorPage({
+  error,
+  reset,
+}: {
+  error: Error & { digest?: string };
+  reset: () => void;
+}) {
+  useEffect(() => {
+    console.error(error);
+  }, [error]);
+
   return (
     <div className="flex flex-col items-center justify-center text-center py-20">
       <h1 className="text-5xl font-bold pb-6">500 Internal Server Error</h1>
@@ -15,7 +26,7 @@ export default function ErrorPage() {
       </p>
 
       <div className="flex gap-4 mt-6">
-        <Button onClick={() => window.location.reload()} variant="default">
+        <Button onClick={() => reset()} variant="default">
           再試行
         </Button>
 
